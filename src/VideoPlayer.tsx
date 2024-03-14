@@ -4,29 +4,6 @@ interface VideoPlayerProps {
   videoFile: File
 }
 
-// const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
-//   const videoSrc = URL.createObjectURL(videoFile)
-//   const videoRef = React.useRef<HTMLVideoElement>(null)
-
-//   return (<>
-//     <div className="fixed top-0 left-0 right-0 bottom-0">
-//       <p>playTime: {videoRef.current?.currentTime}</p>
-//     </div>
-//     <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black">
-//       <video
-//         ref={videoRef}
-//         src={videoSrc}
-//         className="object-contain max-w-full max-h-full min-w-full min-h-full"
-//         autoPlay
-//         controls
-//       >
-//         <source src={videoSrc} type={videoFile.type} />
-//       </video>
-//     </div>
-//     </>
-//   )
-// }
-
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
   const videoSrc = URL.createObjectURL(videoFile)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
@@ -112,35 +89,45 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
   }
 
   return (
-    <div ref={videoPlayerRef}>
-      <video ref={videoRef} src={videoSrc} autoPlay />
-      <button ref={playButtonRef} onClick={togglePlayPause}>
-        Pause
-      </button>
-      <div>
-        Current time: <span ref={currentTimeRef}></span>/ Total time:{" "}
-        <span ref={totalTimeRef}></span>
+    <div
+      ref={videoPlayerRef}
+      className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black"
+    >
+      <video
+        ref={videoRef}
+        className="object-contain max-h-full max-w-full min-h-full min-w-full"
+        src={videoSrc}
+        autoPlay
+      />
+      <div className="absolute inset-0 text-white">
+        <button ref={playButtonRef} onClick={togglePlayPause}>
+          Pause
+        </button>
+        <div>
+          Current time: <span ref={currentTimeRef}></span>/ Total time:{" "}
+          <span ref={totalTimeRef}></span>
+        </div>
+        Seek:{" "}
+        <input
+          ref={seekRef}
+          type="range"
+          min="0"
+          max="100"
+          onChange={handleSeek}
+        />
+        <br />
+        Volumen:{" "}
+        <input
+          ref={volumeRef}
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          onChange={handleVolumeChange}
+        />
+        <br />
+        <button onClick={toggleFullScreen}>Fullscreen</button>
       </div>
-      Seek:{" "}
-      <input
-        ref={seekRef}
-        type="range"
-        min="0"
-        max="100"
-        onChange={handleSeek}
-      />
-      <br />
-      Volumen:{" "}
-      <input
-        ref={volumeRef}
-        type="range"
-        min="0"
-        max="1"
-        step="0.1"
-        onChange={handleVolumeChange}
-      />
-      <br />
-      <button onClick={toggleFullScreen}>Fullscreen</button>
     </div>
   )
 }
