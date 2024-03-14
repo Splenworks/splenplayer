@@ -1,10 +1,12 @@
 import React, { useState } from "react"
 import { twJoin } from "tailwind-merge"
-import Spinner from "./Spinner"
+import { getVideoFiles } from "./utils/getVideoFiles"
 
-interface DragDropAreaProps {}
+interface DragDropAreaProps {
+  setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
+}
 
-const DragDropArea: React.FC<DragDropAreaProps> = () => {
+const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
   const [dragging, setDragging] = useState(false)
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
@@ -24,6 +26,9 @@ const DragDropArea: React.FC<DragDropAreaProps> = () => {
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setDragging(false)
+    const files = Array.from(e.dataTransfer.files)
+    const videoFiles = getVideoFiles(files)
+    setVideoFiles(videoFiles)
   }
 
   return (
@@ -43,7 +48,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = () => {
         ) : (
           <>
             <p className="text-xl font-semibold px-4 text-center">
-              Drag and drop a video file here
+              Drag and drop video files here
             </p>
           </>
         )}

@@ -1,10 +1,18 @@
+import { useState } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
+import VideoPlayer from "./VideoPlayer"
 
 function App() {
+  const [videoFiles, setVideoFiles] = useState<File[]>([])
+
+  if (videoFiles.length > 0) {
+    return <VideoPlayer videoFile={videoFiles[0]} />
+  }
+
   return (
     <>
-      <DragDropArea />
+      <DragDropArea setVideoFiles={setVideoFiles} />
       <Footer />
     </>
   )
