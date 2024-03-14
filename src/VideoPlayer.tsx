@@ -29,6 +29,7 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
   const videoSrc = URL.createObjectURL(videoFile)
+  const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playButtonRef = useRef<HTMLButtonElement>(null)
   const currentTimeRef = useRef<HTMLSpanElement>(null)
@@ -96,11 +97,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
   }
 
   const toggleFullScreen = () => {
-    const video = videoRef.current
-    if (!video) return
+    const videoPlayer = videoPlayerRef.current
+    if (!videoPlayer) return
 
     if (!document.fullscreenElement) {
-      video.requestFullscreen().catch((err) => {
+      videoPlayer.requestFullscreen().catch((err) => {
         alert(
           `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
         )
@@ -111,7 +112,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
   }
 
   return (
-    <div className="video-player">
+    <div ref={videoPlayerRef}>
       <video ref={videoRef} src={videoSrc} autoPlay />
       <button ref={playButtonRef} onClick={togglePlayPause}>
         Pause
