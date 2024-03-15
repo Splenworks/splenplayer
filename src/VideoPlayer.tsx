@@ -1,10 +1,12 @@
 import React, { useRef, useEffect } from "react"
+import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 
 interface VideoPlayerProps {
   videoFile: File
+  exit: () => void
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
   const videoSrc = URL.createObjectURL(videoFile)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -100,6 +102,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile }) => {
         autoPlay
       />
       <div className="absolute inset-0 text-white">
+        <button
+          className="absolute top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-gray-500 rounded-full"
+          onClick={exit}
+        >
+          <CloseIcon className="w-6 h-6 text-white" />
+        </button>
         <button ref={playButtonRef} onClick={togglePlayPause}>
           Pause
         </button>

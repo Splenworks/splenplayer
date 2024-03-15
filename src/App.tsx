@@ -7,7 +7,9 @@ function App() {
   const [videoFiles, setVideoFiles] = useState<File[]>([])
 
   if (videoFiles.length > 0) {
-    return <VideoPlayer videoFile={videoFiles[0]} />
+    return (
+      <VideoPlayer videoFile={videoFiles[0]} exit={() => setVideoFiles([])} />
+    )
   }
 
   return (
