@@ -97,13 +97,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     >
       <video
         ref={videoRef}
-        className="object-contain max-h-full max-w-full min-h-full min-w-full"
+        className="max-h-full max-w-full min-h-full min-w-full"
         src={videoSrc}
         autoPlay
       />
       <div className="absolute inset-0 text-white">
         <button
-          className="absolute top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-gray-500 rounded-full"
+          className="absolute top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
           onClick={exit}
         >
           <CloseIcon className="w-6 h-6 text-white" />
