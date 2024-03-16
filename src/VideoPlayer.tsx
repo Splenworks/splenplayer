@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from "react"
+import IconButton from "./IconButton"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 import { ReactComponent as PlayIcon } from "./assets/play.svg"
 import { ReactComponent as PauseIcon } from "./assets/pause.svg"
 import { ReactComponent as FullscreenIcon } from "./assets/expand.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
-import IconButton from "./IconButton"
 
 interface VideoPlayerProps {
   videoFile: File
@@ -184,52 +184,52 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         <IconButton
           svgIcon={CloseIcon}
           onClick={exit}
-          className="absolute top-2 right-2"
+          className="absolute top-4 right-4"
         />
-        <div className="absolute bottom-4 left-0 p-4">
-          <button
-            className="top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
-            ref={playButtonRef}
-            onClick={togglePlayPause}
-          >
-            <PauseIcon className="pauseIcon w-6 h-6 text-white" />
-            <PlayIcon className="hidden playIcon w-6 h-6 text-white" />
-          </button>
+        <div className="absolute bottom-8 left-0 right-0 h-8 mx-4 flex justify-between">
+          <div className="flex justify-center items-center">
+            <button
+              className="top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
+              ref={playButtonRef}
+              onClick={togglePlayPause}
+            >
+              <PauseIcon className="pauseIcon w-6 h-6 text-white" />
+              <PlayIcon className="hidden playIcon w-6 h-6 text-white" />
+            </button>
+            <div className="font-mono text-sm font-semibold">
+              <span className="pr-2" ref={currentTimeRef}></span>/
+              <span className="pl-2" ref={totalTimeRef}></span>
+            </div>
+          </div>
+          <div className="flex justify-center items-center gap-2">
+            <div className="">
+              <button className="group w-8 hover:w-32 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out">
+                <input
+                  ref={volumeRef}
+                  className="hidden group-hover:block accent-white cursor-pointer w-24"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  onChange={handleVolumeChange}
+                />
+                <VolumeIcon className="w-6 h-6 text-white" />
+                <MuteIcon className="hidden w-6 h-6 text-white" />
+              </button>
+            </div>
+            <IconButton svgIcon={FullscreenIcon} onClick={toggleFullScreen} />
+          </div>
         </div>
-        <div className="font-mono text-sm font-semibold">
-          <span className="pr-2" ref={currentTimeRef}></span>/
-          <span className="pl-2" ref={totalTimeRef}></span>
+        <div className="absolute bottom-0 left-0 right-0 h-8 flex justify-center items-center mx-4">
+          <input
+            ref={seekRef}
+            className="accent-white w-full cursor-pointer"
+            type="range"
+            min="0"
+            max="100"
+            onChange={handleSeek}
+          />
         </div>
-        <input
-          ref={seekRef}
-          type="range"
-          min="0"
-          max="100"
-          onChange={handleSeek}
-        />
-        <div className="absolute bottom-4 right-10 p-4">
-          <button
-            className="top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
-            ref={playButtonRef}
-            onClick={togglePlayPause}
-          >
-            <input
-              ref={volumeRef}
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              onChange={handleVolumeChange}
-            />
-            <VolumeIcon className="w-6 h-6 text-white" />
-            <MuteIcon className="hidden w-6 h-6 text-white" />
-          </button>
-        </div>
-        <IconButton
-          svgIcon={FullscreenIcon}
-          onClick={toggleFullScreen}
-          className=""
-        />
       </div>
     </div>
   )
