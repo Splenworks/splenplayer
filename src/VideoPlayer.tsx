@@ -21,6 +21,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
   const currentTimeRef = useRef<HTMLSpanElement>(null)
   const totalTimeRef = useRef<HTMLSpanElement>(null)
   const seekRef = useRef<HTMLInputElement>(null)
+  const volumnButton = useRef<HTMLButtonElement>(null)
   const volumeRef = useRef<HTMLInputElement>(null)
 
   let mouseMoveTimeout: number = 0
@@ -108,6 +109,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     const video = videoRef.current
     if (volumeControl && video) {
       video.volume = Number(volumeControl.value)
+      if (video.volume === 0) {
+        if (volumnButton.current) {
+          volumnButton.current
+            .querySelector(".volumeIcon")
+            ?.classList.add("hidden")
+          volumnButton.current
+            .querySelector(".muteIcon")
+            ?.classList.remove("hidden")
+        }
+      } else {
+        if (volumnButton.current) {
+          volumnButton.current
+            .querySelector(".volumeIcon")
+            ?.classList.remove("hidden")
+          volumnButton.current
+            .querySelector(".muteIcon")
+            ?.classList.add("hidden")
+        }
+      }
     }
   }
 
@@ -203,9 +223,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           </div>
           <div className="flex justify-center items-center gap-2">
             <div className="overflow-hidden w-8 hover:w-32 p-1 h-8 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
-              <button className="w-6 h-6">
-                <VolumeIcon className="w-6 h-6 text-white" />
-                <MuteIcon className="hidden w-6 h-6 text-white" />
+              <button ref={volumnButton} className="w-6 h-6">
+                <VolumeIcon className="volumeIcon w-6 h-6 text-white" />
+                <MuteIcon className="hidden muteIcon w-6 h-6 text-white" />
               </button>
               <input
                 ref={volumeRef}
