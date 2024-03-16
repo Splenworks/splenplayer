@@ -130,16 +130,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           }
           e.currentTarget.style.opacity = "1"
           e.currentTarget.style.cursor = "auto"
-          mouseMoveTimeout = window.setTimeout(() => {
-            if (controlsRef.current) {
-              controlsRef.current.style.opacity = "0"
-              controlsRef.current.style.cursor = "none"
-            }
-          }, 1000)
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.opacity = "0"
-          e.currentTarget.style.cursor = "none"
+          if (document.hasFocus()) {
+            mouseMoveTimeout = window.setTimeout(() => {
+              if (controlsRef.current) {
+                controlsRef.current.style.opacity = "0"
+                controlsRef.current.style.cursor = "none"
+              }
+            }, 1000)
+          }
         }}
       >
         <IconButton
