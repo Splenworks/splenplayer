@@ -211,11 +211,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           onClick={exit}
           className="absolute top-4 right-4"
         />
-        <div className="absolute bottom-9 left-0 right-0 h-8 mx-4 flex justify-between">
+        <div className="absolute bottom-11 left-0 right-0 h-8 mx-4 flex justify-between">
           <div className="flex justify-center items-center gap-2">
             <IconButton
               id="playButton"
-              className="hidden"
+              className="hidden pl-0.5"
               svgIcon={PlayIcon}
               onClick={togglePlayPause}
             />
@@ -230,14 +230,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
             </div>
           </div>
           <div className="flex justify-center items-center gap-2">
-            <div className="overflow-hidden w-8 hover:w-32 p-1 h-8 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
-              <button ref={volumnButton} className="w-6 h-6">
+            <div className="overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
+              <button ref={volumnButton} className="w-6 h-6 mx-2">
                 <VolumeIcon id="volumeIcon" className="w-6 h-6 text-white" />
                 <MuteIcon id="muteIcon" className="hidden w-6 h-6 text-white" />
               </button>
               <input
                 ref={volumeRef}
-                className="accent-white cursor-pointer w-20 mx-2"
+                className="accent-white cursor-pointer w-24 mr-0.5"
                 type="range"
                 min="0"
                 max="1"
@@ -258,7 +258,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
             />
           </div>
         </div>
-        <div className="absolute bottom-1 left-0 right-0 h-8 flex justify-center items-center mx-4">
+        <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
           <input
             ref={seekRef}
             className="accent-white w-full cursor-pointer"
