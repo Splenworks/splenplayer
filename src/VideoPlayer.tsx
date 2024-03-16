@@ -153,33 +153,33 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           background:
             "linear-gradient(to bottom, rgba(0,0,0,75%),  rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
         }}
-        onMouseEnter={(e) => {
-          if (document.hasFocus()) {
-            e.currentTarget.style.opacity = "1"
-            e.currentTarget.style.cursor = "auto"
-          } else {
-            e.currentTarget.style.opacity = "0"
-            e.currentTarget.style.cursor = "none"
-          }
-        }}
-        onMouseMove={(e) => {
-          if (mouseMoveTimeout) {
-            clearTimeout(mouseMoveTimeout)
-          }
-          if (document.hasFocus()) {
-            e.currentTarget.style.opacity = "1"
-            e.currentTarget.style.cursor = "auto"
-            mouseMoveTimeout = window.setTimeout(() => {
-              if (controlsRef.current) {
-                controlsRef.current.style.opacity = "0"
-                controlsRef.current.style.cursor = "none"
-              }
-            }, 1000)
-          } else {
-            e.currentTarget.style.opacity = "0"
-            e.currentTarget.style.cursor = "none"
-          }
-        }}
+        // onMouseEnter={(e) => {
+        //   if (document.hasFocus()) {
+        //     e.currentTarget.style.opacity = "1"
+        //     e.currentTarget.style.cursor = "auto"
+        //   } else {
+        //     e.currentTarget.style.opacity = "0"
+        //     e.currentTarget.style.cursor = "none"
+        //   }
+        // }}
+        // onMouseMove={(e) => {
+        //   if (mouseMoveTimeout) {
+        //     clearTimeout(mouseMoveTimeout)
+        //   }
+        //   if (document.hasFocus()) {
+        //     e.currentTarget.style.opacity = "1"
+        //     e.currentTarget.style.cursor = "auto"
+        //     mouseMoveTimeout = window.setTimeout(() => {
+        //       if (controlsRef.current) {
+        //         controlsRef.current.style.opacity = "0"
+        //         controlsRef.current.style.cursor = "none"
+        //       }
+        //     }, 1000)
+        //   } else {
+        //     e.currentTarget.style.opacity = "0"
+        //     e.currentTarget.style.cursor = "none"
+        //   }
+        // }}
       >
         <IconButton
           svgIcon={CloseIcon}
@@ -187,9 +187,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           className="absolute top-4 right-4"
         />
         <div className="absolute bottom-8 left-0 right-0 h-8 mx-4 flex justify-between">
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center gap-2">
             <button
-              className="top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
+              className="w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
               ref={playButtonRef}
               onClick={togglePlayPause}
             >
@@ -202,20 +202,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
             </div>
           </div>
           <div className="flex justify-center items-center gap-2">
-            <div className="">
-              <button className="group w-8 hover:w-32 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out">
-                <input
-                  ref={volumeRef}
-                  className="hidden group-hover:block accent-white cursor-pointer w-24"
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  onChange={handleVolumeChange}
-                />
+            <div className="overflow-hidden w-8 hover:w-32 p-1 h-8 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
+              <button className="w-6 h-6">
                 <VolumeIcon className="w-6 h-6 text-white" />
                 <MuteIcon className="hidden w-6 h-6 text-white" />
               </button>
+              <input
+                ref={volumeRef}
+                className="accent-white cursor-pointer w-20 mx-2"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                onChange={handleVolumeChange}
+              />
             </div>
             <IconButton svgIcon={FullscreenIcon} onClick={toggleFullScreen} />
           </div>
