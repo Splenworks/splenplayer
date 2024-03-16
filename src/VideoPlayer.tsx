@@ -121,22 +121,30 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         ref={controlsRef}
         className="absolute inset-0 text-white"
         onMouseEnter={(e) => {
-          e.currentTarget.style.opacity = "1"
-          e.currentTarget.style.cursor = "auto"
+          if (document.hasFocus()) {
+            e.currentTarget.style.opacity = "1"
+            e.currentTarget.style.cursor = "auto"
+          } else {
+            e.currentTarget.style.opacity = "0"
+            e.currentTarget.style.cursor = "none"
+          }
         }}
         onMouseMove={(e) => {
           if (mouseMoveTimeout) {
             clearTimeout(mouseMoveTimeout)
           }
-          e.currentTarget.style.opacity = "1"
-          e.currentTarget.style.cursor = "auto"
           if (document.hasFocus()) {
+            e.currentTarget.style.opacity = "1"
+            e.currentTarget.style.cursor = "auto"
             mouseMoveTimeout = window.setTimeout(() => {
               if (controlsRef.current) {
                 controlsRef.current.style.opacity = "0"
                 controlsRef.current.style.cursor = "none"
               }
             }, 1000)
+          } else {
+            e.currentTarget.style.opacity = "0"
+            e.currentTarget.style.cursor = "none"
           }
         }}
       >
