@@ -3,6 +3,8 @@ import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 import { ReactComponent as PlayIcon } from "./assets/play.svg"
 import { ReactComponent as PauseIcon } from "./assets/pause.svg"
 import { ReactComponent as FullscreenIcon } from "./assets/expand.svg"
+import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
+import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 import IconButton from "./IconButton"
 
 interface VideoPlayerProps {
@@ -54,7 +56,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     if (video) {
       video.ontimeupdate = () => {
         if (currentTimeRef.current) {
-          currentTimeRef.current.innerText = video.currentTime.toFixed(2)
+          const hour = Math.floor(video.currentTime / 3600)
+          let minute = Math.floor((video.currentTime % 3600) / 60).toString()
+          if (minute.length === 1) {
+            minute = `0${minute}`
+          }
+          let second = Math.floor(video.currentTime % 60).toString()
+          if (second.length === 1) {
+            second = `0${second}`
+          }
+          if (hour === 0) {
+            currentTimeRef.current.innerText = `${minute}:${second}`
+          } else {
+            currentTimeRef.current.innerText = `${hour}:${minute}:${second}`
+          }
         }
         if (seekRef.current) {
           seekRef.current.value =
@@ -63,7 +78,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
       }
       video.onloadedmetadata = () => {
         if (totalTimeRef.current) {
-          totalTimeRef.current.innerText = video.duration.toFixed(2)
+          const hour = Math.floor(video.duration / 3600)
+          let minute = Math.floor((video.duration % 3600) / 60).toString()
+          if (minute.length === 1) {
+            minute = `0${minute}`
+          }
+          let second = Math.floor(video.duration % 60).toString()
+          if (second.length === 1) {
+            second = `0${second}`
+          }
+          if (hour === 0) {
+            totalTimeRef.current.innerText = `${minute}:${second}`
+          } else {
+            totalTimeRef.current.innerText = `${hour}:${minute}:${second}`
+          }
         }
         if (volumeRef.current) {
           volumeRef.current.value = "0.5"
@@ -168,11 +196,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
             <PlayIcon className="hidden playIcon w-6 h-6 text-white" />
           </button>
         </div>
-        <div>
-          Current time: <span ref={currentTimeRef}></span>/ Total time:{" "}
-          <span ref={totalTimeRef}></span>
+        <div className="font-mono text-sm font-semibold">
+          <span className="pr-2" ref={currentTimeRef}></span>/
+          <span className="pl-2" ref={totalTimeRef}></span>
         </div>
-        Seek:{" "}
         <input
           ref={seekRef}
           type="range"
@@ -180,17 +207,24 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           max="100"
           onChange={handleSeek}
         />
-        <br />
-        Volume:{" "}
-        <input
-          ref={volumeRef}
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          onChange={handleVolumeChange}
-        />
-        <br />
+        <div className="absolute bottom-4 right-10 p-4">
+          <button
+            className="top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
+            ref={playButtonRef}
+            onClick={togglePlayPause}
+          >
+            <input
+              ref={volumeRef}
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              onChange={handleVolumeChange}
+            />
+            <VolumeIcon className="w-6 h-6 text-white" />
+            <MuteIcon className="hidden w-6 h-6 text-white" />
+          </button>
+        </div>
         <IconButton
           svgIcon={FullscreenIcon}
           onClick={toggleFullScreen}
