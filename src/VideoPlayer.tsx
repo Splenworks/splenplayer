@@ -4,6 +4,7 @@ import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 import { ReactComponent as PlayIcon } from "./assets/play.svg"
 import { ReactComponent as PauseIcon } from "./assets/pause.svg"
 import { ReactComponent as FullscreenIcon } from "./assets/expand.svg"
+import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 
@@ -145,13 +146,26 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     if (!videoPlayer) return
 
     if (!document.fullscreenElement) {
+      document.querySelector("#exitButton")?.classList.add("hidden")
+      document.querySelector("#fullScreenButton")?.classList.add("hidden")
+      document
+        .querySelector("#exitFullScreenButton")
+        ?.classList.remove("hidden")
+      document.querySelector("#exitFullScreenButton")?.classList.add("flex")
       videoPlayer.requestFullscreen().catch((err) => {
         alert(
           `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
         )
+        document.querySelector("#exitButton")?.classList.remove("hidden")
+        document.querySelector("#fullScreenButton")?.classList.remove("hidden")
+        document.querySelector("#exitFullScreenButton")?.classList.add("hidden")
       })
     } else {
       document.exitFullscreen()
+      document.querySelector("#exitButton")?.classList.remove("hidden")
+      document.querySelector("#fullScreenButton")?.classList.remove("hidden")
+      document.querySelector("#exitFullScreenButton")?.classList.add("hidden")
+      document.querySelector("#exitFullScreenButton")?.classList.add("flex")
     }
   }
 
@@ -202,6 +216,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         }}
       >
         <IconButton
+          id="exitButton"
           svgIcon={CloseIcon}
           onClick={exit}
           className="absolute top-4 right-4"
@@ -237,7 +252,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
                 onChange={handleVolumeChange}
               />
             </div>
-            <IconButton svgIcon={FullscreenIcon} onClick={toggleFullScreen} />
+            <IconButton
+              id="fullScreenButton"
+              svgIcon={FullscreenIcon}
+              onClick={toggleFullScreen}
+            />
+            <IconButton
+              id="exitFullScreenButton"
+              className="hidden"
+              svgIcon={ExitFullscreenIcon}
+              onClick={toggleFullScreen}
+            />
           </div>
         </div>
         <div className="absolute bottom-1 left-0 right-0 h-8 flex justify-center items-center mx-4">

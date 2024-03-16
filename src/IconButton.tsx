@@ -3,17 +3,20 @@ import { twMerge } from "tailwind-merge"
 
 interface IconButtonProps {
   svgIcon: React.FunctionComponent
+  id?: string
   className?: string
   onClick?: () => void
 }
 
 const IconButton: React.FC<IconButtonProps> = ({
   svgIcon,
+  id,
   className,
   onClick,
 }) => {
   return (
     <button
+      id={id}
       className={twMerge(
         "w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out",
         className,
