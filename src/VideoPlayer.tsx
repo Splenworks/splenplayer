@@ -33,20 +33,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         videoRef.current.play()
         if (playButtonRef.current) {
           playButtonRef.current
-            .querySelector(".playIcon")
+            .querySelector("#playIcon")
             ?.classList.add("hidden")
           playButtonRef.current
-            .querySelector(".pauseIcon")
+            .querySelector("#pauseIcon")
             ?.classList.remove("hidden")
         }
       } else {
         videoRef.current.pause()
         if (playButtonRef.current) {
           playButtonRef.current
-            .querySelector(".playIcon")
+            .querySelector("#playIcon")
             ?.classList.remove("hidden")
           playButtonRef.current
-            .querySelector(".pauseIcon")
+            .querySelector("#pauseIcon")
             ?.classList.add("hidden")
         }
       }
@@ -113,19 +113,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
       if (video.volume === 0) {
         if (volumnButton.current) {
           volumnButton.current
-            .querySelector(".volumeIcon")
+            .querySelector("#volumeIcon")
             ?.classList.add("hidden")
           volumnButton.current
-            .querySelector(".muteIcon")
+            .querySelector("#muteIcon")
             ?.classList.remove("hidden")
         }
       } else {
         if (volumnButton.current) {
           volumnButton.current
-            .querySelector(".volumeIcon")
+            .querySelector("#volumeIcon")
             ?.classList.remove("hidden")
           volumnButton.current
-            .querySelector(".muteIcon")
+            .querySelector("#muteIcon")
             ?.classList.add("hidden")
         }
       }
@@ -228,8 +228,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
               ref={playButtonRef}
               onClick={togglePlayPause}
             >
-              <PauseIcon className="pauseIcon w-6 h-6 text-white" />
-              <PlayIcon className="hidden playIcon w-6 h-6 text-white" />
+              <PauseIcon id="pauseIcon" className="w-6 h-6 text-white" />
+              <PlayIcon id="playIcon" className="hidden w-6 h-6 text-white" />
             </button>
             <div className="font-mono text-sm font-semibold">
               <span className="pr-2" ref={currentTimeRef}></span>/
@@ -239,8 +239,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           <div className="flex justify-center items-center gap-2">
             <div className="overflow-hidden w-8 hover:w-32 p-1 h-8 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
               <button ref={volumnButton} className="w-6 h-6">
-                <VolumeIcon className="volumeIcon w-6 h-6 text-white" />
-                <MuteIcon className="hidden muteIcon w-6 h-6 text-white" />
+                <VolumeIcon id="volumeIcon" className="w-6 h-6 text-white" />
+                <MuteIcon
+                  id="muteIcon"
+                  className="hidden muteIcon w-6 h-6 text-white"
+                />
               </button>
               <input
                 ref={volumeRef}
