@@ -119,7 +119,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
       />
       <div
         ref={controlsRef}
-        className="absolute inset-0 text-white"
+        className="absolute inset-0 text-white ease-linear duration-300 transition-opacity"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,75%),  rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
+        }}
         onMouseEnter={(e) => {
           if (document.hasFocus()) {
             e.currentTarget.style.opacity = "1"
