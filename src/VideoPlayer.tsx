@@ -105,6 +105,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     }
   }, [videoRef])
 
+  useEffect(() => {
+    const fullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        document.querySelector("#exitButton")?.classList.remove("hidden")
+        document.querySelector("#fullScreenButton")?.classList.remove("hidden")
+        document.querySelector("#exitFullScreenButton")?.classList.add("hidden")
+      } else {
+        document.querySelector("#exitButton")?.classList.add("hidden")
+        document.querySelector("#fullScreenButton")?.classList.add("hidden")
+        document
+          .querySelector("#exitFullScreenButton")
+          ?.classList.remove("hidden")
+        document.querySelector("#exitFullScreenButton")?.classList.add("flex")
+      }
+    }
+    addEventListener("fullscreenchange", fullscreenChange)
+    return () => {
+      removeEventListener("fullscreenchange", fullscreenChange)
+    }
+  }, [])
+
   const handleVolumeChange = () => {
     const volumeControl = volumeRef.current
     const video = videoRef.current
@@ -146,26 +167,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     if (!videoPlayer) return
 
     if (!document.fullscreenElement) {
-      document.querySelector("#exitButton")?.classList.add("hidden")
-      document.querySelector("#fullScreenButton")?.classList.add("hidden")
-      document
-        .querySelector("#exitFullScreenButton")
-        ?.classList.remove("hidden")
-      document.querySelector("#exitFullScreenButton")?.classList.add("flex")
       videoPlayer.requestFullscreen().catch((err) => {
         alert(
           `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
         )
-        document.querySelector("#exitButton")?.classList.remove("hidden")
-        document.querySelector("#fullScreenButton")?.classList.remove("hidden")
-        document.querySelector("#exitFullScreenButton")?.classList.add("hidden")
       })
     } else {
       document.exitFullscreen()
-      document.querySelector("#exitButton")?.classList.remove("hidden")
-      document.querySelector("#fullScreenButton")?.classList.remove("hidden")
-      document.querySelector("#exitFullScreenButton")?.classList.add("hidden")
-      document.querySelector("#exitFullScreenButton")?.classList.add("flex")
     }
   }
 
