@@ -1,5 +1,8 @@
 import React, { useRef, useEffect } from "react"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
+import { ReactComponent as PlayIcon } from "./assets/play.svg"
+import { ReactComponent as PauseIcon } from "./assets/pause.svg"
+import IconButton from "./IconButton"
 
 interface VideoPlayerProps {
   videoFile: File
@@ -10,23 +13,36 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
   const videoSrc = URL.createObjectURL(videoFile)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const controlsRef = useRef<HTMLDivElement>(null)
   const playButtonRef = useRef<HTMLButtonElement>(null)
   const currentTimeRef = useRef<HTMLSpanElement>(null)
   const totalTimeRef = useRef<HTMLSpanElement>(null)
   const seekRef = useRef<HTMLInputElement>(null)
   const volumeRef = useRef<HTMLInputElement>(null)
 
+  let mouseMoveTimeout: number = 0
+
   const togglePlayPause = () => {
     if (videoRef.current) {
       if (videoRef.current.paused || videoRef.current.ended) {
         videoRef.current.play()
         if (playButtonRef.current) {
-          playButtonRef.current.innerText = "Pause"
+          playButtonRef.current
+            .querySelector(".playIcon")
+            ?.classList.add("hidden")
+          playButtonRef.current
+            .querySelector(".pauseIcon")
+            ?.classList.remove("hidden")
         }
       } else {
         videoRef.current.pause()
         if (playButtonRef.current) {
-          playButtonRef.current.innerText = "Play"
+          playButtonRef.current
+            .querySelector(".playIcon")
+            ?.classList.remove("hidden")
+          playButtonRef.current
+            .querySelector(".pauseIcon")
+            ?.classList.add("hidden")
         }
       }
     }
@@ -101,16 +117,46 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         src={videoSrc}
         autoPlay
       />
-      <div className="absolute inset-0 text-white">
-        <button
-          className="absolute top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
+      <div
+        ref={controlsRef}
+        className="absolute inset-0 text-white"
+        onMouseEnter={(e) => {
+          e.currentTarget.style.opacity = "1"
+          e.currentTarget.style.cursor = "auto"
+        }}
+        onMouseMove={(e) => {
+          if (mouseMoveTimeout) {
+            clearTimeout(mouseMoveTimeout)
+          }
+          e.currentTarget.style.opacity = "1"
+          e.currentTarget.style.cursor = "auto"
+          mouseMoveTimeout = window.setTimeout(() => {
+            if (controlsRef.current) {
+              controlsRef.current.style.opacity = "0"
+              controlsRef.current.style.cursor = "none"
+            }
+          }, 1000)
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.opacity = "0"
+          e.currentTarget.style.cursor = "none"
+        }}
+      >
+        <IconButton
+          svgIcon={CloseIcon}
           onClick={exit}
-        >
-          <CloseIcon className="w-6 h-6 text-white" />
-        </button>
-        <button ref={playButtonRef} onClick={togglePlayPause}>
-          Pause
-        </button>
+          className="absolute top-2 right-2"
+        />
+        <div className="absolute bottom-4 left-0 p-4">
+          <button
+            className="top-2 right-2 w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
+            ref={playButtonRef}
+            onClick={togglePlayPause}
+          >
+            <PauseIcon className="pauseIcon w-6 h-6 text-white" />
+            <PlayIcon className="hidden playIcon w-6 h-6 text-white" />
+          </button>
+        </div>
         <div>
           Current time: <span ref={currentTimeRef}></span>/ Total time:{" "}
           <span ref={totalTimeRef}></span>
