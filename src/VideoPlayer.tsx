@@ -119,7 +119,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
       />
       <div
         ref={controlsRef}
-        className="absolute inset-0 text-white ease-linear duration-300 transition-opacity"
+        className="absolute inset-0 text-white transition-opacity duration-300 ease-in-out"
         style={{
           background:
             "linear-gradient(to bottom, rgba(0,0,0,75%),  rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
