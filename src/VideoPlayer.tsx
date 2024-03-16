@@ -186,7 +186,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           onClick={exit}
           className="absolute top-4 right-4"
         />
-        <div className="absolute bottom-8 left-0 right-0 h-8 mx-4 flex justify-between">
+        <div className="absolute bottom-9 left-0 right-0 h-8 mx-4 flex justify-between">
           <div className="flex justify-center items-center gap-2">
             <button
               className="w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
@@ -220,7 +220,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
             <IconButton svgIcon={FullscreenIcon} onClick={toggleFullScreen} />
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-8 flex justify-center items-center mx-4">
+        <div className="absolute bottom-1 left-0 right-0 h-8 flex justify-center items-center mx-4">
           <input
             ref={seekRef}
             className="accent-white w-full cursor-pointer"
