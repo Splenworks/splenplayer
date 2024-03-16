@@ -153,33 +153,33 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           background:
             "linear-gradient(to bottom, rgba(0,0,0,75%),  rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
         }}
-        // onMouseEnter={(e) => {
-        //   if (document.hasFocus()) {
-        //     e.currentTarget.style.opacity = "1"
-        //     e.currentTarget.style.cursor = "auto"
-        //   } else {
-        //     e.currentTarget.style.opacity = "0"
-        //     e.currentTarget.style.cursor = "none"
-        //   }
-        // }}
-        // onMouseMove={(e) => {
-        //   if (mouseMoveTimeout) {
-        //     clearTimeout(mouseMoveTimeout)
-        //   }
-        //   if (document.hasFocus()) {
-        //     e.currentTarget.style.opacity = "1"
-        //     e.currentTarget.style.cursor = "auto"
-        //     mouseMoveTimeout = window.setTimeout(() => {
-        //       if (controlsRef.current) {
-        //         controlsRef.current.style.opacity = "0"
-        //         controlsRef.current.style.cursor = "none"
-        //       }
-        //     }, 1000)
-        //   } else {
-        //     e.currentTarget.style.opacity = "0"
-        //     e.currentTarget.style.cursor = "none"
-        //   }
-        // }}
+        onMouseEnter={(e) => {
+          if (document.hasFocus()) {
+            e.currentTarget.style.opacity = "1"
+            e.currentTarget.style.cursor = "auto"
+          } else {
+            e.currentTarget.style.opacity = "0"
+            e.currentTarget.style.cursor = "none"
+          }
+        }}
+        onMouseMove={(e) => {
+          if (mouseMoveTimeout) {
+            clearTimeout(mouseMoveTimeout)
+          }
+          if (document.hasFocus()) {
+            e.currentTarget.style.opacity = "1"
+            e.currentTarget.style.cursor = "auto"
+            mouseMoveTimeout = window.setTimeout(() => {
+              if (controlsRef.current) {
+                controlsRef.current.style.opacity = "0"
+                controlsRef.current.style.cursor = "none"
+              }
+            }, 1000)
+          } else {
+            e.currentTarget.style.opacity = "0"
+            e.currentTarget.style.cursor = "none"
+          }
+        }}
       >
         <IconButton
           svgIcon={CloseIcon}
