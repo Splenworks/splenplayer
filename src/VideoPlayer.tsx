@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 import { ReactComponent as PlayIcon } from "./assets/play.svg"
 import { ReactComponent as PauseIcon } from "./assets/pause.svg"
+import { ReactComponent as FullscreenIcon } from "./assets/expand.svg"
 import IconButton from "./IconButton"
 
 interface VideoPlayerProps {
@@ -180,7 +181,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           onChange={handleSeek}
         />
         <br />
-        Volumen:{" "}
+        Volume:{" "}
         <input
           ref={volumeRef}
           type="range"
@@ -190,7 +191,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
           onChange={handleVolumeChange}
         />
         <br />
-        <button onClick={toggleFullScreen}>Fullscreen</button>
+        <IconButton
+          svgIcon={FullscreenIcon}
+          onClick={toggleFullScreen}
+          className=""
+        />
       </div>
     </div>
   )
