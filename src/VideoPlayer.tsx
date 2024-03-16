@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react"
 import IconButton from "./IconButton"
+import { toggleHidden, hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 import { ReactComponent as PlayIcon } from "./assets/play.svg"
 import { ReactComponent as PauseIcon } from "./assets/pause.svg"
@@ -18,7 +19,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
-  const playButtonRef = useRef<HTMLButtonElement>(null)
   const currentTimeRef = useRef<HTMLSpanElement>(null)
   const totalTimeRef = useRef<HTMLSpanElement>(null)
   const seekRef = useRef<HTMLInputElement>(null)
@@ -29,26 +29,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
 
   const togglePlayPause = () => {
     if (videoRef.current) {
+      const playButton = document.querySelector("#playButton")
+      const pauseButton = document.querySelector("#pauseButton")
       if (videoRef.current.paused || videoRef.current.ended) {
         videoRef.current.play()
-        if (playButtonRef.current) {
-          playButtonRef.current
-            .querySelector("#playIcon")
-            ?.classList.add("hidden")
-          playButtonRef.current
-            .querySelector("#pauseIcon")
-            ?.classList.remove("hidden")
-        }
+        toggleHidden(playButton)
+        toggleHidden(pauseButton)
       } else {
         videoRef.current.pause()
-        if (playButtonRef.current) {
-          playButtonRef.current
-            .querySelector("#playIcon")
-            ?.classList.remove("hidden")
-          playButtonRef.current
-            .querySelector("#pauseIcon")
-            ?.classList.add("hidden")
-        }
+        toggleHidden(playButton)
+        toggleHidden(pauseButton)
       }
     }
   }
@@ -107,17 +97,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
 
   useEffect(() => {
     const fullscreenChange = () => {
+      const exitButton = document.querySelector("#exitButton")
+      const fullScreenButton = document.querySelector("#fullScreenButton")
+      const exitFullScreenButton = document.querySelector(
+        "#exitFullScreenButton",
+      )
       if (!document.fullscreenElement) {
-        document.querySelector("#exitButton")?.classList.remove("hidden")
-        document.querySelector("#fullScreenButton")?.classList.remove("hidden")
-        document.querySelector("#exitFullScreenButton")?.classList.add("hidden")
+        showElement(exitButton)
+        showElement(fullScreenButton)
+        hideElement(exitFullScreenButton)
       } else {
-        document.querySelector("#exitButton")?.classList.add("hidden")
-        document.querySelector("#fullScreenButton")?.classList.add("hidden")
-        document
-          .querySelector("#exitFullScreenButton")
-          ?.classList.remove("hidden")
-        document.querySelector("#exitFullScreenButton")?.classList.add("flex")
+        hideElement(exitButton)
+        hideElement(fullScreenButton)
+        showElement(exitFullScreenButton)
       }
     }
     addEventListener("fullscreenchange", fullscreenChange)
@@ -131,24 +123,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     const video = videoRef.current
     if (volumeControl && video) {
       video.volume = Number(volumeControl.value)
+      const volumeIcon = document.querySelector("#volumeIcon")
+      const muteIcon = document.querySelector("#muteIcon")
       if (video.volume === 0) {
-        if (volumnButton.current) {
-          volumnButton.current
-            .querySelector("#volumeIcon")
-            ?.classList.add("hidden")
-          volumnButton.current
-            .querySelector("#muteIcon")
-            ?.classList.remove("hidden")
-        }
+        hideElement(volumeIcon)
+        showElement(muteIcon)
       } else {
-        if (volumnButton.current) {
-          volumnButton.current
-            .querySelector("#volumeIcon")
-            ?.classList.remove("hidden")
-          volumnButton.current
-            .querySelector("#muteIcon")
-            ?.classList.add("hidden")
-        }
+        showElement(volumeIcon)
+        hideElement(muteIcon)
       }
     }
   }
@@ -231,14 +213,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         />
         <div className="absolute bottom-9 left-0 right-0 h-8 mx-4 flex justify-between">
           <div className="flex justify-center items-center gap-2">
-            <button
-              className="w-8 h-8 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
-              ref={playButtonRef}
+            <IconButton
+              id="playButton"
+              className="hidden"
+              svgIcon={PlayIcon}
               onClick={togglePlayPause}
-            >
-              <PauseIcon id="pauseIcon" className="w-6 h-6 text-white" />
-              <PlayIcon id="playIcon" className="hidden w-6 h-6 text-white" />
-            </button>
+            />
+            <IconButton
+              id="pauseButton"
+              svgIcon={PauseIcon}
+              onClick={togglePlayPause}
+            />
             <div className="font-mono text-sm font-semibold">
               <span className="pr-2" ref={currentTimeRef}></span>/
               <span className="pl-2" ref={totalTimeRef}></span>
@@ -248,10 +233,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
             <div className="overflow-hidden w-8 hover:w-32 p-1 h-8 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
               <button ref={volumnButton} className="w-6 h-6">
                 <VolumeIcon id="volumeIcon" className="w-6 h-6 text-white" />
-                <MuteIcon
-                  id="muteIcon"
-                  className="hidden muteIcon w-6 h-6 text-white"
-                />
+                <MuteIcon id="muteIcon" className="hidden w-6 h-6 text-white" />
               </button>
               <input
                 ref={volumeRef}
