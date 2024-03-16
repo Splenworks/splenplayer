@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import { getVideoFiles } from "./utils/getVideoFiles"
 
@@ -8,6 +8,7 @@ interface DragDropAreaProps {
 
 const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
   const [dragging, setDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -31,6 +32,18 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
     setVideoFiles(videoFiles)
   }
 
+  const handleClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(e.target.files || [])
+    const videoFiles = getVideoFiles(files)
+    setVideoFiles(videoFiles)
+  }
+
   return (
     <div className="fixed top-0 left-0 right-0 bottom-4">
       <div
@@ -42,7 +55,15 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        onClick={handleClick}
       >
+        <input
+          type="file"
+          multiple
+          hidden
+          ref={fileInputRef}
+          onChange={handleFileInputChange}
+        />
         {dragging ? (
           <p className="text-xl font-semibold px-4 text-center">Drop here</p>
         ) : (
