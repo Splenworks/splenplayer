@@ -11,10 +11,15 @@ import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 
 interface VideoPlayerProps {
   videoFile: File
+  subtitleFile?: File
   exit: () => void
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  videoFile,
+  subtitleFile,
+  exit,
+}) => {
   const videoSrc = URL.createObjectURL(videoFile)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
