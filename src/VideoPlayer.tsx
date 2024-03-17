@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react"
+import { parse as samiParse, ParseResult } from "sami-parser"
 import IconButton from "./IconButton"
 import { toggleHidden, hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
@@ -8,13 +9,32 @@ import { ReactComponent as FullscreenIcon } from "./assets/expand.svg"
 import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
+import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 
 interface VideoPlayerProps {
   videoFile: File
+  subtitleFile?: File
   exit: () => void
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
+let subtitles: ParseResult = []
+
+const parseSubtitles = (subtitleFile: File) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const smiContent = e.target?.result
+    if (typeof smiContent === "string") {
+      subtitles = samiParse(smiContent)?.result || []
+    }
+  }
+  reader.readAsText(subtitleFile)
+}
+
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  videoFile,
+  subtitleFile,
+  exit,
+}) => {
   const videoSrc = URL.createObjectURL(videoFile)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -27,21 +47,35 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
 
   let mouseMoveTimeout: number = 0
 
-  const togglePlayPause = () => {
-    if (videoRef.current) {
-      const playButton = document.querySelector("#playButton")
-      const pauseButton = document.querySelector("#pauseButton")
-      if (videoRef.current.paused || videoRef.current.ended) {
-        videoRef.current.play()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+  if (subtitleFile) {
+    parseSubtitles(subtitleFile)
+  } else {
+    subtitles = []
+  }
+
+  useEffect(() => {
+    const fullscreenChange = () => {
+      const exitButton = document.querySelector("#exitButton")
+      const fullScreenButton = document.querySelector("#fullScreenButton")
+      const exitFullScreenButton = document.querySelector(
+        "#exitFullScreenButton",
+      )
+      if (!document.fullscreenElement) {
+        showElement(exitButton)
+        showElement(fullScreenButton)
+        hideElement(exitFullScreenButton)
       } else {
-        videoRef.current.pause()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+        hideElement(exitButton)
+        hideElement(fullScreenButton)
+        showElement(exitFullScreenButton)
       }
     }
-  }
+    addEventListener("fullscreenchange", fullscreenChange)
+    return () => {
+      removeEventListener("fullscreenchange", fullscreenChange)
+      subtitles = []
+    }
+  }, [])
 
   useEffect(() => {
     const video = videoRef.current
@@ -66,6 +100,24 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         if (seekRef.current) {
           seekRef.current.value =
             (video.currentTime / video.duration) * 100 + ""
+        }
+        const subtitleEl =
+          document.querySelector<HTMLParagraphElement>("#subtitle")
+        if (subtitleEl) {
+          if (subtitles.length > 0) {
+            const currentSubtitle = subtitles.find(
+              (subtitle) =>
+                video.currentTime * 1000 >= subtitle.startTime &&
+                video.currentTime * 1000 <= subtitle.endTime,
+            )
+            if (currentSubtitle) {
+              subtitleEl.innerText = Object.values(currentSubtitle.languages)[0]
+            } else {
+              subtitleEl.innerText = ""
+            }
+          } else {
+            subtitleEl.innerText = ""
+          }
         }
       }
       video.onloadedmetadata = () => {
@@ -95,28 +147,30 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
     }
   }, [videoRef])
 
-  useEffect(() => {
-    const fullscreenChange = () => {
-      const exitButton = document.querySelector("#exitButton")
-      const fullScreenButton = document.querySelector("#fullScreenButton")
-      const exitFullScreenButton = document.querySelector(
-        "#exitFullScreenButton",
-      )
-      if (!document.fullscreenElement) {
-        showElement(exitButton)
-        showElement(fullScreenButton)
-        hideElement(exitFullScreenButton)
+  const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const files = Array.from(e.dataTransfer.files)
+    const subtitleFiles = getSubtitleFiles(files)
+    if (subtitleFiles.length > 0) {
+      parseSubtitles(subtitleFiles[0])
+    }
+  }
+
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      const playButton = document.querySelector("#playButton")
+      const pauseButton = document.querySelector("#pauseButton")
+      if (videoRef.current.paused || videoRef.current.ended) {
+        videoRef.current.play()
+        toggleHidden(playButton)
+        toggleHidden(pauseButton)
       } else {
-        hideElement(exitButton)
-        hideElement(fullScreenButton)
-        showElement(exitFullScreenButton)
+        videoRef.current.pause()
+        toggleHidden(playButton)
+        toggleHidden(pauseButton)
       }
     }
-    addEventListener("fullscreenchange", fullscreenChange)
-    return () => {
-      removeEventListener("fullscreenchange", fullscreenChange)
-    }
-  }, [])
+  }
 
   const handleVolumeChange = () => {
     const volumeControl = volumeRef.current
@@ -170,6 +224,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         src={videoSrc}
         autoPlay
       />
+      <p
+        id="subtitle"
+        className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
+        style={{ textShadow: "0 0 8px black" }}
+      ></p>
       <div
         ref={controlsRef}
         className="absolute inset-0 text-white transition-opacity duration-300 ease-in-out"
@@ -204,6 +263,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
             e.currentTarget.style.cursor = "none"
           }
         }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleSubtitleDrop}
       >
         <IconButton
           id="exitButton"
@@ -237,7 +298,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
               </button>
               <input
                 ref={volumeRef}
-                className="accent-white cursor-pointer w-24 mr-0.5"
+                className="accent-white cursor-pointer w-24 mr-0.5 outline-none"
                 type="range"
                 min="0"
                 max="1"
@@ -261,7 +322,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
           <input
             ref={seekRef}
-            className="accent-white w-full cursor-pointer"
+            className="accent-white w-full cursor-pointer outline-none"
             type="range"
             min="0"
             max="100"

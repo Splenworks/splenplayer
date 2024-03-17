@@ -1,12 +1,17 @@
 import React, { useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import { getVideoFiles } from "./utils/getVideoFiles"
+import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 
 interface DragDropAreaProps {
   setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
+  setSubtitleFiles: React.Dispatch<React.SetStateAction<File[]>>
 }
 
-const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
+const DragDropArea: React.FC<DragDropAreaProps> = ({
+  setVideoFiles,
+  setSubtitleFiles,
+}) => {
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -29,7 +34,9 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
     setDragging(false)
     const files = Array.from(e.dataTransfer.files)
     const videoFiles = getVideoFiles(files)
+    const subtitleFiles = getSubtitleFiles(files)
     setVideoFiles(videoFiles)
+    setSubtitleFiles(subtitleFiles)
   }
 
   const handleClick = () => {
@@ -41,7 +48,9 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
   ) => {
     const files = Array.from(e.target.files || [])
     const videoFiles = getVideoFiles(files)
+    const subtitleFiles = getSubtitleFiles(files)
     setVideoFiles(videoFiles)
+    setSubtitleFiles(subtitleFiles)
   }
 
   return (
@@ -69,7 +78,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setVideoFiles }) => {
         ) : (
           <>
             <p className="text-xl font-semibold px-4 text-center">
-              Drag and drop video files here
+              Drag and drop video and subtitle(.smi) files here
             </p>
           </>
         )}
