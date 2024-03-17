@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react"
+import { parse as samiParse, ParseResult } from "sami-parser"
 import IconButton from "./IconButton"
 import { toggleHidden, hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
@@ -32,25 +33,43 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   let mouseMoveTimeout: number = 0
 
-  const togglePlayPause = () => {
-    if (videoRef.current) {
-      const playButton = document.querySelector("#playButton")
-      const pauseButton = document.querySelector("#pauseButton")
-      if (videoRef.current.paused || videoRef.current.ended) {
-        videoRef.current.play()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+  useEffect(() => {
+    const fullscreenChange = () => {
+      const exitButton = document.querySelector("#exitButton")
+      const fullScreenButton = document.querySelector("#fullScreenButton")
+      const exitFullScreenButton = document.querySelector(
+        "#exitFullScreenButton",
+      )
+      if (!document.fullscreenElement) {
+        showElement(exitButton)
+        showElement(fullScreenButton)
+        hideElement(exitFullScreenButton)
       } else {
-        videoRef.current.pause()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+        hideElement(exitButton)
+        hideElement(fullScreenButton)
+        showElement(exitFullScreenButton)
       }
     }
-  }
+    addEventListener("fullscreenchange", fullscreenChange)
+    return () => {
+      removeEventListener("fullscreenchange", fullscreenChange)
+    }
+  }, [])
 
   useEffect(() => {
     const video = videoRef.current
     if (video) {
+      let subtitles: ParseResult = []
+      if (subtitleFile) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const smiContent = e.target?.result
+          if (typeof smiContent === "string") {
+            subtitles = samiParse(smiContent)?.result || []
+          }
+        }
+        reader.readAsText(subtitleFile)
+      }
       video.ontimeupdate = () => {
         if (currentTimeRef.current) {
           const hour = Math.floor(video.currentTime / 3600)
@@ -71,6 +90,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         if (seekRef.current) {
           seekRef.current.value =
             (video.currentTime / video.duration) * 100 + ""
+        }
+        if (subtitles.length > 0) {
+          const subtitleEl =
+            document.querySelector<HTMLParagraphElement>("#subtitle")
+          if (subtitleEl) {
+            const currentSubtitle = subtitles.find(
+              (subtitle) =>
+                video.currentTime * 1000 >= subtitle.startTime &&
+                video.currentTime * 1000 <= subtitle.endTime,
+            )
+            if (currentSubtitle) {
+              subtitleEl.innerText = Object.values(currentSubtitle.languages)[0]
+            } else {
+              subtitleEl.innerText = ""
+            }
+          }
         }
       }
       video.onloadedmetadata = () => {
@@ -100,28 +135,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }, [videoRef])
 
-  useEffect(() => {
-    const fullscreenChange = () => {
-      const exitButton = document.querySelector("#exitButton")
-      const fullScreenButton = document.querySelector("#fullScreenButton")
-      const exitFullScreenButton = document.querySelector(
-        "#exitFullScreenButton",
-      )
-      if (!document.fullscreenElement) {
-        showElement(exitButton)
-        showElement(fullScreenButton)
-        hideElement(exitFullScreenButton)
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      const playButton = document.querySelector("#playButton")
+      const pauseButton = document.querySelector("#pauseButton")
+      if (videoRef.current.paused || videoRef.current.ended) {
+        videoRef.current.play()
+        toggleHidden(playButton)
+        toggleHidden(pauseButton)
       } else {
-        hideElement(exitButton)
-        hideElement(fullScreenButton)
-        showElement(exitFullScreenButton)
+        videoRef.current.pause()
+        toggleHidden(playButton)
+        toggleHidden(pauseButton)
       }
     }
-    addEventListener("fullscreenchange", fullscreenChange)
-    return () => {
-      removeEventListener("fullscreenchange", fullscreenChange)
-    }
-  }, [])
+  }
 
   const handleVolumeChange = () => {
     const volumeControl = volumeRef.current
@@ -175,6 +203,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         src={videoSrc}
         autoPlay
       />
+      <p
+        id="subtitle"
+        className="absolute bottom-20 left-4 right-4 font-sans text-xl text-center text-white font-semibold"
+        style={{ textShadow: "0 0 10px black" }}
+      ></p>
       <div
         ref={controlsRef}
         className="absolute inset-0 text-white transition-opacity duration-300 ease-in-out"
