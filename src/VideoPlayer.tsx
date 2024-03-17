@@ -9,11 +9,25 @@ import { ReactComponent as FullscreenIcon } from "./assets/expand.svg"
 import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
+import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 
 interface VideoPlayerProps {
   videoFile: File
   subtitleFile?: File
   exit: () => void
+}
+
+let subtitles: ParseResult = []
+
+const parseSubtitles = (subtitleFile: File) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const smiContent = e.target?.result
+    if (typeof smiContent === "string") {
+      subtitles = samiParse(smiContent)?.result || []
+    }
+  }
+  reader.readAsText(subtitleFile)
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -32,6 +46,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const volumeRef = useRef<HTMLInputElement>(null)
 
   let mouseMoveTimeout: number = 0
+
+  if (subtitleFile) {
+    parseSubtitles(subtitleFile)
+  } else {
+    subtitles = []
+  }
 
   useEffect(() => {
     const fullscreenChange = () => {
@@ -53,23 +73,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     addEventListener("fullscreenchange", fullscreenChange)
     return () => {
       removeEventListener("fullscreenchange", fullscreenChange)
+      subtitles = []
     }
   }, [])
 
   useEffect(() => {
     const video = videoRef.current
     if (video) {
-      let subtitles: ParseResult = []
-      if (subtitleFile) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          const smiContent = e.target?.result
-          if (typeof smiContent === "string") {
-            subtitles = samiParse(smiContent)?.result || []
-          }
-        }
-        reader.readAsText(subtitleFile)
-      }
       video.ontimeupdate = () => {
         if (currentTimeRef.current) {
           const hour = Math.floor(video.currentTime / 3600)
@@ -136,6 +146,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       }
     }
   }, [videoRef])
+
+  const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const files = Array.from(e.dataTransfer.files)
+    const subtitleFiles = getSubtitleFiles(files)
+    if (subtitleFiles.length > 0) {
+      parseSubtitles(subtitleFiles[0])
+    }
+  }
 
   const togglePlayPause = () => {
     if (videoRef.current) {
@@ -244,6 +263,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             e.currentTarget.style.cursor = "none"
           }
         }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleSubtitleDrop}
       >
         <IconButton
           id="exitButton"
