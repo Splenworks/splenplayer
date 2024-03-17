@@ -91,10 +91,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           seekRef.current.value =
             (video.currentTime / video.duration) * 100 + ""
         }
-        if (subtitles.length > 0) {
-          const subtitleEl =
-            document.querySelector<HTMLParagraphElement>("#subtitle")
-          if (subtitleEl) {
+        const subtitleEl =
+          document.querySelector<HTMLParagraphElement>("#subtitle")
+        if (subtitleEl) {
+          if (subtitles.length > 0) {
             const currentSubtitle = subtitles.find(
               (subtitle) =>
                 video.currentTime * 1000 >= subtitle.startTime &&
@@ -105,6 +105,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             } else {
               subtitleEl.innerText = ""
             }
+          } else {
+            subtitleEl.innerText = ""
           }
         }
       }
