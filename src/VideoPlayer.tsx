@@ -237,7 +237,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
               </button>
               <input
                 ref={volumeRef}
-                className="accent-white cursor-pointer w-24 mr-0.5"
+                className="accent-white cursor-pointer w-24 mr-0.5 outline-none"
                 type="range"
                 min="0"
                 max="1"
@@ -261,7 +261,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoFile, exit }) => {
         <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
           <input
             ref={seekRef}
-            className="accent-white w-full cursor-pointer"
+            className="accent-white w-full cursor-pointer outline-none"
             type="range"
             min="0"
             max="100"
