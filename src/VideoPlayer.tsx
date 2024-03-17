@@ -207,8 +207,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       />
       <p
         id="subtitle"
-        className="absolute bottom-20 left-4 right-4 font-sans text-xl text-center text-white font-semibold"
-        style={{ textShadow: "0 0 10px black" }}
+        className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
+        style={{ textShadow: "0 0 8px black" }}
       ></p>
       <div
         ref={controlsRef}
