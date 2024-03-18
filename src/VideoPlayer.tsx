@@ -10,6 +10,7 @@ import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
+import AudioVisualizer from "./AudioVisualizer"
 
 interface VideoPlayerProps {
   videoFile: File
@@ -121,6 +122,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
       }
       video.onloadedmetadata = () => {
+        const visualizerEl = document.querySelector("#visualizer")
+        if (video.videoWidth === 0) {
+          showElement(visualizerEl)
+        } else {
+          hideElement(visualizerEl)
+        }
         if (totalTimeRef.current) {
           const hour = Math.floor(video.duration / 3600)
           let minute = Math.floor((video.duration % 3600) / 60).toString()
@@ -224,6 +231,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         src={videoSrc}
         autoPlay
       />
+      <div id="visualizer" className="absolute inset-0 hidden">
+        <AudioVisualizer />
+      </div>
       <p
         id="subtitle"
         className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
