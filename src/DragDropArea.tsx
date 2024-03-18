@@ -2,14 +2,17 @@ import React, { useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import { getVideoFiles } from "./utils/getVideoFiles"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
+import { getAudioFiles } from "./utils/getAudioFiles"
 
 interface DragDropAreaProps {
   setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
+  setAudioFiles: React.Dispatch<React.SetStateAction<File[]>>
   setSubtitleFiles: React.Dispatch<React.SetStateAction<File[]>>
 }
 
 const DragDropArea: React.FC<DragDropAreaProps> = ({
   setVideoFiles,
+  setAudioFiles,
   setSubtitleFiles,
 }) => {
   const [dragging, setDragging] = useState(false)
@@ -34,8 +37,10 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     setDragging(false)
     const files = Array.from(e.dataTransfer.files)
     const videoFiles = getVideoFiles(files)
+    const audioFiles = getAudioFiles(files)
     const subtitleFiles = getSubtitleFiles(files)
     setVideoFiles(videoFiles)
+    setAudioFiles(audioFiles)
     setSubtitleFiles(subtitleFiles)
   }
 
@@ -48,8 +53,10 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
   ) => {
     const files = Array.from(e.target.files || [])
     const videoFiles = getVideoFiles(files)
+    const audioFiles = getAudioFiles(files)
     const subtitleFiles = getSubtitleFiles(files)
     setVideoFiles(videoFiles)
+    setAudioFiles(audioFiles)
     setSubtitleFiles(subtitleFiles)
   }
 
