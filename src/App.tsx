@@ -5,17 +5,19 @@ import VideoPlayer from "./VideoPlayer"
 
 function App() {
   const [videoFiles, setVideoFiles] = useState<File[]>([])
+  const [audioFiles, setAudioFiles] = useState<File[]>([])
   const [subtitleFiles, setSubtitleFiles] = useState<File[]>([])
 
   const exit = () => {
     setVideoFiles([])
+    setAudioFiles([])
     setSubtitleFiles([])
   }
 
-  if (videoFiles.length > 0) {
+  if (videoFiles.length > 0 || audioFiles.length > 0) {
     return (
       <VideoPlayer
-        videoFile={videoFiles[0]}
+        videoFile={videoFiles[0] || audioFiles[0]}
         subtitleFile={subtitleFiles[0]}
         exit={exit}
       />
@@ -26,6 +28,7 @@ function App() {
     <>
       <DragDropArea
         setVideoFiles={setVideoFiles}
+        setAudioFiles={setAudioFiles}
         setSubtitleFiles={setSubtitleFiles}
       />
       <Footer />

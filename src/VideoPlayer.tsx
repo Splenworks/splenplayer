@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
+import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
 import { toggleHidden, hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
@@ -121,6 +122,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
       }
       video.onloadedmetadata = () => {
+        const visualizerEl = document.querySelector<HTMLElement>("#visualizer")
+        if (video.videoWidth === 0) {
+          showElement(visualizerEl)
+          if (visualizerEl) {
+            new AudioMotionAnalyzer(visualizerEl, {
+              source: video,
+              smoothing: 0.8,
+            })
+          }
+        } else {
+          hideElement(visualizerEl)
+        }
         if (totalTimeRef.current) {
           const hour = Math.floor(video.duration / 3600)
           let minute = Math.floor((video.duration % 3600) / 60).toString()
@@ -224,6 +237,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         src={videoSrc}
         autoPlay
       />
+      <div id="visualizer" className="absolute inset-0 hidden" />
       <p
         id="subtitle"
         className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
