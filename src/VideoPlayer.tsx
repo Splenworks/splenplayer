@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
+import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
 import { toggleHidden, hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
@@ -10,7 +11,6 @@ import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
-import AudioVisualizer from "./AudioVisualizer"
 
 interface VideoPlayerProps {
   videoFile: File
@@ -122,9 +122,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
       }
       video.onloadedmetadata = () => {
-        const visualizerEl = document.querySelector("#visualizer")
+        const visualizerEl = document.querySelector<HTMLElement>("#visualizer")
         if (video.videoWidth === 0) {
           showElement(visualizerEl)
+          if (visualizerEl) {
+            const audioMotion = new AudioMotionAnalyzer(visualizerEl, {
+              source: video,
+            })
+          }
         } else {
           hideElement(visualizerEl)
         }
@@ -231,9 +236,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         src={videoSrc}
         autoPlay
       />
-      <div id="visualizer" className="absolute inset-0 hidden">
-        <AudioVisualizer />
-      </div>
+      <div id="visualizer" className="absolute inset-0 hidden" />
       <p
         id="subtitle"
         className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
