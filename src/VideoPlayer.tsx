@@ -126,8 +126,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         if (video.videoWidth === 0) {
           showElement(visualizerEl)
           if (visualizerEl) {
-            const audioMotion = new AudioMotionAnalyzer(visualizerEl, {
+            new AudioMotionAnalyzer(visualizerEl, {
               source: video,
+              smoothing: 0.8,
             })
           }
         } else {
