@@ -129,6 +129,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             new AudioMotionAnalyzer(visualizerEl, {
               source: video,
               smoothing: 0.8,
+              hideScaleX: true,
             })
           }
         } else {

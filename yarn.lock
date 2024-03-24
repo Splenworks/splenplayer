@@ -1820,7 +1820,7 @@ at-least-node@^1.0.0:
 
 "audiomotion-analyzer@github:roylory/audioMotion-analyzer":
   version "4.4.0"
-  resolved "https://codeload.github.com/roylory/audioMotion-analyzer/tar.gz/2db5827249797cf917805bfc7fa1f513e5beae09"
+  resolved "https://codeload.github.com/roylory/audioMotion-analyzer/tar.gz/7a94ac113f0b909fda6a680fa7b4fae49f5b86ee"
 
 autoprefixer@^10.4.16:
   version "10.4.18"
