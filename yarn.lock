@@ -1818,10 +1818,9 @@ at-least-node@^1.0.0:
   resolved "https://registry.yarnpkg.com/at-least-node/-/at-least-node-1.0.0.tgz#602cd4b46e844ad4effc92a8011a3c46e0238dc2"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
-audiomotion-analyzer@^4.4.0:
+"audiomotion-analyzer@github:roylory/audioMotion-analyzer":
   version "4.4.0"
-  resolved "https://registry.yarnpkg.com/audiomotion-analyzer/-/audiomotion-analyzer-4.4.0.tgz#ec3b4abbee39e324f2a8b80d4905980abaaf1dd3"
-  integrity sha512-vba/mHQPF31NkLD+5K/0yRcmd33aaBqKx0T48dav/vc+2AQAizHCMFLxROTsVE27HsGdacwC9H1DsV3YazeKwA==
+  resolved "https://codeload.github.com/roylory/audioMotion-analyzer/tar.gz/2db5827249797cf917805bfc7fa1f513e5beae09"
 
 autoprefixer@^10.4.16:
   version "10.4.18"
