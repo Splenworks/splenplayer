@@ -18,6 +18,7 @@ function App() {
     return (
       <VideoPlayer
         videoFile={videoFiles[0] || audioFiles[0]}
+        isAudio={videoFiles.length === 0}
         subtitleFile={subtitleFiles[0]}
         exit={exit}
       />
