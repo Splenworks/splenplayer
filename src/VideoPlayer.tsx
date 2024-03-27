@@ -169,6 +169,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       }
       video.onended = () => {
         showPlayIcon()
+        controlsRef.current?.style.setProperty("opacity", "1")
+        controlsRef.current?.style.setProperty("cursor", "auto")
       }
     }
   }, [videoRef])
