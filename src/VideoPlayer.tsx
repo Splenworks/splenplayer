@@ -11,6 +11,7 @@ import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
+import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
 
 interface VideoPlayerProps {
   videoFile: File
@@ -117,7 +118,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 video.currentTime * 1000 <= subtitle.endTime,
             )
             if (currentSubtitle) {
-              subtitleEl.innerText = Object.values(currentSubtitle.languages)[0]
+              const text = Object.values(currentSubtitle.languages)[0]
+              subtitleEl.innerText = replaceBasicHtmlEntities(text)
             } else {
               subtitleEl.innerText = ""
             }
