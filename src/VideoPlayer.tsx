@@ -273,7 +273,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             "linear-gradient(to bottom, rgba(0,0,0,75%),  rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
         }}
         onMouseEnter={(e) => {
-          if (document.hasFocus()) {
+          if (document.hasFocus() || videoRef.current?.paused) {
             e.currentTarget.style.opacity = "1"
             e.currentTarget.style.cursor = "auto"
           } else {
@@ -285,11 +285,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           if (mouseMoveTimeout) {
             clearTimeout(mouseMoveTimeout)
           }
-          if (document.hasFocus()) {
+          if (document.hasFocus() || videoRef.current?.paused) {
             e.currentTarget.style.opacity = "1"
             e.currentTarget.style.cursor = "auto"
             mouseMoveTimeout = window.setTimeout(() => {
-              if (controlsRef.current) {
+              if (controlsRef.current && !videoRef.current?.paused) {
                 controlsRef.current.style.opacity = "0"
                 controlsRef.current.style.cursor = "none"
               }
