@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
-import { toggleHidden, hideElement, showElement } from "./utils/toggleHidden"
+import { hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 import { ReactComponent as PlayIcon } from "./assets/play.svg"
 import { ReactComponent as PauseIcon } from "./assets/pause.svg"
@@ -14,6 +14,7 @@ import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 
 interface VideoPlayerProps {
   videoFile: File
+  isAudio?: boolean
   subtitleFile?: File
   exit: () => void
 }
@@ -33,10 +34,14 @@ const parseSubtitles = (subtitleFile: File) => {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   videoFile,
+  isAudio = false,
   subtitleFile,
   exit,
 }) => {
-  const videoSrc = URL.createObjectURL(videoFile)
+  const blob = new Blob([videoFile], {
+    type: isAudio ? "audio/mpeg" : "video/mp4",
+  })
+  const videoSrc = URL.createObjectURL(blob)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
@@ -157,6 +162,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         if (seekRef.current) {
           seekRef.current.value = "0"
         }
+        showPlayIcon()
+        video.play().then(() => {
+          showPauseIcon()
+        })
+      }
+      video.onended = () => {
+        showPlayIcon()
       }
     }
   }, [videoRef])
@@ -170,18 +182,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }
 
+  const showPlayIcon = () => {
+    const playButton = document.querySelector("#playButton")
+    const pauseButton = document.querySelector("#pauseButton")
+    hideElement(pauseButton)
+    showElement(playButton)
+  }
+
+  const showPauseIcon = () => {
+    const playButton = document.querySelector("#playButton")
+    const pauseButton = document.querySelector("#pauseButton")
+    hideElement(playButton)
+    showElement(pauseButton)
+  }
+
   const togglePlayPause = () => {
     if (videoRef.current) {
-      const playButton = document.querySelector("#playButton")
-      const pauseButton = document.querySelector("#pauseButton")
       if (videoRef.current.paused || videoRef.current.ended) {
         videoRef.current.play()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+        showPauseIcon()
       } else {
         videoRef.current.pause()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+        showPlayIcon()
       }
     }
   }
@@ -236,7 +258,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         ref={videoRef}
         className="max-h-full max-w-full min-h-full min-w-full"
         src={videoSrc}
-        autoPlay
       />
       <div id="visualizer" className="absolute inset-0 hidden" />
       <p
