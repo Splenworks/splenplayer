@@ -80,15 +80,20 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
           ref={fileInputRef}
           onChange={handleFileInputChange}
         />
-        {dragging ? (
-          <p className="text-xl font-semibold px-4 text-center">Drop here</p>
-        ) : (
-          <>
-            <p className="text-xl font-semibold px-4 text-center">
-              Drag and drop video and subtitle(.smi) files here
-            </p>
-          </>
-        )}
+        <div className="px-4">
+          {dragging ? (
+            <p className="text-xl font-bold text-center">Drop here</p>
+          ) : (
+            <>
+              <p className="mb-4 text-xl font-bold text-center">
+                Drag and drop any <u>video</u> or <u>audio</u> files here!
+              </p>
+              <p className="mb-4 text-lg text-center">
+                You can even drop subtitle(.smi) files too.
+              </p>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
