@@ -88,7 +88,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
               <p className="mb-4 text-xl font-bold text-center">
                 Drag and drop any <u>video</u> or <u>audio</u> files here!
               </p>
-              <p className="mb-4 text-lg text-center">
+              <p className="text-lg text-center">
                 You can even drop subtitle(.smi) files too.
               </p>
             </>
