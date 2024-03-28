@@ -61,7 +61,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-4">
+    <div className="fixed top-0 left-0 right-0 bottom-4 dark:bg-neutral-900">
       <div
         className={twJoin(
           "absolute inset-10 rounded-xl border-dashed border-4 border-gray-300 cursor-pointer flex flex-col items-center justify-center transition-colors duration-300 ease-in-out",
@@ -80,7 +80,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
           ref={fileInputRef}
           onChange={handleFileInputChange}
         />
-        <div className="px-4">
+        <div className="px-4 dark:text-white">
           {dragging ? (
             <p className="text-xl font-bold text-center">Drop here</p>
           ) : (
