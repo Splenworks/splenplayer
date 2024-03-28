@@ -51,6 +51,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const seekRef = useRef<HTMLInputElement>(null)
   const volumnButton = useRef<HTMLButtonElement>(null)
   const volumeRef = useRef<HTMLInputElement>(null)
+  const volume = localStorage.getItem("volume") || "0.5"
 
   let mouseMoveTimeout: number = 0
 
@@ -159,7 +160,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           }
         }
         if (volumeRef.current) {
-          volumeRef.current.value = "0.5"
+          volumeRef.current.value = volume
         }
         if (seekRef.current) {
           seekRef.current.value = "0"
@@ -217,6 +218,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const video = videoRef.current
     if (volumeControl && video) {
       video.volume = Number(volumeControl.value)
+      localStorage.setItem("volume", volumeControl.value)
       const volumeIcon = document.querySelector("#volumeIcon")
       const muteIcon = document.querySelector("#muteIcon")
       if (video.volume === 0) {
