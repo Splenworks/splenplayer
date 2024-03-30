@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
-import { toggleHidden, hideElement, showElement } from "./utils/toggleHidden"
+import { hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
 import { ReactComponent as PlayIcon } from "./assets/play.svg"
 import { ReactComponent as PauseIcon } from "./assets/pause.svg"
@@ -11,9 +11,11 @@ import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
+import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
 
 interface VideoPlayerProps {
   videoFile: File
+  isAudio?: boolean
   subtitleFile?: File
   exit: () => void
 }
@@ -33,10 +35,14 @@ const parseSubtitles = (subtitleFile: File) => {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   videoFile,
+  isAudio = false,
   subtitleFile,
   exit,
 }) => {
-  const videoSrc = URL.createObjectURL(videoFile)
+  const blob = new Blob([videoFile], {
+    type: isAudio ? "audio/mpeg" : "video/mp4",
+  })
+  const videoSrc = URL.createObjectURL(blob)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
@@ -45,6 +51,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const seekRef = useRef<HTMLInputElement>(null)
   const volumnButton = useRef<HTMLButtonElement>(null)
   const volumeRef = useRef<HTMLInputElement>(null)
+  const volume = localStorage.getItem("volume") || "0.5"
 
   let mouseMoveTimeout: number = 0
 
@@ -112,7 +119,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 video.currentTime * 1000 <= subtitle.endTime,
             )
             if (currentSubtitle) {
-              subtitleEl.innerText = Object.values(currentSubtitle.languages)[0]
+              const text = Object.values(currentSubtitle.languages)[0]
+              subtitleEl.innerText = replaceBasicHtmlEntities(text)
             } else {
               subtitleEl.innerText = ""
             }
@@ -152,11 +160,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           }
         }
         if (volumeRef.current) {
-          volumeRef.current.value = "0.5"
+          volumeRef.current.value = volume
         }
         if (seekRef.current) {
           seekRef.current.value = "0"
         }
+        showPlayIcon()
+        video.play().then(() => {
+          showPauseIcon()
+        })
+      }
+      video.onended = () => {
+        showPlayIcon()
+        controlsRef.current?.style.setProperty("opacity", "1")
+        controlsRef.current?.style.setProperty("cursor", "auto")
       }
     }
   }, [videoRef])
@@ -170,18 +187,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }
 
+  const showPlayIcon = () => {
+    const playButton = document.querySelector("#playButton")
+    const pauseButton = document.querySelector("#pauseButton")
+    hideElement(pauseButton)
+    showElement(playButton)
+  }
+
+  const showPauseIcon = () => {
+    const playButton = document.querySelector("#playButton")
+    const pauseButton = document.querySelector("#pauseButton")
+    hideElement(playButton)
+    showElement(pauseButton)
+  }
+
   const togglePlayPause = () => {
     if (videoRef.current) {
-      const playButton = document.querySelector("#playButton")
-      const pauseButton = document.querySelector("#pauseButton")
       if (videoRef.current.paused || videoRef.current.ended) {
         videoRef.current.play()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+        showPauseIcon()
       } else {
         videoRef.current.pause()
-        toggleHidden(playButton)
-        toggleHidden(pauseButton)
+        showPlayIcon()
       }
     }
   }
@@ -191,6 +218,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const video = videoRef.current
     if (volumeControl && video) {
       video.volume = Number(volumeControl.value)
+      localStorage.setItem("volume", volumeControl.value)
       const volumeIcon = document.querySelector("#volumeIcon")
       const muteIcon = document.querySelector("#muteIcon")
       if (video.volume === 0) {
@@ -236,7 +264,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         ref={videoRef}
         className="max-h-full max-w-full min-h-full min-w-full"
         src={videoSrc}
-        autoPlay
       />
       <div id="visualizer" className="absolute inset-0 hidden" />
       <p
@@ -252,7 +279,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             "linear-gradient(to bottom, rgba(0,0,0,75%),  rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
         }}
         onMouseEnter={(e) => {
-          if (document.hasFocus()) {
+          if (document.hasFocus() || videoRef.current?.paused) {
             e.currentTarget.style.opacity = "1"
             e.currentTarget.style.cursor = "auto"
           } else {
@@ -264,11 +291,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           if (mouseMoveTimeout) {
             clearTimeout(mouseMoveTimeout)
           }
-          if (document.hasFocus()) {
+          if (document.hasFocus() || videoRef.current?.paused) {
             e.currentTarget.style.opacity = "1"
             e.currentTarget.style.cursor = "auto"
             mouseMoveTimeout = window.setTimeout(() => {
-              if (controlsRef.current) {
+              if (controlsRef.current && !videoRef.current?.paused) {
                 controlsRef.current.style.opacity = "0"
                 controlsRef.current.style.cursor = "none"
               }

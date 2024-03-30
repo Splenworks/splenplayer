@@ -2,6 +2,7 @@ import { useState } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import VideoPlayer from "./VideoPlayer"
+import Header from "./Header"
 
 function App() {
   const [videoFiles, setVideoFiles] = useState<File[]>([])
@@ -18,6 +19,7 @@ function App() {
     return (
       <VideoPlayer
         videoFile={videoFiles[0] || audioFiles[0]}
+        isAudio={videoFiles.length === 0}
         subtitleFile={subtitleFiles[0]}
         exit={exit}
       />
@@ -26,6 +28,7 @@ function App() {
 
   return (
     <>
+      <Header />
       <DragDropArea
         setVideoFiles={setVideoFiles}
         setAudioFiles={setAudioFiles}

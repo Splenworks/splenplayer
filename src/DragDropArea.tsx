@@ -61,11 +61,11 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-4">
+    <div className="fixed top-16 left-0 right-0 bottom-16 bg-white dark:bg-neutral-900">
       <div
         className={twJoin(
-          "absolute inset-10 rounded-xl border-dashed border-4 border-gray-300 cursor-pointer flex flex-col items-center justify-center transition-colors duration-300 ease-in-out",
-          dragging && "border-blue-500 bg-blue-100",
+          "absolute inset-x-8 md:inset-x-16 inset-y-0 rounded-xl border-dashed border-4 border-gray-300 cursor-pointer flex flex-col items-center justify-center transition-colors duration-300 ease-in-out",
+          dragging && "bg-neutral-200 dark:bg-neutral-600",
         )}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -80,15 +80,20 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
           ref={fileInputRef}
           onChange={handleFileInputChange}
         />
-        {dragging ? (
-          <p className="text-xl font-semibold px-4 text-center">Drop here</p>
-        ) : (
-          <>
-            <p className="text-xl font-semibold px-4 text-center">
-              Drag and drop video and subtitle(.smi) files here
-            </p>
-          </>
-        )}
+        <div className="px-4 text-black dark:text-white">
+          {dragging ? (
+            <p className="text-xl font-bold text-center">Drop here</p>
+          ) : (
+            <>
+              <p className="mb-4 text-xl font-bold text-center">
+                Drag and drop any <u>video</u> or <u>audio</u> files here!
+              </p>
+              <p className="text-lg text-center">
+                You can even drop subtitle(.smi) files too.
+              </p>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
