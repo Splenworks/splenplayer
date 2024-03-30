@@ -80,7 +80,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
           ref={fileInputRef}
           onChange={handleFileInputChange}
         />
-        <div className="px-4 text-black dark:text-white">
+        <div className="px-4 text-black dark:text-white pointer-events-none">
           {dragging ? (
             <p className="text-xl font-bold text-center">Drop here</p>
           ) : (
