@@ -86,6 +86,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, [])
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (!document.fullscreenElement) {
+          exit()
+        }
+      } else if (event.key === "ArrowLeft") {
+        if (videoRef.current) {
+          videoRef.current.currentTime -= 5
+        }
+      } else if (event.key === "ArrowRight") {
+        if (videoRef.current) {
+          videoRef.current.currentTime += 5
+        }
+      } else if (event.key === " ") {
+        togglePlayPause()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
+
+  useEffect(() => {
     const video = videoRef.current
     if (video) {
       video.ontimeupdate = () => {
@@ -363,6 +385,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </div>
         <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
           <input
+            autoFocus
             ref={seekRef}
             className="accent-white w-full cursor-pointer outline-none"
             type="range"

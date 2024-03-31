@@ -15,18 +15,6 @@ function App() {
     setSubtitleFiles([])
   }
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (!document.fullscreenElement) {
-          exit()
-        }
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
-
   if (videoFiles.length > 0 || audioFiles.length > 0) {
     return (
       <VideoPlayer
