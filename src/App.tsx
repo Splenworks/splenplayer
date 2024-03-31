@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import VideoPlayer from "./VideoPlayer"
@@ -14,6 +14,18 @@ function App() {
     setAudioFiles([])
     setSubtitleFiles([])
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (!document.fullscreenElement) {
+          exit()
+        }
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
 
   if (videoFiles.length > 0 || audioFiles.length > 0) {
     return (
