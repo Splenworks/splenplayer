@@ -183,6 +183,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
         if (volumeRef.current) {
           volumeRef.current.value = volume
+          video.volume = Number(volume)
         }
         if (seekRef.current) {
           seekRef.current.value = "0"
