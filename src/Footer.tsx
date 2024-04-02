@@ -8,7 +8,11 @@ const Footer: React.FC = () => {
         <div className="flex-1"></div>
         <p className="text-black dark:text-white text-sm">
           Check out our other product{" "}
-          <a href="https://splenview.com" target="_blank" className="underline">
+          <a
+            href="https://splenview.com"
+            target="_blank"
+            className="hover:underline text-pink-900 dark:text-pink-700"
+          >
             SplenView
           </a>
         </p>
