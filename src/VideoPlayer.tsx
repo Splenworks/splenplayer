@@ -86,6 +86,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, [])
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (!document.fullscreenElement) {
+          exit()
+        }
+      } else if (event.key === "ArrowLeft") {
+        if (videoRef.current) {
+          videoRef.current.currentTime -= 5
+        }
+      } else if (event.key === "ArrowRight") {
+        if (videoRef.current) {
+          videoRef.current.currentTime += 5
+        }
+      } else if (event.key === " ") {
+        togglePlayPause()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
+
+  useEffect(() => {
     const video = videoRef.current
     if (video) {
       video.ontimeupdate = () => {
@@ -161,6 +183,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
         if (volumeRef.current) {
           volumeRef.current.value = volume
+          video.volume = Number(volume)
         }
         if (seekRef.current) {
           seekRef.current.value = "0"
@@ -311,7 +334,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <IconButton
           id="exitButton"
           svgIcon={CloseIcon}
-          onClick={exit}
+          onClick={() => {
+            if (controlsRef.current?.style.opacity !== "0") {
+              exit()
+            }
+          }}
           className="absolute top-4 right-4"
         />
         <div className="absolute bottom-11 left-0 right-0 h-8 mx-4 flex justify-between">
@@ -320,12 +347,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="playButton"
               className="hidden pl-0.5"
               svgIcon={PlayIcon}
-              onClick={togglePlayPause}
+              onClick={() => {
+                if (controlsRef.current?.style.opacity !== "0") {
+                  togglePlayPause()
+                }
+              }}
             />
             <IconButton
               id="pauseButton"
               svgIcon={PauseIcon}
-              onClick={togglePlayPause}
+              onClick={() => {
+                if (controlsRef.current?.style.opacity !== "0") {
+                  togglePlayPause()
+                }
+              }}
             />
             <div className="font-mono text-sm font-semibold">
               <span className="pr-2" ref={currentTimeRef}></span>/
@@ -351,18 +386,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <IconButton
               id="fullScreenButton"
               svgIcon={FullscreenIcon}
-              onClick={toggleFullScreen}
+              onClick={() => {
+                if (controlsRef.current?.style.opacity !== "0") {
+                  toggleFullScreen()
+                }
+              }}
             />
             <IconButton
               id="exitFullScreenButton"
               className="hidden"
               svgIcon={ExitFullscreenIcon}
-              onClick={toggleFullScreen}
+              onClick={() => {
+                if (controlsRef.current?.style.opacity !== "0") {
+                  toggleFullScreen()
+                }
+              }}
             />
           </div>
         </div>
         <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
           <input
+            autoFocus
             ref={seekRef}
             className="accent-white w-full cursor-pointer outline-none"
             type="range"

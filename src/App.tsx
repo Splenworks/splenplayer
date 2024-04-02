@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import VideoPlayer from "./VideoPlayer"
