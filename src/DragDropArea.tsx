@@ -3,6 +3,7 @@ import { twJoin } from "tailwind-merge"
 import { getVideoFiles } from "./utils/getVideoFiles"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 import { getAudioFiles } from "./utils/getAudioFiles"
+import { PlayCircleIcon } from "@heroicons/react/24/solid"
 
 interface DragDropAreaProps {
   setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
@@ -86,14 +87,15 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
               Drop here
             </p>
           ) : (
-            <>
+            <div className="flex flex-col items-center justify-center">
+              <PlayCircleIcon className="mb-8 w-24 h-24 text-pink-900 dark:text-pink-700" />
               <p className="mb-4 text-xl font-bold text-center">
                 Drag and drop any <u>video</u> or <u>audio</u> files here!
               </p>
               <p className="text-lg text-center">
                 You can even drop subtitle(.smi) files too.
               </p>
-            </>
+            </div>
           )}
         </div>
       </div>
