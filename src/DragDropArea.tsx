@@ -66,7 +66,8 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
       <div
         className={twJoin(
           "absolute inset-x-8 md:inset-x-16 inset-y-0 rounded-xl border-dashed border-4 border-gray-300 cursor-pointer flex flex-col items-center justify-center transition-colors duration-300 ease-in-out",
-          dragging && "bg-neutral-200 dark:bg-neutral-600",
+          dragging &&
+            "bg-neutral-200 dark:bg-neutral-600 border-pink-900 dark:border-pink-700",
         )}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
