@@ -4,6 +4,7 @@ import { getVideoFiles } from "./utils/getVideoFiles"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 import { getAudioFiles } from "./utils/getAudioFiles"
 import { PlayCircleIcon } from "@heroicons/react/24/solid"
+import { Trans } from "react-i18next"
 
 interface DragDropAreaProps {
   setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
@@ -85,16 +86,22 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
         <div className="px-4 text-black dark:text-white pointer-events-none">
           {dragging ? (
             <p className="text-xl font-bold text-center text-gray-50 dark:text-white shadow-gray-600 dark:shadow-black [text-shadow:_0_5px_5px_var(--tw-shadow-color,0.5)]">
-              Drop here
+              <Trans i18nKey="dragDropArea.dropHere" />
             </p>
           ) : (
             <div className="flex flex-col items-center justify-center">
               <PlayCircleIcon className="mb-8 w-24 h-24 text-pink-900 dark:text-pink-700" />
               <p className="mb-4 text-xl font-bold text-center">
-                Drag and drop any <u>video</u> or <u>audio</u> files here!
+                <Trans
+                  i18nKey="dragDropArea.mainMessage"
+                  components={{ u: <u /> }}
+                />
               </p>
               <p className="text-lg text-center">
-                You can even drop subtitle(.smi) files too.
+                <Trans
+                  i18nKey="dragDropArea.subMessage"
+                  components={{ u: <u /> }}
+                />
               </p>
             </div>
           )}

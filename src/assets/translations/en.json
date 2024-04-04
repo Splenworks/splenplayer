@@ -1,0 +1,10 @@
+{
+  "dragDropArea": {
+    "dropHere": "Drop here",
+    "mainMessage": "Drag and drop any <u>video</u> or <u>audio</u> files here!",
+    "subMessage": "You can even drop subtitle(.smi) files too."
+  },
+  "footer": {
+    "checkOutProduct": "Check out our other product <link />"
+  }
+}
