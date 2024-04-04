@@ -1,6 +1,6 @@
 const looksLikeSubtitle = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return lowerCasedName.endsWith(".smi")
+  return lowerCasedName.endsWith(".smi") || lowerCasedName.endsWith(".sami")
 }
 
 export const getSubtitleFiles = (files: File[]) => {
