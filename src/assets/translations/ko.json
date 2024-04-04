@@ -2,7 +2,7 @@
   "dragDropArea": {
     "dropHere": "여기에 드롭하세요",
     "mainMessage": "여기에 당신의 <u>비디오</u>나 <u>오디오</u>를 드래그 드롭하세요!",
-    "subMessage": "자막 (.smi) 파일도 가능합니다."
+    "subMessage": "자막(.smi) 파일도 가능합니다."
   },
   "footer": {
     "checkOutProduct": "우리의 다른 제품 <link />도 확인해보세요"
