@@ -7,7 +7,7 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-center h-16 mx-8 md:mx-16">
         <div className="flex-1"></div>
         <p className="text-black dark:text-white text-lg font-semibold">
-          SplenPlayer
+          <span className="text-pink-900 dark:text-pink-700">Splen</span>Player
         </p>
         <div className="flex-1 flex justify-end items-center">
           <DarkModeSwitch />
