@@ -12,6 +12,8 @@ import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
+import { twJoin } from "tailwind-merge"
+import { isSafari } from "./utils/browserDetect"
 
 interface VideoPlayerProps {
   videoFile: File
@@ -408,7 +410,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <input
             autoFocus
             ref={seekRef}
-            className="accent-white w-full cursor-pointer outline-none"
+            className={twJoin(
+              isSafari
+                ? "appearance-none accent-white bg-transparent w-full cursor-pointer outline-none rounded-full h-2 border border-neutral-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                : "accent-white w-full cursor-pointer outline-none",
+            )}
             type="range"
             min="0"
             max="100"
