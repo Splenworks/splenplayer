@@ -334,7 +334,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onDrop={handleSubtitleDrop}
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
-          <span className="font-semibold">{videoFile.name}</span>
+          <span className="font-semibold text-xl">{videoFile.name}</span>
           <IconButton
             id="exitButton"
             svgIcon={CloseIcon}
