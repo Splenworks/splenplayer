@@ -333,16 +333,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleSubtitleDrop}
       >
-        <IconButton
-          id="exitButton"
-          svgIcon={CloseIcon}
-          onClick={() => {
-            if (controlsRef.current?.style.opacity !== "0") {
-              exit()
-            }
-          }}
-          className="absolute top-4 right-4"
-        />
+        <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
+          <span className="font-semibold">{videoFile.name}</span>
+          <IconButton
+            id="exitButton"
+            svgIcon={CloseIcon}
+            onClick={() => {
+              if (controlsRef.current?.style.opacity !== "0") {
+                exit()
+              }
+            }}
+          />
+        </div>
         <div className="absolute bottom-11 left-0 right-0 h-8 mx-4 flex justify-between">
           <div className="flex justify-center items-center gap-2">
             <IconButton
