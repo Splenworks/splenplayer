@@ -211,7 +211,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
         if (volumeRef.current) {
           volumeRef.current.value = volume
-          video.volume = Number(volume)
+          const volumeNum = Number(volume)
+          video.volume = volumeNum
+          if (volumeNum === 0) {
+            const volumeIcon = document.querySelector("#volumeIcon")
+            const muteIcon = document.querySelector("#muteIcon")
+            hideElement(volumeIcon)
+            showElement(muteIcon)
+          }
         }
         if (seekRef.current) {
           seekRef.current.value = "0"
