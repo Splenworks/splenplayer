@@ -94,13 +94,17 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
               <p className="mb-4 text-xl font-bold text-center">
                 <Trans
                   i18nKey="dragDropArea.mainMessage"
-                  components={{ u: <u /> }}
+                  components={{
+                    u: <span className="text-pink-900 dark:text-pink-700" />,
+                  }}
                 />
               </p>
               <p className="text-lg text-center">
                 <Trans
                   i18nKey="dragDropArea.subMessage"
-                  components={{ u: <u /> }}
+                  components={{
+                    u: <span className="text-pink-900 dark:text-pink-700" />,
+                  }}
                 />
               </p>
             </div>
