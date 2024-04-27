@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useCallback } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
@@ -63,6 +63,32 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     subtitles = []
   }
 
+  const showPlayIcon = () => {
+    const playButton = document.querySelector("#playButton")
+    const pauseButton = document.querySelector("#pauseButton")
+    hideElement(pauseButton)
+    showElement(playButton)
+  }
+
+  const showPauseIcon = () => {
+    const playButton = document.querySelector("#playButton")
+    const pauseButton = document.querySelector("#pauseButton")
+    hideElement(playButton)
+    showElement(pauseButton)
+  }
+
+  const togglePlayPause = useCallback(() => {
+    if (videoRef.current) {
+      if (videoRef.current.paused || videoRef.current.ended) {
+        videoRef.current.play()
+        showPauseIcon()
+      } else {
+        videoRef.current.pause()
+        showPlayIcon()
+      }
+    }
+  }, [videoRef])
+
   useEffect(() => {
     const fullscreenChange = () => {
       const exitButton = document.querySelector("#exitButton")
@@ -107,7 +133,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
+  }, [exit, togglePlayPause])
 
   useEffect(() => {
     const video = videoRef.current
@@ -185,7 +211,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
         if (volumeRef.current) {
           volumeRef.current.value = volume
-          video.volume = Number(volume)
+          const volumeNum = Number(volume)
+          video.volume = volumeNum
+          if (volumeNum === 0) {
+            const volumeIcon = document.querySelector("#volumeIcon")
+            const muteIcon = document.querySelector("#muteIcon")
+            hideElement(volumeIcon)
+            showElement(muteIcon)
+          }
         }
         if (seekRef.current) {
           seekRef.current.value = "0"
@@ -201,7 +234,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         controlsRef.current?.style.setProperty("cursor", "auto")
       }
     }
-  }, [videoRef])
+  }, [videoRef, volume])
 
   const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -209,32 +242,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const subtitleFiles = getSubtitleFiles(files)
     if (subtitleFiles.length > 0) {
       parseSubtitles(subtitleFiles[0])
-    }
-  }
-
-  const showPlayIcon = () => {
-    const playButton = document.querySelector("#playButton")
-    const pauseButton = document.querySelector("#pauseButton")
-    hideElement(pauseButton)
-    showElement(playButton)
-  }
-
-  const showPauseIcon = () => {
-    const playButton = document.querySelector("#playButton")
-    const pauseButton = document.querySelector("#pauseButton")
-    hideElement(playButton)
-    showElement(pauseButton)
-  }
-
-  const togglePlayPause = () => {
-    if (videoRef.current) {
-      if (videoRef.current.paused || videoRef.current.ended) {
-        videoRef.current.play()
-        showPauseIcon()
-      } else {
-        videoRef.current.pause()
-        showPlayIcon()
-      }
     }
   }
 
@@ -333,16 +340,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleSubtitleDrop}
       >
-        <IconButton
-          id="exitButton"
-          svgIcon={CloseIcon}
-          onClick={() => {
-            if (controlsRef.current?.style.opacity !== "0") {
-              exit()
-            }
-          }}
-          className="absolute top-4 right-4"
-        />
+        <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
+          <span className="font-semibold text-xl">{videoFile.name}</span>
+          <IconButton
+            id="exitButton"
+            svgIcon={CloseIcon}
+            onClick={() => {
+              if (controlsRef.current?.style.opacity !== "0") {
+                exit()
+              }
+            }}
+          />
+        </div>
         <div className="absolute bottom-11 left-0 right-0 h-8 mx-4 flex justify-between">
           <div className="flex justify-center items-center gap-2">
             <IconButton
