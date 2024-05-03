@@ -308,7 +308,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         className="absolute inset-0 text-white transition-opacity duration-300 ease-in-out"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,75%),  rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
+            "linear-gradient(to bottom, rgba(0,0,0,75%), rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
         }}
         onMouseEnter={(e) => {
           if (document.hasFocus() || videoRef.current?.paused) {
