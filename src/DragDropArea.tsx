@@ -4,7 +4,7 @@ import { getVideoFiles } from "./utils/getVideoFiles"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 import { getAudioFiles } from "./utils/getAudioFiles"
 import { PlayCircleIcon } from "@heroicons/react/24/solid"
-import { Trans } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 
 interface DragDropAreaProps {
   setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
@@ -19,6 +19,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
 }) => {
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { t } = useTranslation()
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -41,9 +42,13 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     const videoFiles = getVideoFiles(files)
     const audioFiles = getAudioFiles(files)
     const subtitleFiles = getSubtitleFiles(files)
-    setVideoFiles(videoFiles)
-    setAudioFiles(audioFiles)
-    setSubtitleFiles(subtitleFiles)
+    if (videoFiles.length === 0 && audioFiles.length === 0) {
+      alert(t("dragDropArea.noMediaFilesFound"))
+    } else {
+      setVideoFiles(videoFiles)
+      setAudioFiles(audioFiles)
+      setSubtitleFiles(subtitleFiles)
+    }
   }
 
   const handleClick = () => {
@@ -57,9 +62,13 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     const videoFiles = getVideoFiles(files)
     const audioFiles = getAudioFiles(files)
     const subtitleFiles = getSubtitleFiles(files)
-    setVideoFiles(videoFiles)
-    setAudioFiles(audioFiles)
-    setSubtitleFiles(subtitleFiles)
+    if (videoFiles.length === 0 && audioFiles.length === 0) {
+      alert(t("dragDropArea.noMediaFilesFound"))
+    } else {
+      setVideoFiles(videoFiles)
+      setAudioFiles(audioFiles)
+      setSubtitleFiles(subtitleFiles)
+    }
   }
 
   return (
