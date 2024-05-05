@@ -1,20 +1,17 @@
 import React, { useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
-import { getVideoFiles } from "./utils/getVideoFiles"
+import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
-import { getAudioFiles } from "./utils/getAudioFiles"
 import { PlayCircleIcon } from "@heroicons/react/24/solid"
 import { Trans, useTranslation } from "react-i18next"
 
 interface DragDropAreaProps {
-  setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
-  setAudioFiles: React.Dispatch<React.SetStateAction<File[]>>
+  setMediaFiles: React.Dispatch<React.SetStateAction<MediaFile[]>>
   setSubtitleFiles: React.Dispatch<React.SetStateAction<File[]>>
 }
 
 const DragDropArea: React.FC<DragDropAreaProps> = ({
-  setVideoFiles,
-  setAudioFiles,
+  setMediaFiles,
   setSubtitleFiles,
 }) => {
   const [dragging, setDragging] = useState(false)
@@ -39,14 +36,12 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     e.preventDefault()
     setDragging(false)
     const files = Array.from(e.dataTransfer.files)
-    const videoFiles = getVideoFiles(files)
-    const audioFiles = getAudioFiles(files)
+    const mediaFiles = getMediaFiles(files)
     const subtitleFiles = getSubtitleFiles(files)
-    if (videoFiles.length === 0 && audioFiles.length === 0) {
+    if (mediaFiles.length === 0) {
       alert(t("dragDropArea.noMediaFilesFound"))
     } else {
-      setVideoFiles(videoFiles)
-      setAudioFiles(audioFiles)
+      setMediaFiles(mediaFiles)
       setSubtitleFiles(subtitleFiles)
     }
   }
@@ -59,14 +54,12 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = Array.from(e.target.files || [])
-    const videoFiles = getVideoFiles(files)
-    const audioFiles = getAudioFiles(files)
+    const mediaFiles = getMediaFiles(files)
     const subtitleFiles = getSubtitleFiles(files)
-    if (videoFiles.length === 0 && audioFiles.length === 0) {
+    if (mediaFiles.length === 0) {
       alert(t("dragDropArea.noMediaFilesFound"))
     } else {
-      setVideoFiles(videoFiles)
-      setAudioFiles(audioFiles)
+      setMediaFiles(mediaFiles)
       setSubtitleFiles(subtitleFiles)
     }
   }

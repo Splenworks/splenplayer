@@ -4,21 +4,21 @@ import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
 import { hideElement, showElement } from "./utils/toggleHidden"
 import { ReactComponent as CloseIcon } from "./assets/xmark.svg"
-import { ReactComponent as PlayIcon } from "./assets/play.svg"
-import { ReactComponent as PauseIcon } from "./assets/pause.svg"
 import { ReactComponent as FullscreenIcon } from "./assets/expand.svg"
 import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
+import { ReactComponent as NextIcon } from "./assets/next.svg"
 import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
 import { twJoin } from "tailwind-merge"
 import { isSafari } from "./utils/browserDetect"
 import { isMac } from "./utils/isMac"
+import PlayButton, { showPauseIcon, showPlayIcon } from "./PlayButton"
+import { MediaFile } from "./utils/getMediaFiles"
 
 interface VideoPlayerProps {
-  videoFile: File
-  isAudio?: boolean
+  mediaFiles: MediaFile[]
   subtitleFile?: File
   exit: () => void
 }
@@ -37,13 +37,12 @@ const parseSubtitles = (subtitleFile: File) => {
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
-  videoFile,
-  isAudio = false,
+  mediaFiles,
   subtitleFile,
   exit,
 }) => {
-  const blob = new Blob([videoFile], {
-    type: isAudio ? "audio/mpeg" : "video/mp4",
+  const blob = new Blob([mediaFiles[0].file], {
+    type: mediaFiles[0].type === "audio" ? "audio/mpeg" : "video/mp4",
   })
   const videoSrc = URL.createObjectURL(blob)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
@@ -62,20 +61,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     parseSubtitles(subtitleFile)
   } else {
     subtitles = []
-  }
-
-  const showPlayIcon = () => {
-    const playButton = document.querySelector("#playButton")
-    const pauseButton = document.querySelector("#pauseButton")
-    hideElement(pauseButton)
-    showElement(playButton)
-  }
-
-  const showPauseIcon = () => {
-    const playButton = document.querySelector("#playButton")
-    const pauseButton = document.querySelector("#pauseButton")
-    hideElement(playButton)
-    showElement(pauseButton)
   }
 
   const togglePlayPause = useCallback(() => {
@@ -348,7 +333,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onDrop={handleSubtitleDrop}
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
-          <span className="font-semibold text-xl">{videoFile.name}</span>
+          <span className="font-semibold text-xl">
+            {mediaFiles[0].file.name}
+          </span>
           <IconButton
             id="exitButton"
             svgIcon={CloseIcon}
@@ -359,28 +346,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             }}
           />
         </div>
-        <div className="absolute bottom-11 left-0 right-0 h-8 mx-4 flex justify-between">
+        <div className="absolute bottom-11 left-0 right-0 h-8 mx-4 flex items-center justify-between">
           <div className="flex justify-center items-center gap-2">
-            <IconButton
-              id="playButton"
-              className="hidden pl-0.5"
-              svgIcon={PlayIcon}
+            <PlayButton
               onClick={() => {
                 if (controlsRef.current?.style.opacity !== "0") {
                   togglePlayPause()
                 }
               }}
             />
-            <IconButton
-              id="pauseButton"
-              svgIcon={PauseIcon}
-              onClick={() => {
-                if (controlsRef.current?.style.opacity !== "0") {
-                  togglePlayPause()
-                }
-              }}
-            />
-            <div className="font-mono text-sm font-semibold">
+            {mediaFiles.length > 1 && (
+              <IconButton id="nextButton" className="" svgIcon={NextIcon} />
+            )}
+            <div
+              className={`hidden sm:block font-mono text-sm font-semibold ${
+                mediaFiles.length > 1 ? "pl-2" : ""
+              }`}
+            >
               <span className="pr-2" ref={currentTimeRef}></span>/
               <span className="pl-2" ref={totalTimeRef}></span>
             </div>
