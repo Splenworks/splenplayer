@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from "react"
+import React, { useRef, useEffect, useCallback, useState } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
@@ -41,10 +41,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   subtitleFile,
   exit,
 }) => {
-  const blob = new Blob([mediaFiles[0].file], {
-    type: mediaFiles[0].type === "audio" ? "audio/mpeg" : "video/mp4",
-  })
-  const videoSrc = URL.createObjectURL(blob)
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
@@ -54,6 +50,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const volumnButton = useRef<HTMLButtonElement>(null)
   const volumeRef = useRef<HTMLInputElement>(null)
   const volume = localStorage.getItem("volume") || "0.5"
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const blob = new Blob([mediaFiles[currentIndex].file], {
+    type:
+      mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
+  })
+  const videoSrc = URL.createObjectURL(blob)
 
   let mouseMoveTimeout: number = 0
 
@@ -221,12 +223,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         })
       }
       video.onended = () => {
-        showPlayIcon()
-        controlsRef.current?.style.setProperty("opacity", "1")
-        controlsRef.current?.style.setProperty("cursor", "auto")
+        if (currentIndex < mediaFiles.length - 1) {
+          setCurrentIndex(currentIndex + 1)
+          // controlsRef.current?.style.setProperty("opacity", "1")
+          // controlsRef.current?.style.setProperty("cursor", "auto")
+        } else {
+          showPlayIcon()
+          controlsRef.current?.style.setProperty("opacity", "1")
+          controlsRef.current?.style.setProperty("cursor", "auto")
+        }
       }
     }
-  }, [videoRef, volume])
+    return () => {
+      if (video) {
+        video.ontimeupdate = null
+        video.onloadedmetadata = null
+        video.onended = null
+      }
+    }
+  }, [videoRef, volume, mediaFiles.length, currentIndex])
 
   const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -334,7 +349,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
           <span className="font-semibold text-xl">
-            {mediaFiles[0].file.name}
+            {mediaFiles[currentIndex].file.name} [{currentIndex + 1}/
+            {mediaFiles.length}]
           </span>
           <IconButton
             id="exitButton"
@@ -355,8 +371,26 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 }
               }}
             />
-            {mediaFiles.length > 1 && (
-              <IconButton id="nextButton" className="" svgIcon={NextIcon} />
+            {mediaFiles.length > 1 && currentIndex > 0 && (
+              <IconButton
+                svgIcon={NextIcon}
+                className="transform rotate-180"
+                onClick={() => {
+                  if (controlsRef.current?.style.opacity !== "0") {
+                    setCurrentIndex(currentIndex - 1)
+                  }
+                }}
+              />
+            )}
+            {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
+              <IconButton
+                svgIcon={NextIcon}
+                onClick={() => {
+                  if (controlsRef.current?.style.opacity !== "0") {
+                    setCurrentIndex(currentIndex + 1)
+                  }
+                }}
+              />
             )}
             <div
               className={`hidden sm:block font-mono text-sm font-semibold ${
