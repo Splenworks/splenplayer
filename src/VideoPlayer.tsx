@@ -14,6 +14,7 @@ import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
 import { twJoin } from "tailwind-merge"
 import { isSafari } from "./utils/browserDetect"
+import { isMac } from "./utils/isMac"
 
 interface VideoPlayerProps {
   videoFile: File
@@ -129,6 +130,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
       } else if (event.key === " ") {
         togglePlayPause()
+      } else if (
+        event.key === "f" ||
+        (isMac && event.metaKey) ||
+        (!isMac && event.altKey)
+      ) {
+        toggleFullScreen()
       }
     }
     window.addEventListener("keydown", handleKeyDown)
