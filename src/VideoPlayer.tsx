@@ -349,8 +349,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
           <span className="font-semibold text-xl">
-            {mediaFiles[currentIndex].file.name} [{currentIndex + 1}/
-            {mediaFiles.length}]
+            {mediaFiles[currentIndex].file.name}{" "}
+            {mediaFiles.length > 1 && (
+              <>
+                [{currentIndex + 1}/{mediaFiles.length}]
+              </>
+            )}
           </span>
           <IconButton
             id="exitButton"
