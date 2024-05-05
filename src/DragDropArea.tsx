@@ -88,6 +88,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
         <input
           type="file"
           multiple
+          accept="video/*,audio/*,.mkv,.smi"
           hidden
           ref={fileInputRef}
           onChange={handleFileInputChange}
