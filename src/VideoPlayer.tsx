@@ -36,6 +36,9 @@ const parseSubtitles = (subtitleFile: File) => {
   reader.readAsText(subtitleFile)
 }
 
+let mouseMoveTimeout: number = 0
+let analyzer: AudioMotionAnalyzer | null = null
+
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   mediaFiles,
   subtitleFile,
@@ -56,8 +59,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
   })
   const videoSrc = URL.createObjectURL(blob)
-
-  let mouseMoveTimeout: number = 0
 
   if (subtitleFile) {
     parseSubtitles(subtitleFile)
@@ -178,11 +179,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         if (video.videoWidth === 0) {
           showElement(visualizerEl)
           if (visualizerEl) {
-            new AudioMotionAnalyzer(visualizerEl, {
-              source: video,
-              smoothing: 0.8,
-              hideScaleX: true,
-            })
+            if (!analyzer) {
+              analyzer = new AudioMotionAnalyzer(visualizerEl, {
+                source: video,
+                smoothing: 0.8,
+                hideScaleX: true,
+              })
+            }
           }
         } else {
           hideElement(visualizerEl)
@@ -227,7 +230,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           setCurrentIndex(currentIndex + 1)
           controlsRef.current?.style.setProperty("opacity", "1")
           controlsRef.current?.style.setProperty("cursor", "auto")
-          // eslint-disable-next-line react-hooks/exhaustive-deps
           mouseMoveTimeout = window.setTimeout(() => {
             if (controlsRef.current && !videoRef.current?.paused) {
               controlsRef.current.style.opacity = "0"
