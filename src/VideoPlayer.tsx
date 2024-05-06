@@ -225,8 +225,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       video.onended = () => {
         if (currentIndex < mediaFiles.length - 1) {
           setCurrentIndex(currentIndex + 1)
-          // controlsRef.current?.style.setProperty("opacity", "1")
-          // controlsRef.current?.style.setProperty("cursor", "auto")
+          controlsRef.current?.style.setProperty("opacity", "1")
+          controlsRef.current?.style.setProperty("cursor", "auto")
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+          mouseMoveTimeout = window.setTimeout(() => {
+            if (controlsRef.current && !videoRef.current?.paused) {
+              controlsRef.current.style.opacity = "0"
+              controlsRef.current.style.cursor = "none"
+            }
+          }, 2000)
         } else {
           showPlayIcon()
           controlsRef.current?.style.setProperty("opacity", "1")
