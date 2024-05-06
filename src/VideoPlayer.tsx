@@ -9,7 +9,7 @@ import { ReactComponent as ExitFullscreenIcon } from "./assets/compress.svg"
 import { ReactComponent as VolumeIcon } from "./assets/volume-max.svg"
 import { ReactComponent as MuteIcon } from "./assets/volume-mute.svg"
 import { ReactComponent as NextIcon } from "./assets/next.svg"
-import { getSubtitleFiles } from "./utils/getSubtitleFiles"
+import { getSubtitleFiles } from "./utils/getMediaFiles"
 import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
 import { twJoin } from "tailwind-merge"
 import { isSafari } from "./utils/browserDetect"
@@ -19,7 +19,6 @@ import { MediaFile } from "./utils/getMediaFiles"
 
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]
-  subtitleFile?: File
   exit: () => void
 }
 
@@ -39,11 +38,7 @@ const parseSubtitles = (subtitleFile: File) => {
 let mouseMoveTimeout: number = 0
 let analyzer: AudioMotionAnalyzer | null = null
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({
-  mediaFiles,
-  subtitleFile,
-  exit,
-}) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
   const videoPlayerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
@@ -59,7 +54,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
   })
   const videoSrc = URL.createObjectURL(blob)
-
+  const subtitleFile = mediaFiles[currentIndex].subtitleFile
   if (subtitleFile) {
     parseSubtitles(subtitleFile)
   } else {

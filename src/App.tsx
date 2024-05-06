@@ -30,30 +30,19 @@ i18n
 
 function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
-  const [subtitleFiles, setSubtitleFiles] = useState<File[]>([])
 
   const exit = () => {
     setMediaFiles([])
-    setSubtitleFiles([])
   }
 
   if (mediaFiles.length > 0) {
-    return (
-      <VideoPlayer
-        mediaFiles={mediaFiles}
-        subtitleFile={subtitleFiles[0]}
-        exit={exit}
-      />
-    )
+    return <VideoPlayer mediaFiles={mediaFiles} exit={exit} />
   }
 
   return (
     <>
       <Header />
-      <DragDropArea
-        setMediaFiles={setMediaFiles}
-        setSubtitleFiles={setSubtitleFiles}
-      />
+      <DragDropArea setMediaFiles={setMediaFiles} />
       <Footer />
     </>
   )

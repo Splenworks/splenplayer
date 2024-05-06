@@ -1,19 +1,14 @@
 import React, { useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
-import { getSubtitleFiles } from "./utils/getSubtitleFiles"
 import { PlayCircleIcon } from "@heroicons/react/24/solid"
 import { Trans, useTranslation } from "react-i18next"
 
 interface DragDropAreaProps {
   setMediaFiles: React.Dispatch<React.SetStateAction<MediaFile[]>>
-  setSubtitleFiles: React.Dispatch<React.SetStateAction<File[]>>
 }
 
-const DragDropArea: React.FC<DragDropAreaProps> = ({
-  setMediaFiles,
-  setSubtitleFiles,
-}) => {
+const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
@@ -37,12 +32,10 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     setDragging(false)
     const files = Array.from(e.dataTransfer.files)
     const mediaFiles = getMediaFiles(files)
-    const subtitleFiles = getSubtitleFiles(files)
     if (mediaFiles.length === 0) {
       alert(t("dragDropArea.noMediaFilesFound"))
     } else {
       setMediaFiles(mediaFiles)
-      setSubtitleFiles(subtitleFiles)
     }
   }
 
@@ -55,12 +48,10 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
   ) => {
     const files = Array.from(e.target.files || [])
     const mediaFiles = getMediaFiles(files)
-    const subtitleFiles = getSubtitleFiles(files)
     if (mediaFiles.length === 0) {
       alert(t("dragDropArea.noMediaFilesFound"))
     } else {
       setMediaFiles(mediaFiles)
-      setSubtitleFiles(subtitleFiles)
     }
   }
 
