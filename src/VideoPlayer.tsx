@@ -454,7 +454,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             type="range"
             min="0"
             max="100"
+            step="0.1"
             onChange={handleSeek}
+            onKeyDown={(e) => {
+              e.preventDefault()
+            }}
           />
         </div>
       </div>
