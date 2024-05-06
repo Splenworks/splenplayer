@@ -178,14 +178,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         const visualizerEl = document.querySelector<HTMLElement>("#visualizer")
         if (video.videoWidth === 0) {
           showElement(visualizerEl)
-          if (visualizerEl) {
-            if (!analyzer) {
-              analyzer = new AudioMotionAnalyzer(visualizerEl, {
-                source: video,
-                smoothing: 0.8,
-                hideScaleX: true,
-              })
-            }
+          if (visualizerEl && analyzer === null) {
+            analyzer = new AudioMotionAnalyzer(visualizerEl, {
+              source: video,
+              smoothing: 0.8,
+              hideScaleX: true,
+            })
           }
         } else {
           hideElement(visualizerEl)
