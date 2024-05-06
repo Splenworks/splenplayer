@@ -410,13 +410,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
           </div>
           <div className="flex justify-center items-center gap-2">
             <div className="overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
-              <button ref={volumnButton} className="w-6 h-6 mx-2">
+              <button
+                ref={volumnButton}
+                tabIndex={-1}
+                className="w-6 h-6 mx-2 outline-none focus:outline-none"
+              >
                 <VolumeIcon id="volumeIcon" className="w-6 h-6 text-white" />
                 <MuteIcon id="muteIcon" className="hidden w-6 h-6 text-white" />
               </button>
               <input
                 ref={volumeRef}
-                className="accent-white cursor-pointer w-24 mr-0.5 outline-none"
+                tabIndex={-1}
+                className="accent-white cursor-pointer w-24 mr-0.5 outline-none focus:outline-none"
                 type="range"
                 min="0"
                 max="1"
