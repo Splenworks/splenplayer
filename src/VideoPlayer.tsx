@@ -397,8 +397,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               />
             )}
             <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
-              <span className="pr-2" ref={currentTimeRef}></span>/
-              <span className="pl-2" ref={totalTimeRef}></span>
+              <span className="pr-2" ref={currentTimeRef}>
+                00:00
+              </span>
+              /
+              <span className="pl-2" ref={totalTimeRef}>
+                00:00
+              </span>
             </div>
           </div>
           <div className="flex justify-center items-center gap-2">
