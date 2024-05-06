@@ -1,0 +1,11 @@
+{
+  "dragDropArea": {
+    "dropHere": "ここにドロップしてください",
+    "mainMessage": "ここに<u>ビデオ</u>または<u>オーディオ</u>ファイルをドロップしてください！",
+    "subMessage": "字幕（.smi）ファイルも可能です",
+    "noMediaFilesFound": "メディア ファイルが見つかりません。"
+  },
+  "footer": {
+    "checkOutProduct": "弊社の他のプロダクト<link />もご確認ください"
+  }
+}
