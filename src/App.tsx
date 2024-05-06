@@ -8,6 +8,7 @@ import { initReactI18next } from "react-i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
 import enTranslation from "./assets/translations/en.json"
 import koTranslation from "./assets/translations/ko.json"
+import { MediaFile } from "./utils/getMediaFiles"
 
 i18n
   .use(LanguageDetector)
@@ -28,35 +29,20 @@ i18n
   })
 
 function App() {
-  const [videoFiles, setVideoFiles] = useState<File[]>([])
-  const [audioFiles, setAudioFiles] = useState<File[]>([])
-  const [subtitleFiles, setSubtitleFiles] = useState<File[]>([])
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
 
   const exit = () => {
-    setVideoFiles([])
-    setAudioFiles([])
-    setSubtitleFiles([])
+    setMediaFiles([])
   }
 
-  if (videoFiles.length > 0 || audioFiles.length > 0) {
-    return (
-      <VideoPlayer
-        videoFile={videoFiles[0] || audioFiles[0]}
-        isAudio={videoFiles.length === 0}
-        subtitleFile={subtitleFiles[0]}
-        exit={exit}
-      />
-    )
+  if (mediaFiles.length > 0) {
+    return <VideoPlayer mediaFiles={mediaFiles} exit={exit} />
   }
 
   return (
     <>
       <Header />
-      <DragDropArea
-        setVideoFiles={setVideoFiles}
-        setAudioFiles={setAudioFiles}
-        setSubtitleFiles={setSubtitleFiles}
-      />
+      <DragDropArea setMediaFiles={setMediaFiles} />
       <Footer />
     </>
   )

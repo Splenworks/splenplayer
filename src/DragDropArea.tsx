@@ -1,24 +1,17 @@
 import React, { useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
-import { getVideoFiles } from "./utils/getVideoFiles"
-import { getSubtitleFiles } from "./utils/getSubtitleFiles"
-import { getAudioFiles } from "./utils/getAudioFiles"
+import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 import { PlayCircleIcon } from "@heroicons/react/24/solid"
-import { Trans } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 
 interface DragDropAreaProps {
-  setVideoFiles: React.Dispatch<React.SetStateAction<File[]>>
-  setAudioFiles: React.Dispatch<React.SetStateAction<File[]>>
-  setSubtitleFiles: React.Dispatch<React.SetStateAction<File[]>>
+  setMediaFiles: React.Dispatch<React.SetStateAction<MediaFile[]>>
 }
 
-const DragDropArea: React.FC<DragDropAreaProps> = ({
-  setVideoFiles,
-  setAudioFiles,
-  setSubtitleFiles,
-}) => {
+const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { t } = useTranslation()
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -38,12 +31,12 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     e.preventDefault()
     setDragging(false)
     const files = Array.from(e.dataTransfer.files)
-    const videoFiles = getVideoFiles(files)
-    const audioFiles = getAudioFiles(files)
-    const subtitleFiles = getSubtitleFiles(files)
-    setVideoFiles(videoFiles)
-    setAudioFiles(audioFiles)
-    setSubtitleFiles(subtitleFiles)
+    const mediaFiles = getMediaFiles(files)
+    if (mediaFiles.length === 0) {
+      alert(t("dragDropArea.noMediaFilesFound"))
+    } else {
+      setMediaFiles(mediaFiles)
+    }
   }
 
   const handleClick = () => {
@@ -54,12 +47,12 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = Array.from(e.target.files || [])
-    const videoFiles = getVideoFiles(files)
-    const audioFiles = getAudioFiles(files)
-    const subtitleFiles = getSubtitleFiles(files)
-    setVideoFiles(videoFiles)
-    setAudioFiles(audioFiles)
-    setSubtitleFiles(subtitleFiles)
+    const mediaFiles = getMediaFiles(files)
+    if (mediaFiles.length === 0) {
+      alert(t("dragDropArea.noMediaFilesFound"))
+    } else {
+      setMediaFiles(mediaFiles)
+    }
   }
 
   return (
@@ -79,11 +72,12 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({
         <input
           type="file"
           multiple
+          accept="video/*,audio/*,.mkv,.smi"
           hidden
           ref={fileInputRef}
           onChange={handleFileInputChange}
         />
-        <div className="px-4 text-black dark:text-white pointer-events-none">
+        <div className="px-4 pb-4 text-black dark:text-white pointer-events-none">
           {dragging ? (
             <p className="text-xl font-bold text-center text-gray-50 dark:text-white shadow-gray-600 dark:shadow-black [text-shadow:_0_5px_5px_var(--tw-shadow-color,0.5)]">
               <Trans i18nKey="dragDropArea.dropHere" />

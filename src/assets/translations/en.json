@@ -2,7 +2,8 @@
   "dragDropArea": {
     "dropHere": "Drop here",
     "mainMessage": "Drag and drop any <u>video</u> or <u>audio</u> files here!",
-    "subMessage": "You can even drop subtitle(.smi) files too."
+    "subMessage": "You can even drop subtitle(.smi) files too.",
+    "noMediaFilesFound": "No media files found."
   },
   "footer": {
     "checkOutProduct": "Check out our other product <link />"
