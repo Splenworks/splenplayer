@@ -396,11 +396,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 }}
               />
             )}
-            <div
-              className={`hidden sm:block font-mono text-sm font-semibold ${
-                mediaFiles.length > 1 ? "pl-2" : ""
-              }`}
-            >
+            <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
               <span className="pr-2" ref={currentTimeRef}></span>/
               <span className="pl-2" ref={totalTimeRef}></span>
             </div>
