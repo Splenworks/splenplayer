@@ -178,7 +178,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         const visualizerEl = document.querySelector<HTMLElement>("#visualizer")
         if (video.videoWidth === 0) {
           showElement(visualizerEl)
-          if (visualizerEl && analyzer === null) {
+          if (visualizerEl && analyzer === null && !isSafari) {
             analyzer = new AudioMotionAnalyzer(visualizerEl, {
               source: video,
               smoothing: 0.8,
