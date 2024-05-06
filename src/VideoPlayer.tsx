@@ -94,6 +94,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
     return () => {
       removeEventListener("fullscreenchange", fullscreenChange)
       subtitles = []
+      analyzer?.destroy()
+      analyzer = null
     }
   }, [])
 
