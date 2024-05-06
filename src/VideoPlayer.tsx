@@ -420,6 +420,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 max="1"
                 step="0.1"
                 onChange={handleVolumeChange}
+                onKeyDown={(e) => {
+                  e.stopPropagation()
+                }}
               />
             </div>
             <IconButton
