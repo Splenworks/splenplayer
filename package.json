@@ -23,7 +23,8 @@
     "react-toggle-dark-mode": "^1.1.1",
     "sami-parser": "^0.5.3",
     "tailwind-merge": "^2.1.0",
-    "unzipit": "^1.4.3"
+    "unzipit": "^1.4.3",
+    "usehooks-ts": "^3.1.0"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",

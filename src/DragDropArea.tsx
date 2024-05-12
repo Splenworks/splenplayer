@@ -3,6 +3,7 @@ import { twJoin } from "tailwind-merge"
 import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 import { PlayCircleIcon } from "@heroicons/react/24/solid"
 import { Trans, useTranslation } from "react-i18next"
+import { useMediaQuery } from "usehooks-ts"
 
 interface DragDropAreaProps {
   setMediaFiles: React.Dispatch<React.SetStateAction<MediaFile[]>>
@@ -12,6 +13,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
+  const smallScreen = useMediaQuery("(max-width: 640px) or (max-height: 640px)")
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -77,7 +79,12 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
           ref={fileInputRef}
           onChange={handleFileInputChange}
         />
-        <div className="px-4 pb-12 text-black dark:text-white pointer-events-none">
+        <div
+          className={twJoin(
+            "px-4 text-black dark:text-white pointer-events-none",
+            !smallScreen && "pb-12",
+          )}
+        >
           {dragging ? (
             <p className="text-xl font-bold text-center text-gray-50 dark:text-white shadow-gray-600 dark:shadow-black [text-shadow:_0_5px_5px_var(--tw-shadow-color,0.5)]">
               <Trans i18nKey="dragDropArea.dropHere" />
@@ -101,9 +108,11 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
                   }}
                 />
               </p>
-              <p className="text-center">
-                <Trans i18nKey="dragDropArea.neverStoreYourData" />
-              </p>
+              {!smallScreen && (
+                <p className="text-center">
+                  <Trans i18nKey="dragDropArea.neverStoreYourData" />
+                </p>
+              )}
             </div>
           )}
         </div>
