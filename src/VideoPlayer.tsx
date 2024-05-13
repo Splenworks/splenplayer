@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useCallback, useState } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
+import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
 import { hideElement, showElement } from "./utils/toggleHidden"
@@ -22,19 +23,9 @@ interface VideoPlayerProps {
   exit: () => void
 }
 
+// These variables are outside the component
+// to prevent the video player re-rendering when the state changes
 let subtitles: ParseResult = []
-
-const parseSubtitles = (subtitleFile: File) => {
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const smiContent = e.target?.result
-    if (typeof smiContent === "string") {
-      subtitles = samiParse(smiContent)?.result || []
-    }
-  }
-  reader.readAsText(subtitleFile)
-}
-
 let mouseMoveTimeout: number = 0
 let analyzer: AudioMotionAnalyzer | null = null
 
@@ -55,8 +46,33 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
   })
   const videoSrc = URL.createObjectURL(blob)
   const subtitleFile = mediaFiles[currentIndex].subtitleFile
+
+  const parseSubtitle = useCallback((subtitleFile: File) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const content = e.target?.result
+      if (typeof content === "string") {
+        if (
+          subtitleFile.name.endsWith(".srt") ||
+          subtitleFile.name.endsWith(".vtt")
+        ) {
+          subtitles = srtVttParse(content).entries.map((entry) => ({
+            startTime: entry.from,
+            endTime: entry.to,
+            languages: {
+              x: entry.text,
+            },
+          }))
+        } else {
+          subtitles = samiParse(content)?.result || []
+        }
+      }
+    }
+    reader.readAsText(subtitleFile)
+  }, [])
+
   if (subtitleFile) {
-    parseSubtitles(subtitleFile)
+    parseSubtitle(subtitleFile)
   } else {
     subtitles = []
   }
@@ -252,7 +268,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
     const files = Array.from(e.dataTransfer.files)
     const subtitleFiles = getSubtitleFiles(files)
     if (subtitleFiles.length > 0) {
-      parseSubtitles(subtitleFiles[0])
+      parseSubtitle(subtitleFiles[0])
     }
   }
 

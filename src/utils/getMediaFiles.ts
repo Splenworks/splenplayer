@@ -22,7 +22,12 @@ const looksLikeAudio = (name: string) => {
 
 const looksLikeSubtitle = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return lowerCasedName.endsWith(".smi") || lowerCasedName.endsWith(".sami")
+  return (
+    lowerCasedName.endsWith(".smi") ||
+    lowerCasedName.endsWith(".sami") ||
+    lowerCasedName.endsWith(".vtt") ||
+    lowerCasedName.endsWith(".srt")
+  )
 }
 
 const nameMatchesWithoutExtension = (name1: string, name2: string) => {

@@ -2,7 +2,7 @@
   "dragDropArea": {
     "dropHere": "ここにドロップしてください",
     "mainMessage": "ここに<u>ビデオ</u>や、<u>オーディオ</u>ファイルをドロップしてください！",
-    "subMessage": "字幕（.smi）ファイルも可能です",
+    "subMessage": "字幕（vtt, srt, smi）ファイルも可能です",
     "noMediaFilesFound": "メディア ファイルが見つかりません。",
     "neverStoreYourData": "お客様のデータをサーバに保存することは決してありません。"
   },
