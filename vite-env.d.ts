@@ -14,5 +14,5 @@ declare module "sami-parser" {
       [key: string]: string
     }
   }>
-  export function parse(str: string): { result: ParseResult; errors: any[] }
+  export function parse(str: string): { result: ParseResult; errors: Error[] }
 }
