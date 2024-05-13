@@ -8,6 +8,7 @@ import { initReactI18next } from "react-i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
 import enTranslation from "./assets/translations/en.json"
 import koTranslation from "./assets/translations/ko.json"
+import jaTranslation from "./assets/translations/ja.json"
 import { MediaFile } from "./utils/getMediaFiles"
 
 i18n
@@ -20,6 +21,9 @@ i18n
       },
       ko: {
         translation: koTranslation,
+      },
+      ja: {
+        translation: jaTranslation,
       },
     },
     fallbackLng: "en",

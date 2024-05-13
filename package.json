@@ -1,7 +1,7 @@
 {
   "name": "splenview",
   "private": true,
-  "version": "0.1.8",
+  "version": "0.1.9",
   "type": "module",
   "scripts": {
     "dev": "vite --port 3021",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.1.1",
+    "@plussub/srt-vtt-parser": "^1.1.1",
     "audiomotion-analyzer": "github:roylory/audioMotion-analyzer",
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^7.2.1",
@@ -23,7 +24,8 @@
     "react-toggle-dark-mode": "^1.1.1",
     "sami-parser": "^0.5.3",
     "tailwind-merge": "^2.1.0",
-    "unzipit": "^1.4.3"
+    "unzipit": "^1.4.3",
+    "usehooks-ts": "^3.1.0"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
