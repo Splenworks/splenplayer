@@ -1,6 +1,6 @@
 import React from "react"
-import { ReactComponent as PlayIcon } from "./assets/play.svg"
-import { ReactComponent as PauseIcon } from "./assets/pause.svg"
+import PlayIcon from "./assets/play.svg?react"
+import PauseIcon from "./assets/pause.svg?react"
 import IconButton from "./IconButton"
 import { hideElement, showElement } from "./utils/toggleHidden"
 
