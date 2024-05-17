@@ -3,7 +3,12 @@ import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import IconButton from "./IconButton"
-import { hideElement, showElement } from "./utils/toggleHidden"
+import {
+  hideElement,
+  showElement,
+  showPlayIcon,
+  showPauseIcon,
+} from "./utils/toggleHidden"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
@@ -15,7 +20,7 @@ import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
 import { twJoin } from "tailwind-merge"
 import { isSafari } from "./utils/browserDetect"
 import { isMac } from "./utils/isMac"
-import PlayButton, { showPauseIcon, showPlayIcon } from "./PlayButton"
+import PlayButton from "./PlayButton"
 import { MediaFile } from "./utils/getMediaFiles"
 
 interface VideoPlayerProps {
