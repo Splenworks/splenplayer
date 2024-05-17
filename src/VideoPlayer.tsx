@@ -138,8 +138,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
         togglePlayPause()
       } else if (
         event.key === "f" ||
-        (isMac && event.metaKey) ||
-        (!isMac && event.altKey)
+        (isMac && event.metaKey && event.key === "Enter") ||
+        (!isMac && event.altKey && event.key === "Enter")
       ) {
         toggleFullScreen()
       }
