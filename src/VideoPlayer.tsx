@@ -15,6 +15,7 @@ import ExitFullscreenIcon from "./assets/compress.svg?react"
 import VolumeIcon from "./assets/volume-max.svg?react"
 import MuteIcon from "./assets/volume-mute.svg?react"
 import NextIcon from "./assets/next.svg?react"
+import PlaybackSpeedIcon from "./assets/playback-speed.svg?react"
 import { getSubtitleFiles } from "./utils/getMediaFiles"
 import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
 import { twJoin } from "tailwind-merge"
@@ -295,6 +296,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
     }
   }
 
+  const handlePlaybackSpeed = (speed: number) => {
+    const video = videoRef.current
+    if (video) {
+      video.playbackRate = speed
+    }
+  }
+
   const handleSeek = () => {
     const seekControl = seekRef.current
     const video = videoRef.current
@@ -455,6 +463,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
                 }}
               />
             </div>
+            <IconButton
+              id="playbackSpeedButton"
+              svgIcon={PlaybackSpeedIcon}
+              onClick={() => {
+                handlePlaybackSpeed(2)
+              }}
+            />
             <IconButton
               id="fullScreenButton"
               svgIcon={FullscreenIcon}
