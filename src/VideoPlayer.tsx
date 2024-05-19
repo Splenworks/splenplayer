@@ -514,7 +514,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
                   }}
                 />
               </div>
-              <div className="overflow-hidden cursor-pointer h-10 hover:h-[212px] flex flex-col-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
+              <div className="overflow-hidden cursor-pointer mr-0.5 h-10 hover:h-[212px] flex flex-col-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
                 <div className="w-10 h-10">
                   <PlaybackSpeedIcon className="w-6 h-6 text-white m-2" />
                 </div>
