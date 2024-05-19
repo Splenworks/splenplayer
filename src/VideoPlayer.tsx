@@ -23,6 +23,7 @@ import { isSafari } from "./utils/browserDetect"
 import { isMac } from "./utils/isMac"
 import PlayButton from "./PlayButton"
 import { MediaFile } from "./utils/getMediaFiles"
+import PlaySpeedButton from "./playSpeedButton"
 
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]
@@ -399,7 +400,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
             }}
           />
         </div>
-        <div className="absolute bottom-11 left-0 right-0 h-8 mx-4 flex items-center justify-between">
+        <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
           <div className="flex justify-center items-center gap-2">
             <PlayButton
               onClick={() => {
@@ -439,8 +440,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
               </span>
             </div>
           </div>
-          <div className="flex justify-center items-center gap-2">
-            <div className="overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse justify-left items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
+          <div className="flex justify-center items-end gap-2">
+            <div className="overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
               <button
                 ref={volumnButton}
                 tabIndex={-1}
@@ -463,13 +464,36 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ mediaFiles, exit }) => {
                 }}
               />
             </div>
-            <IconButton
-              id="playbackSpeedButton"
-              svgIcon={PlaybackSpeedIcon}
-              onClick={() => {
-                handlePlaybackSpeed(2)
-              }}
-            />
+            <div className="overflow-hidden cursor-pointer h-10 hover:h-[208px] flex flex-col-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
+              <div className="w-10 h-10">
+                <PlaybackSpeedIcon className="w-6 h-6 text-white m-2" />
+              </div>
+              <PlaySpeedButton
+                playSpeed={1}
+                onClick={() => handlePlaybackSpeed(1)}
+                isSelected
+              />
+              <PlaySpeedButton
+                playSpeed={1.2}
+                onClick={() => handlePlaybackSpeed(1.2)}
+              />
+              <PlaySpeedButton
+                playSpeed={1.4}
+                onClick={() => handlePlaybackSpeed(1.4)}
+              />
+              <PlaySpeedButton
+                playSpeed={1.6}
+                onClick={() => handlePlaybackSpeed(1.6)}
+              />
+              <PlaySpeedButton
+                playSpeed={1.8}
+                onClick={() => handlePlaybackSpeed(1.8)}
+              />
+              <PlaySpeedButton
+                playSpeed={2}
+                onClick={() => handlePlaybackSpeed(2)}
+              />
+            </div>
             <IconButton
               id="fullScreenButton"
               svgIcon={FullscreenIcon}
