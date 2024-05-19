@@ -45,7 +45,9 @@ function App() {
     return (
       <>
         <VideoPlayer mediaFiles={mediaFiles} exit={exit} ref={videoRef} />
-        {/* <VideoControlOverlay videoRef={videoRef} /> */}
+        {/* Need refactoring
+          <VideoControlOverlay videoRef={videoRef} />
+        */}
       </>
     )
   }

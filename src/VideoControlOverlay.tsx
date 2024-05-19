@@ -64,7 +64,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               <span className="pl-2">{totalTime}</span>
             </div>
           </div>
-        </div>{" "}
+        </div>
       </div>
     </div>
   )
