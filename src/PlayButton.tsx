@@ -1,8 +1,7 @@
 import React from "react"
-import { ReactComponent as PlayIcon } from "./assets/play.svg"
-import { ReactComponent as PauseIcon } from "./assets/pause.svg"
+import PlayIcon from "./assets/play.svg?react"
+import PauseIcon from "./assets/pause.svg?react"
 import IconButton from "./IconButton"
-import { hideElement, showElement } from "./utils/toggleHidden"
 
 interface PlayButtonProps {
   onClick: () => void
@@ -23,17 +22,3 @@ const PlayButton: React.FC<PlayButtonProps> = ({ onClick }) => {
 }
 
 export default PlayButton
-
-export const showPlayIcon = () => {
-  const playButton = document.querySelector("#playButton")
-  const pauseButton = document.querySelector("#pauseButton")
-  hideElement(pauseButton)
-  showElement(playButton)
-}
-
-export const showPauseIcon = () => {
-  const playButton = document.querySelector("#playButton")
-  const pauseButton = document.querySelector("#pauseButton")
-  hideElement(playButton)
-  showElement(pauseButton)
-}
