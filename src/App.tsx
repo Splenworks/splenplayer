@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, createRef } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import VideoPlayer from "./VideoPlayer"
@@ -10,6 +10,7 @@ import enTranslation from "./assets/translations/en.json"
 import koTranslation from "./assets/translations/ko.json"
 import jaTranslation from "./assets/translations/ja.json"
 import { MediaFile } from "./utils/getMediaFiles"
+// import VideoControlOverlay from "./VideoControlOverlay"
 
 i18n
   .use(LanguageDetector)
@@ -34,13 +35,19 @@ i18n
 
 function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
+  const videoRef = createRef<HTMLVideoElement>()
 
   const exit = () => {
     setMediaFiles([])
   }
 
   if (mediaFiles.length > 0) {
-    return <VideoPlayer mediaFiles={mediaFiles} exit={exit} />
+    return (
+      <>
+        <VideoPlayer mediaFiles={mediaFiles} exit={exit} ref={videoRef} />
+        {/* <VideoControlOverlay videoRef={videoRef} /> */}
+      </>
+    )
   }
 
   return (
