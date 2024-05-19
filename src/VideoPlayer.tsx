@@ -41,6 +41,7 @@ interface VideoPlayerProps {
 let subtitles: ParseResult = []
 let mouseMoveTimeout: number = 0
 let analyzer: AudioMotionAnalyzer | null = null
+let currentPlaySpeed = 1
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
   ({ mediaFiles, exit }, videoRef) => {
@@ -157,6 +158,31 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
       return () => window.removeEventListener("keydown", handleKeyDown)
     }, [exit, togglePlayPause, videoRef])
 
+    const selectPlaySpeed = useCallback((speed: number) => {
+      document.querySelectorAll(".play-speed-button").forEach((button) => {
+        if (button.getAttribute("data-play-speed") === speed.toString()) {
+          button.classList.add("bg-zinc-400", "hover:bg-zinc-400")
+          button.classList.remove("hover:bg-zinc-500")
+        } else {
+          button.classList.remove("bg-zinc-400", "hover:bg-zinc-400")
+          button.classList.add("hover:bg-zinc-500")
+        }
+      })
+    }, [])
+
+    const handlePlaybackSpeed = useCallback(
+      (speed: number) => {
+        const video =
+          videoRef && typeof videoRef === "object" && videoRef.current
+        if (video) {
+          video.playbackRate = speed
+          currentPlaySpeed = speed
+          selectPlaySpeed(speed)
+        }
+      },
+      [videoRef, selectPlaySpeed],
+    )
+
     useEffect(() => {
       const video = videoRef && typeof videoRef === "object" && videoRef.current
       if (video) {
@@ -246,6 +272,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
           if (seekRef.current) {
             seekRef.current.value = "0"
           }
+          handlePlaybackSpeed(currentPlaySpeed)
           showPlayIcon()
           video.play().then(() => {
             showPauseIcon()
@@ -276,7 +303,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
           video.onended = null
         }
       }
-    }, [videoRef, volume, mediaFiles.length, currentIndex])
+    }, [videoRef, volume, mediaFiles.length, currentIndex, handlePlaybackSpeed])
 
     const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault()
@@ -302,13 +329,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
           showElement(volumeIcon)
           hideElement(muteIcon)
         }
-      }
-    }
-
-    const handlePlaybackSpeed = (speed: number) => {
-      const video = videoRef && typeof videoRef === "object" && videoRef.current
-      if (video) {
-        video.playbackRate = speed
       }
     }
 
@@ -501,7 +521,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
                 <PlaySpeedButton
                   playSpeed={1}
                   onClick={() => handlePlaybackSpeed(1)}
-                  isSelected
                 />
                 <PlaySpeedButton
                   playSpeed={1.2}
