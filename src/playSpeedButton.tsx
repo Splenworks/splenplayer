@@ -1,6 +1,5 @@
 import React from "react"
 import { twMerge } from "tailwind-merge"
-import XmarkIcon from "./assets/xmark.svg?react"
 
 interface PlaySpeedButtonProps {
   playSpeed: number
@@ -26,7 +25,6 @@ const PlaySpeedButton: React.FC<PlaySpeedButtonProps> = ({
       onClick={onClick}
     >
       <span className="text-white text-xs">{playSpeed.toFixed(1)}</span>
-      <XmarkIcon className="w-2 h-2 ml-px" />
     </div>
   )
 }
