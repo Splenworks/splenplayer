@@ -564,7 +564,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
                   className="opacity-0 peer-hover:opacity-0 flex text-xs text-white left-1 right-0 -bottom-[9px] absolute items-center justify-center transition-opacity duration-300 ease-in-out"
                 >
                   <span>{currentPlaySpeed.toFixed(1)}</span>
-                  <CloseIcon className="w-3 h-3" />
+                  <CloseIcon className="w-[10px] h-3" />
                 </div>
               </div>
               <IconButton
