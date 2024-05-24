@@ -159,6 +159,20 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     }, [exit, togglePlayPause, videoRef])
 
     const selectPlaySpeed = useCallback((speed: number) => {
+      const playSpeedEl = document.querySelector<HTMLElement>("#playSpeed")
+      if (playSpeedEl) {
+        if (speed !== 1) {
+          playSpeedEl.classList.remove("opacity-0")
+          playSpeedEl.classList.add("opacity-100")
+          const playSpeedSpan = playSpeedEl.querySelector("span")
+          if (playSpeedSpan) {
+            playSpeedSpan.innerText = speed.toFixed(1)
+          }
+        } else {
+          playSpeedEl.classList.remove("opacity-100")
+          playSpeedEl.classList.add("opacity-0")
+        }
+      }
       document.querySelectorAll(".play-speed-button").forEach((button) => {
         if (button.getAttribute("data-play-speed") === speed.toString()) {
           button.classList.add("bg-zinc-400", "hover:bg-zinc-400")
@@ -514,35 +528,44 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
                   }}
                 />
               </div>
-              <div className="overflow-hidden cursor-pointer mr-0.5 h-10 hover:h-[212px] flex flex-col-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
-                <div className="w-10 h-10">
-                  <PlaybackSpeedIcon className="w-6 h-6 text-white m-2" />
+              <div className="relative mr-0.5">
+                <div className="overflow-hidden cursor-pointer h-10 hover:h-[212px] flex flex-col-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out peer">
+                  <div className="w-10 h-10">
+                    <PlaybackSpeedIcon className="w-6 h-6 text-white m-2" />
+                  </div>
+                  <PlaySpeedButton
+                    playSpeed={1}
+                    onClick={() => handlePlaybackSpeed(1)}
+                  />
+                  <PlaySpeedButton
+                    playSpeed={1.2}
+                    onClick={() => handlePlaybackSpeed(1.2)}
+                  />
+                  <PlaySpeedButton
+                    playSpeed={1.4}
+                    onClick={() => handlePlaybackSpeed(1.4)}
+                  />
+                  <PlaySpeedButton
+                    playSpeed={1.6}
+                    onClick={() => handlePlaybackSpeed(1.6)}
+                  />
+                  <PlaySpeedButton
+                    playSpeed={1.8}
+                    onClick={() => handlePlaybackSpeed(1.8)}
+                  />
+                  <PlaySpeedButton
+                    playSpeed={2}
+                    onClick={() => handlePlaybackSpeed(2)}
+                    className="h-8 pt-1"
+                  />
                 </div>
-                <PlaySpeedButton
-                  playSpeed={1}
-                  onClick={() => handlePlaybackSpeed(1)}
-                />
-                <PlaySpeedButton
-                  playSpeed={1.2}
-                  onClick={() => handlePlaybackSpeed(1.2)}
-                />
-                <PlaySpeedButton
-                  playSpeed={1.4}
-                  onClick={() => handlePlaybackSpeed(1.4)}
-                />
-                <PlaySpeedButton
-                  playSpeed={1.6}
-                  onClick={() => handlePlaybackSpeed(1.6)}
-                />
-                <PlaySpeedButton
-                  playSpeed={1.8}
-                  onClick={() => handlePlaybackSpeed(1.8)}
-                />
-                <PlaySpeedButton
-                  playSpeed={2}
-                  onClick={() => handlePlaybackSpeed(2)}
-                  className="h-8 pt-1"
-                />
+                <div
+                  id="playSpeed"
+                  className="opacity-0 peer-hover:opacity-0 flex text-xs text-white left-1 right-0 -bottom-[9px] absolute items-center justify-center transition-opacity duration-300 ease-in-out"
+                >
+                  <span>{currentPlaySpeed.toFixed(1)}</span>
+                  <CloseIcon className="w-3 h-3" />
+                </div>
               </div>
               <IconButton
                 id="fullScreenButton"
