@@ -1,14 +1,27 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
+import { twJoin } from "tailwind-merge"
+import IconButton from "./IconButton"
+import CloseIcon from "./assets/xmark.svg?react"
+import FullscreenIcon from "./assets/expand.svg?react"
+import ExitFullscreenIcon from "./assets/compress.svg?react"
+import { MediaFile } from "./utils/getMediaFiles"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
+  mediaFiles: MediaFile[]
+  exit: () => void
 }
 
 const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   videoRef,
+  // mediaFiles,
+  exit,
 }) => {
+  const [showControls, setShowControls] = useState(false)
+  const [isFullScreen, setIsFullScreen] = useState(false)
   const [currentTime, setCurrentTime] = useState("00:00")
   const [totalTime, setTotalTime] = useState("00:00")
+  const mouseMoveTimeout = useRef<number | null>(null)
 
   useEffect(() => {
     const video = videoRef.current
@@ -44,6 +57,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setTotalTime(`${hour}:${minute}:${second}`)
         }
+        video.play()
       }
     }
     return () => {
@@ -54,15 +68,118 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }, [videoRef])
 
+  useEffect(() => {
+    const fullscreenChange = () => {
+      // const exitButton = document.querySelector("#exitButton")
+      if (!document.fullscreenElement) {
+        // showElement(exitButton)
+        setIsFullScreen(false)
+      } else {
+        // hideElement(exitButton)
+        setIsFullScreen(true)
+      }
+    }
+    addEventListener("fullscreenchange", fullscreenChange)
+    return () => {
+      removeEventListener("fullscreenchange", fullscreenChange)
+      // subtitles = []
+      // analyzer?.destroy()
+      // analyzer = null
+    }
+  }, [])
+
+  const toggleFullScreen = () => {
+    const videoPlayer = document.querySelector("#videoPlayer")
+    if (!videoPlayer) return
+
+    if (!document.fullscreenElement) {
+      videoPlayer.requestFullscreen().catch((err) => {
+        alert(
+          `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
+        )
+      })
+    } else {
+      document.exitFullscreen()
+    }
+  }
+
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0">
-      <div className="absolute inset-0 text-white">
+      <div
+        className={twJoin(
+          "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
+          showControls ? "opacity-100 cursor-auto" : "opacity-0 cursor-none",
+        )}
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,75%), rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
+        }}
+        onMouseEnter={() => {
+          const video =
+            videoRef && typeof videoRef === "object" && videoRef.current
+          const videoPaused = video && video.paused
+          if (document.hasFocus() || videoPaused) {
+            setShowControls(true)
+          } else {
+            setShowControls(false)
+          }
+        }}
+        onMouseMove={() => {
+          if (mouseMoveTimeout.current) {
+            clearTimeout(mouseMoveTimeout.current)
+          }
+          const video =
+            videoRef && typeof videoRef === "object" && videoRef.current
+          const videoPaused = video && video.paused
+          if (document.hasFocus() || videoPaused) {
+            setShowControls(true)
+            mouseMoveTimeout.current = window.setTimeout(() => {
+              if (!videoPaused) {
+                setShowControls(false)
+              }
+            }, 1000)
+          } else {
+            setShowControls(false)
+          }
+        }}
+        // onDragOver={(e) => e.preventDefault()}
+        // onDrop={handleSubtitleDrop}
+      >
+        <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
+          <span className="font-semibold text-xl">
+            {/* {mediaFiles[currentIndex].file.name}{" "}
+            {mediaFiles.length > 1 && (
+              <>
+                [{currentIndex + 1}/{mediaFiles.length}]
+              </>
+            )} */}
+          </span>
+          <IconButton
+            id="exitButton"
+            svgIcon={CloseIcon}
+            onClick={() => {
+              if (showControls) {
+                exit()
+              }
+            }}
+          />
+        </div>
         <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
           <div className="flex justify-center items-center gap-2">
             <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
               <span className="pr-2">{currentTime}</span>/
               <span className="pl-2">{totalTime}</span>
             </div>
+          </div>
+          <div className="flex justify-center items-end gap-2">
+            <IconButton
+              svgIcon={isFullScreen ? ExitFullscreenIcon : FullscreenIcon}
+              onClick={() => {
+                if (showControls) {
+                  toggleFullScreen()
+                }
+              }}
+            />
           </div>
         </div>
       </div>
