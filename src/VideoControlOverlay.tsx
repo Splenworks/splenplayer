@@ -190,15 +190,16 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               </>
             )} */}
           </span>
-          <IconButton
-            id="exitButton"
-            svgIcon={CloseIcon}
-            onClick={() => {
-              if (showControls) {
-                exit()
-              }
-            }}
-          />
+          {!isFullScreen && (
+            <IconButton
+              svgIcon={CloseIcon}
+              onClick={() => {
+                if (showControls) {
+                  exit()
+                }
+              }}
+            />
+          )}
         </div>
         <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
           <div className="flex justify-center items-center gap-2">
