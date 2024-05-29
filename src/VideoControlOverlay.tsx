@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import { MediaFile } from "./utils/getMediaFiles"
+import { isSafari } from "./utils/browserDetect"
 
 import IconButton from "./IconButton"
 import PlayIcon from "./assets/play.svg?react"
@@ -30,6 +31,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [currentTime, setCurrentTime] = useState("00:00")
   const [totalTime, setTotalTime] = useState("00:00")
+  const [seekValue, setSeekValue] = useState("0")
   const mouseMoveTimeout = useRef<number | null>(null)
 
   useEffect(() => {
@@ -50,6 +52,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setCurrentTime(`${hour}:${minute}:${second}`)
         }
+        setSeekValue((video.currentTime / video.duration) * 100 + "")
       }
       video.onloadedmetadata = () => {
         const hour = Math.floor(video.duration / 3600)
@@ -66,6 +69,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setTotalTime(`${hour}:${minute}:${second}`)
         }
+        setSeekValue("0")
         video.play().then(() => {
           setIsPaused(false)
         })
@@ -108,12 +112,9 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
 
   useEffect(() => {
     const fullscreenChange = () => {
-      // const exitButton = document.querySelector("#exitButton")
       if (!document.fullscreenElement) {
-        // showElement(exitButton)
         setIsFullScreen(false)
       } else {
-        // hideElement(exitButton)
         setIsFullScreen(true)
       }
     }
@@ -138,6 +139,14 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       })
     } else {
       document.exitFullscreen()
+    }
+  }
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    if (video) {
+      const seekTime = (video.duration / 100) * Number(e.currentTarget.value)
+      video.currentTime = seekTime
     }
   }
 
@@ -250,6 +259,25 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               }}
             />
           </div>
+        </div>
+        <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
+          <input
+            autoFocus
+            className={twJoin(
+              isSafari
+                ? "appearance-none accent-white bg-transparent w-full cursor-pointer outline-none rounded-full h-2 border border-neutral-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                : "accent-white w-full cursor-pointer outline-none",
+            )}
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            onChange={handleSeek}
+            onKeyDown={(e) => {
+              e.preventDefault()
+            }}
+            value={seekValue}
+          />
         </div>
       </div>
     </div>
