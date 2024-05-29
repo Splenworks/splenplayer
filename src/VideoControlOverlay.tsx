@@ -10,6 +10,8 @@ import NextIcon from "./assets/next.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
+import VolumeIcon from "./assets/volume-max.svg?react"
+import MuteIcon from "./assets/volume-mute.svg?react"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -33,9 +35,10 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [totalTime, setTotalTime] = useState("00:00")
   const [seekValue, setSeekValue] = useState("0")
   const mouseMoveTimeout = useRef<number | null>(null)
+  const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
 
   useEffect(() => {
-    const video = videoRef.current
+    const video = videoRef && typeof videoRef === "object" && videoRef.current
     if (video) {
       video.ontimeupdate = () => {
         const hour = Math.floor(video.currentTime / 3600)
@@ -69,6 +72,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setTotalTime(`${hour}:${minute}:${second}`)
         }
+        video.volume = Number(volume)
         setSeekValue("0")
         video.play().then(() => {
           setIsPaused(false)
@@ -96,7 +100,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         video.onended = null
       }
     }
-  }, [videoRef, mediaFiles, currentIndex, setCurrentIndex])
+  }, [videoRef, mediaFiles.length, currentIndex, setCurrentIndex])
 
   const togglePlayPause = useCallback(() => {
     if (videoRef && typeof videoRef === "object" && videoRef.current) {
@@ -147,6 +151,16 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     if (video) {
       const seekTime = (video.duration / 100) * Number(e.currentTarget.value)
       video.currentTime = seekTime
+    }
+  }
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    if (video) {
+      const volume = e.currentTarget.value
+      setVolume(volume)
+      video.volume = Number(volume)
+      localStorage.setItem("volume", volume)
     }
   }
 
@@ -250,6 +264,31 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             </div>
           </div>
           <div className="flex justify-center items-end gap-2">
+            <div className="overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
+              <button
+                tabIndex={-1}
+                className="w-6 h-6 mx-2 outline-none focus:outline-none"
+              >
+                {Number(volume) === 0 ? (
+                  <MuteIcon className="w-6 h-6 text-white" />
+                ) : (
+                  <VolumeIcon className="w-6 h-6 text-white" />
+                )}
+              </button>
+              <input
+                tabIndex={-1}
+                className="accent-white cursor-pointer w-24 mr-0.5 outline-none focus:outline-none"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                onChange={handleVolumeChange}
+                onKeyDown={(e) => {
+                  e.stopPropagation()
+                }}
+                value={volume}
+              />
+            </div>
             <IconButton
               svgIcon={isFullScreen ? ExitFullscreenIcon : FullscreenIcon}
               onClick={() => {
