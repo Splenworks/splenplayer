@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import { MediaFile } from "./utils/getMediaFiles"
 import { isSafari } from "./utils/browserDetect"
+import { isMac } from "./utils/isMac"
 import PlaySpeedButton from "./playSpeedButton"
 
 import IconButton from "./IconButton"
@@ -126,12 +127,13 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   ])
 
   const togglePlayPause = useCallback(() => {
-    if (videoRef && typeof videoRef === "object" && videoRef.current) {
-      if (videoRef.current.paused || videoRef.current.ended) {
+    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    if (video) {
+      if (video.paused || video.ended) {
         videoRef.current.play()
         setIsPaused(false)
       } else {
-        videoRef.current.pause()
+        video.pause()
         setIsPaused(true)
       }
     }
@@ -154,12 +156,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }, [])
 
-  const toggleFullScreen = () => {
-    const videoPlayer = document.querySelector("#videoPlayer")
-    if (!videoPlayer) return
+  const toggleFullScreen = useCallback(() => {
+    const fullscreenSection = document.querySelector("#fullscreenSection")
+    if (!fullscreenSection) return
 
     if (!document.fullscreenElement) {
-      videoPlayer.requestFullscreen().catch((err) => {
+      fullscreenSection.requestFullscreen().catch((err) => {
         alert(
           `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
         )
@@ -167,7 +169,40 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     } else {
       document.exitFullscreen()
     }
-  }
+  }, [])
+
+  // FIXME: keydown event listener is not working properly for some reason.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const video = videoRef && typeof videoRef === "object" && videoRef.current
+      if (!video) return
+      if (event.key === "Escape") {
+        if (!document.fullscreenElement) {
+          exit()
+        }
+      } else if (event.key === "ArrowLeft") {
+        videoRef.current.currentTime -= 5
+      } else if (event.key === "ArrowRight") {
+        videoRef.current.currentTime += 5
+      } else if (event.key === " ") {
+        if (isPaused) {
+          video.play()
+          setIsPaused(false)
+        } else {
+          video.pause()
+          setIsPaused(true)
+        }
+      } else if (
+        event.key === "f" ||
+        (isMac && event.metaKey && event.key === "Enter") ||
+        (!isMac && event.altKey && event.key === "Enter")
+      ) {
+        toggleFullScreen()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [exit, isPaused, videoRef, toggleFullScreen])
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = videoRef && typeof videoRef === "object" && videoRef.current
