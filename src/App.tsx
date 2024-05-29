@@ -44,7 +44,7 @@ function App() {
 
   if (mediaFiles.length > 0) {
     return (
-      <>
+      <div id="fullscreenSection">
         <VideoPlayer
           mediaFiles={mediaFiles}
           exit={exit}
@@ -58,7 +58,7 @@ function App() {
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
           videoRef={videoRef} /> */}
-      </>
+      </div>
     )
   }
 
