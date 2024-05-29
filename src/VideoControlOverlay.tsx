@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
+import { MediaFile } from "./utils/getMediaFiles"
+
 import IconButton from "./IconButton"
+import PlayIcon from "./assets/play.svg?react"
+import PauseIcon from "./assets/pause.svg?react"
+import NextIcon from "./assets/next.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
-import { MediaFile } from "./utils/getMediaFiles"
-import PlayIcon from "./assets/play.svg?react"
-import PauseIcon from "./assets/pause.svg?react"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -183,12 +185,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
           <span className="font-semibold text-xl">
-            {/* {mediaFiles[currentIndex].file.name}{" "}
+            {mediaFiles[currentIndex].file.name}{" "}
             {mediaFiles.length > 1 && (
               <>
                 [{currentIndex + 1}/{mediaFiles.length}]
               </>
-            )} */}
+            )}
           </span>
           {!isFullScreen && (
             <IconButton
@@ -212,27 +214,27 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 }
               }}
             />
-            {/* {mediaFiles.length > 1 && currentIndex > 0 && (
-                <IconButton
-                  svgIcon={NextIcon}
-                  className="transform rotate-180"
-                  onClick={() => {
-                    if (showControls) {
-                      setCurrentIndex(currentIndex - 1)
-                    }
-                  }}
-                />
-              )}
-              {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-                <IconButton
-                  svgIcon={NextIcon}
-                  onClick={() => {
-                    if (showControls) {
-                      setCurrentIndex(currentIndex + 1)
-                    }
-                  }}
-                />
-              )} */}
+            {mediaFiles.length > 1 && currentIndex > 0 && (
+              <IconButton
+                svgIcon={NextIcon}
+                className="transform rotate-180"
+                onClick={() => {
+                  if (showControls) {
+                    setCurrentIndex(currentIndex - 1)
+                  }
+                }}
+              />
+            )}
+            {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
+              <IconButton
+                svgIcon={NextIcon}
+                onClick={() => {
+                  if (showControls) {
+                    setCurrentIndex(currentIndex + 1)
+                  }
+                }}
+              />
+            )}
             <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
               <span className="pr-2">{currentTime}</span>/
               <span className="pl-2">{totalTime}</span>
