@@ -1,23 +1,30 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import IconButton from "./IconButton"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
 import { MediaFile } from "./utils/getMediaFiles"
+import PlayIcon from "./assets/play.svg?react"
+import PauseIcon from "./assets/pause.svg?react"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
   mediaFiles: MediaFile[]
   exit: () => void
+  currentIndex: number
+  setCurrentIndex: (index: number) => void
 }
 
 const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   videoRef,
-  // mediaFiles,
+  mediaFiles,
   exit,
+  currentIndex,
+  setCurrentIndex,
 }) => {
   const [showControls, setShowControls] = useState(false)
+  const [isPaused, setIsPaused] = useState(true)
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [currentTime, setCurrentTime] = useState("00:00")
   const [totalTime, setTotalTime] = useState("00:00")
@@ -57,13 +64,42 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setTotalTime(`${hour}:${minute}:${second}`)
         }
-        video.play()
+        video.play().then(() => {
+          setIsPaused(false)
+        })
+      }
+      video.onended = () => {
+        if (currentIndex < mediaFiles.length - 1) {
+          setCurrentIndex(currentIndex + 1)
+          setShowControls(true)
+          mouseMoveTimeout.current = window.setTimeout(() => {
+            if (!videoRef.current?.paused) {
+              setShowControls(false)
+            }
+          }, 2000)
+        } else {
+          setIsPaused(true)
+          setShowControls(true)
+        }
       }
     }
     return () => {
       if (video) {
         video.ontimeupdate = null
         video.onloadedmetadata = null
+        video.onended = null
+      }
+    }
+  }, [videoRef, mediaFiles, currentIndex, setCurrentIndex])
+
+  const togglePlayPause = useCallback(() => {
+    if (videoRef && typeof videoRef === "object" && videoRef.current) {
+      if (videoRef.current.paused || videoRef.current.ended) {
+        videoRef.current.play()
+        setIsPaused(false)
+      } else {
+        videoRef.current.pause()
+        setIsPaused(true)
       }
     }
   }, [videoRef])
@@ -166,6 +202,36 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         </div>
         <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
           <div className="flex justify-center items-center gap-2">
+            <IconButton
+              className={twJoin(isPaused && "pl-0.5")}
+              svgIcon={isPaused ? PlayIcon : PauseIcon}
+              onClick={() => {
+                if (showControls) {
+                  togglePlayPause()
+                }
+              }}
+            />
+            {/* {mediaFiles.length > 1 && currentIndex > 0 && (
+                <IconButton
+                  svgIcon={NextIcon}
+                  className="transform rotate-180"
+                  onClick={() => {
+                    if (showControls) {
+                      setCurrentIndex(currentIndex - 1)
+                    }
+                  }}
+                />
+              )}
+              {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
+                <IconButton
+                  svgIcon={NextIcon}
+                  onClick={() => {
+                    if (showControls) {
+                      setCurrentIndex(currentIndex + 1)
+                    }
+                  }}
+                />
+              )} */}
             <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
               <span className="pr-2">{currentTime}</span>/
               <span className="pl-2">{totalTime}</span>

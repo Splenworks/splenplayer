@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useEffect,
-  useCallback,
-  useState,
-  forwardRef,
-} from "react"
+import React, { useRef, useEffect, useCallback, forwardRef } from "react"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
@@ -34,6 +28,8 @@ import PlaySpeedButton from "./playSpeedButton"
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]
   exit: () => void
+  currentIndex: number
+  setCurrentIndex: (index: number) => void
 }
 
 // These variables are outside the component
@@ -44,7 +40,7 @@ let analyzer: AudioMotionAnalyzer | null = null
 let currentPlaySpeed = 1
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
-  ({ mediaFiles, exit }, videoRef) => {
+  ({ mediaFiles, exit, currentIndex, setCurrentIndex }, videoRef) => {
     const videoPlayerRef = useRef<HTMLDivElement>(null)
     // const videoRef = useRef<HTMLVideoElement>(null)
     const controlsRef = useRef<HTMLDivElement>(null)
@@ -54,7 +50,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     const volumnButton = useRef<HTMLButtonElement>(null)
     const volumeRef = useRef<HTMLInputElement>(null)
     const volume = localStorage.getItem("volume") || "0.5"
-    const [currentIndex, setCurrentIndex] = useState(0)
+    // const [currentIndex, setCurrentIndex] = useState(0)
     const blob = new Blob([mediaFiles[currentIndex].file], {
       type:
         mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
@@ -317,7 +313,14 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
           video.onended = null
         }
       }
-    }, [videoRef, volume, mediaFiles.length, currentIndex, handlePlaybackSpeed])
+    }, [
+      videoRef,
+      volume,
+      mediaFiles.length,
+      currentIndex,
+      handlePlaybackSpeed,
+      setCurrentIndex,
+    ])
 
     const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault()
@@ -482,16 +485,17 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
                   }}
                 />
               )}
-              {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-                <IconButton
-                  svgIcon={NextIcon}
-                  onClick={() => {
-                    if (controlsRef.current?.style.opacity !== "0") {
-                      setCurrentIndex(currentIndex + 1)
-                    }
-                  }}
-                />
-              )}
+              {mediaFiles.length > 1 &&
+                currentIndex < mediaFiles.length - 1 && (
+                  <IconButton
+                    svgIcon={NextIcon}
+                    onClick={() => {
+                      if (controlsRef.current?.style.opacity !== "0") {
+                        setCurrentIndex(currentIndex + 1)
+                      }
+                    }}
+                  />
+                )}
               <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
                 <span className="pr-2" ref={currentTimeRef}>
                   00:00

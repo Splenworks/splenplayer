@@ -35,6 +35,7 @@ i18n
 
 function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const videoRef = createRef<HTMLVideoElement>()
 
   const exit = () => {
@@ -44,8 +45,19 @@ function App() {
   if (mediaFiles.length > 0) {
     return (
       <>
-        <VideoPlayer mediaFiles={mediaFiles} exit={exit} ref={videoRef} />
-        {/* <VideoControlOverlay mediaFiles={mediaFiles} exit={exit} videoRef={videoRef} /> */}
+        <VideoPlayer
+          mediaFiles={mediaFiles}
+          exit={exit}
+          currentIndex={currentIndex}
+          setCurrentIndex={setCurrentIndex}
+          ref={videoRef}
+        />
+        {/* <VideoControlOverlay
+          mediaFiles={mediaFiles}
+          exit={exit}
+          currentIndex={currentIndex}
+          setCurrentIndex={setCurrentIndex}
+          videoRef={videoRef} /> */}
       </>
     )
   }
