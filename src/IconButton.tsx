@@ -23,6 +23,9 @@ const IconButton: React.FC<IconButtonProps> = ({
         className,
       )}
       onClick={onClick}
+      onKeyDown={(e) => {
+        e.preventDefault()
+      }}
     >
       {svgIcon({ className: "w-6 h-6 text-white" })}
     </button>
