@@ -171,7 +171,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }, [])
 
-  // FIXME: keydown event listener is not working properly for some reason.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const video = videoRef && typeof videoRef === "object" && videoRef.current
@@ -181,17 +180,11 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           exit()
         }
       } else if (event.key === "ArrowLeft") {
-        videoRef.current.currentTime -= 5
+        video.currentTime -= 5
       } else if (event.key === "ArrowRight") {
-        videoRef.current.currentTime += 5
+        video.currentTime += 5
       } else if (event.key === " ") {
-        if (isPaused) {
-          video.play()
-          setIsPaused(false)
-        } else {
-          video.pause()
-          setIsPaused(true)
-        }
+        togglePlayPause()
       } else if (
         event.key === "f" ||
         (isMac && event.metaKey && event.key === "Enter") ||
@@ -202,7 +195,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [exit, isPaused, videoRef, toggleFullScreen])
+  }, [exit, videoRef, togglePlayPause, toggleFullScreen])
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = videoRef && typeof videoRef === "object" && videoRef.current
