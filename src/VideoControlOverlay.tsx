@@ -4,6 +4,8 @@ import { MediaFile } from "./utils/getMediaFiles"
 import { isSafari } from "./utils/browserDetect"
 import { isMac } from "./utils/isMac"
 import PlaySpeedButton from "./playSpeedButton"
+import AudioMotionAnalyzer from "audiomotion-analyzer"
+import { hideElement, showElement } from "./utils/toggleHidden"
 
 import IconButton from "./IconButton"
 import PlayIcon from "./assets/play.svg?react"
@@ -40,6 +42,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
   const mouseMoveTimeout = useRef<number | null>(null)
+  const analyzer = useRef<AudioMotionAnalyzer | null>(null)
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -73,6 +76,20 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         setSeekValue((video.currentTime / video.duration) * 100 + "")
       }
       video.onloadedmetadata = () => {
+        const visualizerEl =
+          document.querySelector<HTMLElement>("#audioVisualizer")
+        if (video.videoWidth === 0) {
+          showElement(visualizerEl)
+          if (visualizerEl && analyzer.current === null && !isSafari) {
+            analyzer.current = new AudioMotionAnalyzer(visualizerEl, {
+              source: video,
+              smoothing: 0.8,
+              hideScaleX: true,
+            })
+          }
+        } else {
+          hideElement(visualizerEl)
+        }
         const hour = Math.floor(video.duration / 3600)
         let minute = Math.floor((video.duration % 3600) / 60).toString()
         if (minute.length === 1) {
@@ -151,8 +168,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     return () => {
       removeEventListener("fullscreenchange", fullscreenChange)
       // subtitles = []
-      // analyzer?.destroy()
-      // analyzer = null
+      analyzer.current?.destroy()
+      analyzer.current = null
     }
   }, [])
 
@@ -217,6 +234,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0">
+      <div id="audioVisualizer" className="absolute inset-0 hidden" />
       <div
         className={twJoin(
           "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
