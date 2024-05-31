@@ -210,7 +210,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     const video = videoRef && typeof videoRef === "object" && videoRef.current
     if (video) {
       if (video.paused || video.ended) {
-        videoRef.current.play()
+        video.play()
         setIsPaused(false)
       } else {
         video.pause()
