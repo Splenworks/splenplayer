@@ -170,7 +170,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           setCurrentIndex(currentIndex + 1)
           setShowControls(true)
           mouseMoveTimeout.current = window.setTimeout(() => {
-            if (!videoRef.current?.paused) {
+            if (!video.paused) {
               setShowControls(false)
             }
           }, 2000)
