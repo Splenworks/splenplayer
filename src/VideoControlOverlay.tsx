@@ -187,10 +187,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         video.onended = null
       }
     }
+    // I don't want to reset video event functions when the volume or playSpeed changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     videoRef,
     // volume,
+    // playSpeed,
     mediaFiles.length,
     currentIndex,
     handlePlaybackSpeed,
