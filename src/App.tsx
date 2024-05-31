@@ -10,7 +10,7 @@ import enTranslation from "./assets/translations/en.json"
 import koTranslation from "./assets/translations/ko.json"
 import jaTranslation from "./assets/translations/ja.json"
 import { MediaFile } from "./utils/getMediaFiles"
-// import VideoControlOverlay from "./VideoControlOverlay"
+import VideoControlOverlay from "./VideoControlOverlay"
 
 i18n
   .use(LanguageDetector)
@@ -47,17 +47,16 @@ function App() {
       <div id="fullscreenSection">
         <VideoPlayer
           mediaFiles={mediaFiles}
-          exit={exit}
           currentIndex={currentIndex}
-          setCurrentIndex={setCurrentIndex}
           ref={videoRef}
         />
-        {/* <VideoControlOverlay
+        <VideoControlOverlay
           mediaFiles={mediaFiles}
           exit={exit}
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
-          videoRef={videoRef} /> */}
+          videoRef={videoRef}
+        />
       </div>
     )
   }
