@@ -6,6 +6,10 @@ import { isMac } from "./utils/isMac"
 import PlaySpeedButton from "./playSpeedButton"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { hideElement, showElement } from "./utils/toggleHidden"
+import { replaceBasicHtmlEntities } from "./utils/replaceBasicHtmlEntities"
+import { getSubtitleFiles } from "./utils/getMediaFiles"
+import { parse as samiParse, ParseResult } from "sami-parser"
+import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 
 import IconButton from "./IconButton"
 import PlayIcon from "./assets/play.svg?react"
@@ -43,6 +47,41 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [playSpeed, setPlaySpeed] = useState(1)
   const mouseMoveTimeout = useRef<number | null>(null)
   const analyzer = useRef<AudioMotionAnalyzer | null>(null)
+  const subtitleFile = mediaFiles[currentIndex].subtitleFile
+  const subtitles = useRef<ParseResult>([])
+  const [currentSubtitle, setCurrentSubtitle] = useState("")
+
+  const parseSubtitle = useCallback((subtitleFile: File) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const content = e.target?.result
+      if (typeof content === "string") {
+        if (
+          subtitleFile.name.endsWith(".srt") ||
+          subtitleFile.name.endsWith(".vtt")
+        ) {
+          subtitles.current = srtVttParse(content).entries.map((entry) => ({
+            startTime: entry.from,
+            endTime: entry.to,
+            languages: {
+              x: entry.text,
+            },
+          }))
+        } else {
+          subtitles.current = samiParse(content)?.result || []
+        }
+      }
+    }
+    reader.readAsText(subtitleFile)
+  }, [])
+
+  useEffect(() => {
+    if (subtitleFile) {
+      parseSubtitle(subtitleFile)
+    } else {
+      subtitles.current = []
+    }
+  }, [subtitleFile, parseSubtitle])
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -74,6 +113,21 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           setCurrentTime(`${hour}:${minute}:${second}`)
         }
         setSeekValue((video.currentTime / video.duration) * 100 + "")
+        if (subtitles.current.length > 0) {
+          const currentSubtitle = subtitles.current.find(
+            (subtitle) =>
+              video.currentTime * 1000 >= subtitle.startTime &&
+              video.currentTime * 1000 <= subtitle.endTime,
+          )
+          if (currentSubtitle) {
+            const text = Object.values(currentSubtitle.languages)[0]
+            setCurrentSubtitle(replaceBasicHtmlEntities(text))
+          } else {
+            setCurrentSubtitle("")
+          }
+        } else {
+          setCurrentSubtitle("")
+        }
       }
       video.onloadedmetadata = () => {
         const visualizerEl =
@@ -143,6 +197,15 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     setCurrentIndex,
   ])
 
+  const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const files = Array.from(e.dataTransfer.files)
+    const subtitleFiles = getSubtitleFiles(files)
+    if (subtitleFiles.length > 0) {
+      parseSubtitle(subtitleFiles[0])
+    }
+  }
+
   const togglePlayPause = useCallback(() => {
     const video = videoRef && typeof videoRef === "object" && videoRef.current
     if (video) {
@@ -167,7 +230,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     addEventListener("fullscreenchange", fullscreenChange)
     return () => {
       removeEventListener("fullscreenchange", fullscreenChange)
-      // subtitles = []
       analyzer.current?.destroy()
       analyzer.current = null
     }
@@ -235,6 +297,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0">
       <div id="audioVisualizer" className="absolute inset-0 hidden" />
+      <p
+        className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
+        style={{ textShadow: "0 0 8px black" }}
+      >
+        {currentSubtitle}
+      </p>
       <div
         className={twJoin(
           "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
@@ -272,8 +340,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             setShowControls(false)
           }
         }}
-        // onDragOver={(e) => e.preventDefault()}
-        // onDrop={handleSubtitleDrop}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleSubtitleDrop}
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
           <span className="font-semibold text-xl">
