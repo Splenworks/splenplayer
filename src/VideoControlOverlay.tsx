@@ -9,6 +9,7 @@ import { isSafari, isMac } from "./utils/browser"
 import { hideElement, showElement } from "./utils/dom"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import PlaySpeedControl from "./PlaySpeedControl"
+import VolumeControl from "./VolumeControl"
 
 import IconButton from "./IconButton"
 import PlayIcon from "./assets/play.svg?react"
@@ -17,7 +18,6 @@ import NextIcon from "./assets/next.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
-import VolumeControl from "./VolumeControl"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
