@@ -1,4 +1,4 @@
-import { useState, createRef } from "react"
+import { useState, createRef, useEffect } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import VideoPlayer from "./VideoPlayer"
@@ -41,6 +41,10 @@ function App() {
   const exit = () => {
     setMediaFiles([])
   }
+
+  useEffect(() => {
+    setCurrentIndex(0)
+  }, [mediaFiles])
 
   if (mediaFiles.length > 0) {
     return (
