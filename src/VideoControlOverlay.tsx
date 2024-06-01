@@ -4,11 +4,10 @@ import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 
-import { MediaFile } from "./utils/getMediaFiles"
+import { MediaFile, getSubtitleFiles } from "./utils/getMediaFiles"
 import { isSafari, isMac } from "./utils/browser"
 import { hideElement, showElement } from "./utils/dom"
 import { replaceBasicHtmlEntities } from "./utils/html"
-import { getSubtitleFiles } from "./utils/getMediaFiles"
 import PlaySpeedControl from "./PlaySpeedControl"
 
 import IconButton from "./IconButton"
