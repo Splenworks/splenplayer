@@ -1,4 +1,4 @@
-import { useState, createRef } from "react"
+import { useState, createRef, useEffect } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import VideoPlayer from "./VideoPlayer"
@@ -10,7 +10,7 @@ import enTranslation from "./assets/translations/en.json"
 import koTranslation from "./assets/translations/ko.json"
 import jaTranslation from "./assets/translations/ja.json"
 import { MediaFile } from "./utils/getMediaFiles"
-// import VideoControlOverlay from "./VideoControlOverlay"
+import VideoControlOverlay from "./VideoControlOverlay"
 
 i18n
   .use(LanguageDetector)
@@ -35,20 +35,33 @@ i18n
 
 function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const videoRef = createRef<HTMLVideoElement>()
 
   const exit = () => {
     setMediaFiles([])
   }
 
+  useEffect(() => {
+    setCurrentIndex(0)
+  }, [mediaFiles])
+
   if (mediaFiles.length > 0) {
     return (
-      <>
-        <VideoPlayer mediaFiles={mediaFiles} exit={exit} ref={videoRef} />
-        {/* Need refactoring
-          <VideoControlOverlay videoRef={videoRef} />
-        */}
-      </>
+      <div id="fullscreenSection">
+        <VideoPlayer
+          mediaFiles={mediaFiles}
+          currentIndex={currentIndex}
+          ref={videoRef}
+        />
+        <VideoControlOverlay
+          mediaFiles={mediaFiles}
+          exit={exit}
+          currentIndex={currentIndex}
+          setCurrentIndex={setCurrentIndex}
+          videoRef={videoRef}
+        />
+      </div>
     )
   }
 

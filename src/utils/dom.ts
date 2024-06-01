@@ -37,17 +37,3 @@ export const showElement = (
     element.classList.add(display)
   }
 }
-
-export const showPlayIcon = () => {
-  const playButton = document.querySelector("#playButton")
-  const pauseButton = document.querySelector("#pauseButton")
-  hideElement(pauseButton)
-  showElement(playButton)
-}
-
-export const showPauseIcon = () => {
-  const playButton = document.querySelector("#playButton")
-  const pauseButton = document.querySelector("#pauseButton")
-  hideElement(playButton)
-  showElement(pauseButton)
-}

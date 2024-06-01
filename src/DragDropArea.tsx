@@ -74,7 +74,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
         <input
           type="file"
           multiple
-          accept="video/*,audio/*,.mkv,.smi"
+          accept="video/*,audio/*,.mkv,.smi,.sami,.vtt,.srt"
           hidden
           ref={fileInputRef}
           onChange={handleFileInputChange}
@@ -109,7 +109,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
                 />
               </p>
               {!smallScreen && (
-                <p className="text-center text-gray-700 dark:text-gray-300">
+                <p className="text-center text-gray-800 dark:text-gray-300">
                   <Trans i18nKey="dragDropArea.neverStoreYourData" />
                 </p>
               )}
