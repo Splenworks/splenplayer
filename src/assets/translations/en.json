@@ -4,7 +4,7 @@
     "mainMessage": "Drag and drop any <u>video</u> or <u>audio</u> files here!",
     "subMessage": "You can drop subtitle files(vtt, srt, smi) too.",
     "noMediaFilesFound": "No media files found.",
-    "neverStoreYourData": "We never store your data in the server."
+    "neverStoreYourData": "We never store your files in the server."
   },
   "footer": {
     "checkOutProduct": "Check out our other product <link />"
