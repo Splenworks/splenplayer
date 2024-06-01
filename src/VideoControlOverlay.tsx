@@ -95,6 +95,17 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   )
 
   useEffect(() => {
+    handlePlaybackSpeed(playSpeed)
+  }, [playSpeed, handlePlaybackSpeed])
+
+  useEffect(() => {
+    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    if (video) {
+      video.volume = Number(volume)
+    }
+  }, [volume, videoRef])
+
+  useEffect(() => {
     const video = videoRef && typeof videoRef === "object" && videoRef.current
     if (video) {
       video.ontimeupdate = () => {
@@ -158,9 +169,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setTotalTime(`${hour}:${minute}:${second}`)
         }
-        video.volume = Number(volume)
         setSeekValue("0")
-        handlePlaybackSpeed(playSpeed)
         video.play().then(() => {
           setIsPaused(false)
         })
@@ -187,17 +196,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         video.onended = null
       }
     }
-    // I don't want to reset video event functions when the volume or playSpeed changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    videoRef,
-    // volume,
-    // playSpeed,
-    mediaFiles.length,
-    currentIndex,
-    handlePlaybackSpeed,
-    setCurrentIndex,
-  ])
+  }, [videoRef, mediaFiles.length, currentIndex, setCurrentIndex])
 
   const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
