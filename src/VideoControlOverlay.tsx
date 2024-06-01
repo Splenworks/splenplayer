@@ -18,8 +18,7 @@ import NextIcon from "./assets/next.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
-import VolumeIcon from "./assets/volume-max.svg?react"
-import MuteIcon from "./assets/volume-mute.svg?react"
+import VolumeControl from "./VolumeControl"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -401,31 +400,10 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             </div>
           </div>
           <div className="flex justify-center items-end gap-2">
-            <div className="overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
-              <button
-                tabIndex={-1}
-                className="w-6 h-6 mx-2 outline-none focus:outline-none"
-              >
-                {Number(volume) === 0 ? (
-                  <MuteIcon className="w-6 h-6 text-white" />
-                ) : (
-                  <VolumeIcon className="w-6 h-6 text-white" />
-                )}
-              </button>
-              <input
-                tabIndex={-1}
-                className="accent-white cursor-pointer w-24 mr-0.5 outline-none focus:outline-none"
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                onChange={handleVolumeChange}
-                onKeyDown={(e) => {
-                  e.stopPropagation()
-                }}
-                value={volume}
-              />
-            </div>
+            <VolumeControl
+              volume={volume}
+              handleVolumeChange={handleVolumeChange}
+            />
             <div className="relative mr-0.5">
               <PlaySpeedControl
                 playSpeed={playSpeed}
