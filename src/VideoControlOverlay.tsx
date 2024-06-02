@@ -6,7 +6,6 @@ import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 
 import { MediaFile, getSubtitleFiles } from "./utils/getMediaFiles"
 import { isSafari, isMac } from "./utils/browser"
-import { hideElement, showElement } from "./utils/dom"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import PlaySpeedControl from "./PlaySpeedControl"
 import VolumeControl from "./VolumeControl"
@@ -44,6 +43,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [playSpeed, setPlaySpeed] = useState(1)
   const mouseMoveTimeout = useRef<number | null>(null)
   const analyzer = useRef<AudioMotionAnalyzer | null>(null)
+  const analyzerContainer = useRef<HTMLDivElement | null>(null)
+  const [isAudio, setIsAudio] = useState(false)
   const subtitleFile = mediaFiles[currentIndex].subtitleFile
   const subtitles = useRef<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
@@ -138,19 +139,24 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         }
       }
       video.onloadedmetadata = () => {
-        const visualizerEl =
-          document.querySelector<HTMLElement>("#audioVisualizer")
         if (video.videoWidth === 0) {
-          showElement(visualizerEl)
-          if (visualizerEl && analyzer.current === null && !isSafari) {
-            analyzer.current = new AudioMotionAnalyzer(visualizerEl, {
-              source: video,
-              smoothing: 0.8,
-              hideScaleX: true,
-            })
+          setIsAudio(true)
+          if (
+            analyzerContainer.current &&
+            analyzer.current === null &&
+            !isSafari
+          ) {
+            analyzer.current = new AudioMotionAnalyzer(
+              analyzerContainer.current,
+              {
+                source: video,
+                smoothing: 0.8,
+                hideScaleX: true,
+              },
+            )
           }
         } else {
-          hideElement(visualizerEl)
+          setIsAudio(false)
         }
         const hour = Math.floor(video.duration / 3600)
         let minute = Math.floor((video.duration % 3600) / 60).toString()
@@ -294,7 +300,10 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0">
-      <div id="audioVisualizer" className="absolute inset-0 hidden" />
+      <div
+        ref={analyzerContainer}
+        className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
+      />
       <p
         className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
         style={{ textShadow: "0 0 8px black" }}
