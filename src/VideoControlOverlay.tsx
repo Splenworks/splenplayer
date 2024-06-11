@@ -413,7 +413,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               volume={volume}
               handleVolumeChange={handleVolumeChange}
             />
-            <div className="mr-1">
+            <div className="mr-0.5">
               <CaptionButton />
             </div>
             <div className="relative">
