@@ -9,6 +9,7 @@ import { isSafari, isMac } from "./utils/browser"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import PlaySpeedControl from "./PlaySpeedControl"
 import VolumeControl from "./VolumeControl"
+import CaptionButton from "./CaptionButton"
 
 import IconButton from "./IconButton"
 import PlayIcon from "./assets/play.svg?react"
@@ -412,7 +413,10 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               volume={volume}
               handleVolumeChange={handleVolumeChange}
             />
-            <div className="relative mr-0.5">
+            <div className="mr-1">
+              <CaptionButton />
+            </div>
+            <div className="relative">
               <PlaySpeedControl
                 playSpeed={playSpeed}
                 handlePlaybackSpeed={handlePlaybackSpeed}
