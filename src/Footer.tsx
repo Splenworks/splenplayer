@@ -16,12 +16,13 @@ import CommitHash from "virtual:commit-hash"
 const Footer: React.FC = () => {
   // const randomProduct =
   //   otherProducts[Math.floor(Math.random() * otherProducts.length)]
+  const currentYear = new Date().getFullYear()
   return (
     <footer className="absolute bottom-0 left-0 right-0 bg-white dark:bg-neutral-900">
       <div className="flex items-center justify-center h-16 mx-8 md:mx-16">
         <div className="flex-1 hidden sm:block"></div>
         <p className="text-gray-800 dark:text-gray-300 text-sm">
-          &copy; 2024 SplenWork Inc. All rights reserved.
+          &copy; {currentYear} SplenWork Inc. All rights reserved.
           {/* <Trans
             i18nKey="footer.checkOutProduct"
             components={{
