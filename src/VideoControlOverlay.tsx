@@ -4,7 +4,11 @@ import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 
-import { MediaFile, getSubtitleFiles } from "./utils/getMediaFiles"
+import {
+  MediaFile,
+  getMediaFiles,
+  getSubtitleFiles,
+} from "./utils/getMediaFiles"
 import { isSafari, isMac } from "./utils/browser"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import PlaySpeedControl from "./PlaySpeedControl"
@@ -25,6 +29,7 @@ interface VideoControlOverlayProps {
   exit: () => void
   currentIndex: number
   setCurrentIndex: (index: number) => void
+  setMedia: (files: MediaFile[]) => void
 }
 
 const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
@@ -33,6 +38,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   exit,
   currentIndex,
   setCurrentIndex,
+  setMedia,
 }) => {
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
@@ -203,12 +209,18 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }, [videoRef, mediaFiles.length, currentIndex, setCurrentIndex])
 
-  const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const files = Array.from(e.dataTransfer.files)
-    const subtitleFiles = getSubtitleFiles(files)
-    if (subtitleFiles.length > 0) {
-      parseSubtitle(subtitleFiles[0])
+    const mediaFiles = getMediaFiles(files)
+    console.log("🚀 ~ handleDrop ~ mediaFiles:", mediaFiles)
+    if (mediaFiles.length === 0) {
+      const subtitleFiles = getSubtitleFiles(files)
+      if (subtitleFiles.length > 0) {
+        parseSubtitle(subtitleFiles[0])
+      }
+    } else {
+      setMedia(mediaFiles)
     }
   }
 
@@ -351,7 +363,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           }
         }}
         onDragOver={(e) => e.preventDefault()}
-        onDrop={handleSubtitleDrop}
+        onDrop={handleDrop}
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
           <span className="font-semibold text-xl">
