@@ -290,13 +290,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVolumeChange = (value: string) => {
     const video = videoRef && typeof videoRef === "object" && videoRef.current
     if (video) {
-      const volume = e.currentTarget.value
-      setVolume(volume)
-      video.volume = Number(volume)
-      localStorage.setItem("volume", volume)
+      setVolume(value)
+      video.volume = Number(value)
+      localStorage.setItem("volume", value)
     }
   }
 
