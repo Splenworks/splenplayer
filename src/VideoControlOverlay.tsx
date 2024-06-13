@@ -49,6 +49,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const subtitleFile = mediaFiles[currentIndex].subtitleFile
   const subtitles = useRef<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
+  const [showSubtitle, setShowSubtitle] = useState(true)
 
   const parseSubtitle = useCallback((subtitleFile: File) => {
     const reader = new FileReader()
@@ -305,12 +306,14 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         ref={analyzerContainer}
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
       />
-      <p
-        className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
-        style={{ textShadow: "0 0 8px black" }}
-      >
-        {currentSubtitle}
-      </p>
+      {showSubtitle && subtitleFile && (
+        <p
+          className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
+          style={{ textShadow: "0 0 8px black" }}
+        >
+          {currentSubtitle}
+        </p>
+      )}
       <div
         className={twJoin(
           "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
@@ -415,7 +418,10 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             />
             {subtitleFile && (
               <div className="mr-0.5">
-                <CaptionButton />
+                <CaptionButton
+                  filled={showSubtitle}
+                  onToggle={() => setShowSubtitle((prev) => !prev)}
+                />
               </div>
             )}
             <div className={twJoin("relative", !subtitleFile && "mr-0.5")}>
