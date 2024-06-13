@@ -413,10 +413,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               volume={volume}
               handleVolumeChange={handleVolumeChange}
             />
-            <div className="mr-0.5">
-              <CaptionButton />
-            </div>
-            <div className="relative">
+            {subtitleFile && (
+              <div className="mr-0.5">
+                <CaptionButton />
+              </div>
+            )}
+            <div className={twJoin("relative", !subtitleFile && "mr-0.5")}>
               <PlaySpeedControl
                 playSpeed={playSpeed}
                 handlePlaybackSpeed={handlePlaybackSpeed}
