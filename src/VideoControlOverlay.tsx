@@ -46,7 +46,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const analyzer = useRef<AudioMotionAnalyzer | null>(null)
   const analyzerContainer = useRef<HTMLDivElement | null>(null)
   const [isAudio, setIsAudio] = useState(false)
-  const subtitleFile = mediaFiles[currentIndex].subtitleFile
   const subtitles = useRef<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
   const [showSubtitle, setShowSubtitle] = useState(true)
@@ -76,12 +75,13 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }, [])
 
   useEffect(() => {
+    const subtitleFile = mediaFiles[currentIndex].subtitleFile
     if (subtitleFile) {
       parseSubtitle(subtitleFile)
     } else {
       subtitles.current = []
     }
-  }, [subtitleFile, parseSubtitle])
+  }, [currentIndex, mediaFiles, parseSubtitle])
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -305,7 +305,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         ref={analyzerContainer}
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
       />
-      {showSubtitle && subtitleFile && (
+      {showSubtitle && subtitles.current.length > 0 && (
         <p
           className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
           style={{ textShadow: "0 0 8px black" }}
@@ -415,7 +415,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               volume={volume}
               handleVolumeChange={handleVolumeChange}
             />
-            {subtitleFile && (
+            {subtitles.current.length > 0 && (
               <div className="mr-0.5">
                 <CaptionButton
                   filled={showSubtitle}
@@ -423,7 +423,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 />
               </div>
             )}
-            <div className={twJoin("relative", !subtitleFile && "mr-0.5")}>
+            <div
+              className={twJoin(
+                "relative",
+                subtitles.current.length === 0 && "mr-0.5",
+              )}
+            >
               <PlaySpeedControl
                 playSpeed={playSpeed}
                 handlePlaybackSpeed={handlePlaybackSpeed}
