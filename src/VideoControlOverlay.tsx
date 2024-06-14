@@ -234,7 +234,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     e.preventDefault()
     const files = Array.from(e.dataTransfer.files)
     const mediaFiles = getMediaFiles(files)
-    console.log("🚀 ~ handleDrop ~ mediaFiles:", mediaFiles)
     if (mediaFiles.length === 0) {
       const subtitleFiles = getSubtitleFiles(files)
       if (subtitleFiles.length > 0) {
