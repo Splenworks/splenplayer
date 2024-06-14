@@ -339,7 +339,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       />
       {showSubtitle && subtitles.current.length > 0 && (
         <p
-          className="absolute left-4 right-4 font-sans text-3xl text-center text-white font-semibold flex justify-center items-center h-10"
+          className="absolute left-4 right-4 font-sans sm:text-xl md:text-2xl lg:text-3xl text-center text-white font-semibold flex justify-center items-center h-10"
           style={{ textShadow: "0 0 8px black", bottom: captionBottomPosition }}
         >
           {currentSubtitle}
