@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
+import { useWindowSize } from "usehooks-ts"
 
 import {
   MediaFile,
@@ -55,6 +56,25 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const subtitles = useRef<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
   const [showSubtitle, setShowSubtitle] = useState(true)
+  const [videoRatio, setVideoRatio] = useState(0)
+  const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
+
+  const captionBottomPosition = useMemo(() => {
+    if (
+      windowWidth === 0 ||
+      windowHeight === 0 ||
+      videoRatio === 0 ||
+      videoRatio < 1
+    )
+      return 48
+    const actualVideoHeight = Math.min(windowWidth / videoRatio, windowHeight)
+    const videoMarginHeight = (windowHeight - actualVideoHeight) / 2
+    if (videoMarginHeight > 92) {
+      return windowHeight - videoMarginHeight - actualVideoHeight - 60
+    } else {
+      return windowHeight - videoMarginHeight - actualVideoHeight + 48
+    }
+  }, [videoRatio, windowWidth, windowHeight])
 
   const parseSubtitle = useCallback((subtitleFile: File) => {
     const reader = new FileReader()
@@ -181,6 +201,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           setTotalTime(`${hour}:${minute}:${second}`)
         }
         setSeekValue("0")
+        setVideoRatio(video.videoWidth / video.videoHeight)
         video.play().then(() => {
           setIsPaused(false)
         })
@@ -319,8 +340,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       />
       {showSubtitle && subtitles.current.length > 0 && (
         <p
-          className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
-          style={{ textShadow: "0 0 8px black" }}
+          className="absolute left-4 right-4 font-sans text-3xl text-center text-white font-semibold flex justify-center items-center h-10"
+          style={{ textShadow: "0 0 8px black", bottom: captionBottomPosition }}
         >
           {currentSubtitle}
         </p>
