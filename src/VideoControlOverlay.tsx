@@ -1,15 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { twJoin } from "tailwind-merge"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
+import { useWindowSize } from "usehooks-ts"
 
-import { MediaFile, getSubtitleFiles } from "./utils/getMediaFiles"
+import {
+  MediaFile,
+  getMediaFiles,
+  getSubtitleFiles,
+} from "./utils/getMediaFiles"
 import { isSafari, isMac } from "./utils/browser"
-import { hideElement, showElement } from "./utils/dom"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import PlaySpeedControl from "./PlaySpeedControl"
 import VolumeControl from "./VolumeControl"
+import CaptionButton from "./CaptionButton"
 
 import IconButton from "./IconButton"
 import PlayIcon from "./assets/play.svg?react"
@@ -25,6 +30,7 @@ interface VideoControlOverlayProps {
   exit: () => void
   currentIndex: number
   setCurrentIndex: (index: number) => void
+  setMedia: (files: MediaFile[]) => void
 }
 
 const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
@@ -33,6 +39,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   exit,
   currentIndex,
   setCurrentIndex,
+  setMedia,
 }) => {
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
@@ -44,9 +51,30 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [playSpeed, setPlaySpeed] = useState(1)
   const mouseMoveTimeout = useRef<number | null>(null)
   const analyzer = useRef<AudioMotionAnalyzer | null>(null)
-  const subtitleFile = mediaFiles[currentIndex].subtitleFile
+  const analyzerContainer = useRef<HTMLDivElement | null>(null)
+  const [isAudio, setIsAudio] = useState(false)
   const subtitles = useRef<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
+  const [showSubtitle, setShowSubtitle] = useState(true)
+  const [videoRatio, setVideoRatio] = useState(0)
+  const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
+
+  const captionBottomPosition = useMemo(() => {
+    if (
+      windowWidth === 0 ||
+      windowHeight === 0 ||
+      videoRatio === 0 ||
+      videoRatio < 1
+    )
+      return 48
+    const actualVideoHeight = Math.min(windowWidth / videoRatio, windowHeight)
+    const videoMarginHeight = (windowHeight - actualVideoHeight) / 2
+    if (videoMarginHeight > 92) {
+      return windowHeight - videoMarginHeight - actualVideoHeight - 60
+    } else {
+      return windowHeight - videoMarginHeight - actualVideoHeight + 48
+    }
+  }, [videoRatio, windowWidth, windowHeight])
 
   const parseSubtitle = useCallback((subtitleFile: File) => {
     const reader = new FileReader()
@@ -73,12 +101,13 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }, [])
 
   useEffect(() => {
+    const subtitleFile = mediaFiles[currentIndex].subtitleFile
     if (subtitleFile) {
       parseSubtitle(subtitleFile)
     } else {
       subtitles.current = []
     }
-  }, [subtitleFile, parseSubtitle])
+  }, [currentIndex, mediaFiles, parseSubtitle])
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -138,19 +167,24 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         }
       }
       video.onloadedmetadata = () => {
-        const visualizerEl =
-          document.querySelector<HTMLElement>("#audioVisualizer")
         if (video.videoWidth === 0) {
-          showElement(visualizerEl)
-          if (visualizerEl && analyzer.current === null && !isSafari) {
-            analyzer.current = new AudioMotionAnalyzer(visualizerEl, {
-              source: video,
-              smoothing: 0.8,
-              hideScaleX: true,
-            })
+          setIsAudio(true)
+          if (
+            analyzerContainer.current &&
+            analyzer.current === null &&
+            !isSafari
+          ) {
+            analyzer.current = new AudioMotionAnalyzer(
+              analyzerContainer.current,
+              {
+                source: video,
+                smoothing: 0.8,
+                hideScaleX: true,
+              },
+            )
           }
         } else {
-          hideElement(visualizerEl)
+          setIsAudio(false)
         }
         const hour = Math.floor(video.duration / 3600)
         let minute = Math.floor((video.duration % 3600) / 60).toString()
@@ -167,6 +201,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           setTotalTime(`${hour}:${minute}:${second}`)
         }
         setSeekValue("0")
+        setVideoRatio(video.videoWidth / video.videoHeight)
         video.play().then(() => {
           setIsPaused(false)
         })
@@ -195,12 +230,17 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }, [videoRef, mediaFiles.length, currentIndex, setCurrentIndex])
 
-  const handleSubtitleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const files = Array.from(e.dataTransfer.files)
-    const subtitleFiles = getSubtitleFiles(files)
-    if (subtitleFiles.length > 0) {
-      parseSubtitle(subtitleFiles[0])
+    const mediaFiles = getMediaFiles(files)
+    if (mediaFiles.length === 0) {
+      const subtitleFiles = getSubtitleFiles(files)
+      if (subtitleFiles.length > 0) {
+        parseSubtitle(subtitleFiles[0])
+      }
+    } else {
+      setMedia(mediaFiles)
     }
   }
 
@@ -282,25 +322,29 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVolumeChange = (value: string) => {
     const video = videoRef && typeof videoRef === "object" && videoRef.current
     if (video) {
-      const volume = e.currentTarget.value
-      setVolume(volume)
-      video.volume = Number(volume)
-      localStorage.setItem("volume", volume)
+      setVolume(value)
+      video.volume = Number(value)
+      localStorage.setItem("volume", value)
     }
   }
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0">
-      <div id="audioVisualizer" className="absolute inset-0 hidden" />
-      <p
-        className="absolute bottom-12 left-4 right-4 font-sans text-3xl text-center text-white font-semibold"
-        style={{ textShadow: "0 0 8px black" }}
-      >
-        {currentSubtitle}
-      </p>
+      <div
+        ref={analyzerContainer}
+        className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
+      />
+      {showSubtitle && subtitles.current.length > 0 && (
+        <p
+          className="absolute left-4 right-4 font-sans sm:text-xl md:text-2xl lg:text-3xl text-center text-white font-semibold flex justify-center items-center h-10"
+          style={{ textShadow: "0 0 8px black", bottom: captionBottomPosition }}
+        >
+          {currentSubtitle}
+        </p>
+      )}
       <div
         className={twJoin(
           "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
@@ -339,7 +383,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           }
         }}
         onDragOver={(e) => e.preventDefault()}
-        onDrop={handleSubtitleDrop}
+        onDrop={handleDrop}
       >
         <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
           <span className="font-semibold text-xl">
@@ -403,7 +447,20 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               volume={volume}
               handleVolumeChange={handleVolumeChange}
             />
-            <div className="relative mr-0.5">
+            {subtitles.current.length > 0 && (
+              <div className="mr-0.5">
+                <CaptionButton
+                  filled={showSubtitle}
+                  onToggle={() => setShowSubtitle((prev) => !prev)}
+                />
+              </div>
+            )}
+            <div
+              className={twJoin(
+                "relative",
+                subtitles.current.length === 0 && "mr-0.5",
+              )}
+            >
               <PlaySpeedControl
                 playSpeed={playSpeed}
                 handlePlaybackSpeed={handlePlaybackSpeed}

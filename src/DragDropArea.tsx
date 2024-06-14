@@ -6,10 +6,10 @@ import { Trans, useTranslation } from "react-i18next"
 import { useMediaQuery } from "usehooks-ts"
 
 interface DragDropAreaProps {
-  setMediaFiles: React.Dispatch<React.SetStateAction<MediaFile[]>>
+  setMedia: (files: MediaFile[]) => void
 }
 
-const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
+const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
@@ -37,7 +37,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
     if (mediaFiles.length === 0) {
       alert(t("dragDropArea.noMediaFilesFound"))
     } else {
-      setMediaFiles(mediaFiles)
+      setMedia(mediaFiles)
     }
   }
 
@@ -53,7 +53,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMediaFiles }) => {
     if (mediaFiles.length === 0) {
       alert(t("dragDropArea.noMediaFilesFound"))
     } else {
-      setMediaFiles(mediaFiles)
+      setMedia(mediaFiles)
     }
   }
 

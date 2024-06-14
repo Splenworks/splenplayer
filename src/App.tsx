@@ -1,4 +1,4 @@
-import { useState, createRef, useEffect } from "react"
+import { useState, createRef, useEffect, useCallback } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import VideoPlayer from "./VideoPlayer"
@@ -46,6 +46,14 @@ function App() {
     setCurrentIndex(0)
   }, [mediaFiles])
 
+  const setMedia = useCallback(
+    (files: MediaFile[]) => {
+      setMediaFiles(files)
+      setCurrentIndex(0)
+    },
+    [setMediaFiles, setCurrentIndex],
+  )
+
   if (mediaFiles.length > 0) {
     return (
       <div id="fullscreenSection">
@@ -60,6 +68,7 @@ function App() {
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
           videoRef={videoRef}
+          setMedia={setMedia}
         />
       </div>
     )
@@ -68,7 +77,7 @@ function App() {
   return (
     <>
       <Header />
-      <DragDropArea setMediaFiles={setMediaFiles} />
+      <DragDropArea setMedia={setMedia} />
       <Footer />
     </>
   )

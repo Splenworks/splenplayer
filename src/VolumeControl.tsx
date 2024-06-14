@@ -4,7 +4,7 @@ import MuteIcon from "./assets/volume-mute.svg?react"
 
 interface VolumeControlProps {
   volume: string
-  handleVolumeChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleVolumeChange: (value: string) => void
 }
 
 const VolumeControl: React.FC<VolumeControlProps> = ({
@@ -12,10 +12,13 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
   handleVolumeChange,
 }) => {
   return (
-    <div className="overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
+    <div className="cursor-pointer overflow-hidden w-10 hover:w-40 p-1 h-10 flex flex-row-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out">
       <button
         tabIndex={-1}
         className="w-6 h-6 mx-2 outline-none focus:outline-none"
+        onClick={() => {
+          handleVolumeChange(volume === "0" ? "0.5" : "0")
+        }}
       >
         {Number(volume) === 0 ? (
           <MuteIcon className="w-6 h-6 text-white" />
@@ -30,7 +33,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
         min="0"
         max="1"
         step="0.1"
-        onChange={handleVolumeChange}
+        onChange={(e) => handleVolumeChange(e.currentTarget.value)}
         onKeyDown={(e) => {
           e.stopPropagation()
         }}
