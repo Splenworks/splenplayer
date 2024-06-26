@@ -24,6 +24,7 @@ import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
 import Tooltip from "./Tooltip"
+import { useTranslation } from "react-i18next"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -59,6 +60,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [showSubtitle, setShowSubtitle] = useState(true)
   const [videoRatio, setVideoRatio] = useState(0)
   const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
+  const { t } = useTranslation()
 
   const captionBottomPosition = useMemo(() => {
     if (
@@ -396,7 +398,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             )}
           </span>
           {!isFullScreen && (
-            <Tooltip text="Close" place="bottom" align="right">
+            <Tooltip text={t("others.close")} place="bottom" align="right">
               <IconButton
                 svgIcon={CloseIcon}
                 onClick={() => {
@@ -411,7 +413,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
           <div className="flex justify-center items-center gap-2">
             <Tooltip
-              text={isPaused ? "Play" : "Pause"}
+              text={isPaused ? t("others.play") : t("others.pause")}
               place="top"
               align="left"
             >
@@ -426,7 +428,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               />
             </Tooltip>
             {mediaFiles.length > 1 && currentIndex > 0 && (
-              <Tooltip text="Previous" place="top">
+              <Tooltip text={t("others.previous")} place="top">
                 <IconButton
                   svgIcon={NextIcon}
                   className="transform rotate-180"
@@ -439,7 +441,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               </Tooltip>
             )}
             {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-              <Tooltip text="Next" place="top">
+              <Tooltip text={t("others.next")} place="top">
                 <IconButton
                   svgIcon={NextIcon}
                   onClick={() => {
@@ -480,7 +482,11 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               />
             </div>
             <Tooltip
-              text={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+              text={
+                isFullScreen
+                  ? t("others.exitFullscreen")
+                  : t("others.fullscreen")
+              }
               place="top"
               align="right"
             >
