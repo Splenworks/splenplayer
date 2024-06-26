@@ -17,7 +17,7 @@ const PlaySpeedButton: React.FC<PlaySpeedButtonProps> = ({
   return (
     <div
       className={twMerge(
-        "play-speed-button w-full h-7 min-h-7 flex justify-center items-center cursor-pointer bg-opacity-50 hover:bg-opacity-50",
+        "play-speed-button w-full h-7 min-h-7 flex justify-center items-center cursor-pointer bg-opacity-50 hover:bg-opacity-50 z-10",
         isSelected ? "bg-zinc-400 hover:bg-zinc-400" : "hover:bg-zinc-500",
         className,
       )}

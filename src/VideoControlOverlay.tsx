@@ -23,6 +23,7 @@ import NextIcon from "./assets/next.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
+import Tooltip from "./Tooltip"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -395,47 +396,59 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             )}
           </span>
           {!isFullScreen && (
-            <IconButton
-              svgIcon={CloseIcon}
-              onClick={() => {
-                if (showControls) {
-                  exit()
-                }
-              }}
-            />
+            <Tooltip text="Close" place="bottom" align="right">
+              <IconButton
+                svgIcon={CloseIcon}
+                onClick={() => {
+                  if (showControls) {
+                    exit()
+                  }
+                }}
+              />
+            </Tooltip>
           )}
         </div>
         <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
           <div className="flex justify-center items-center gap-2">
-            <IconButton
-              className={twJoin(isPaused && "pl-0.5")}
-              svgIcon={isPaused ? PlayIcon : PauseIcon}
-              onClick={() => {
-                if (showControls) {
-                  togglePlayPause()
-                }
-              }}
-            />
-            {mediaFiles.length > 1 && currentIndex > 0 && (
+            <Tooltip
+              text={isPaused ? "Play" : "Pause"}
+              place="top"
+              align="left"
+            >
               <IconButton
-                svgIcon={NextIcon}
-                className="transform rotate-180"
+                className={twJoin(isPaused && "pl-0.5")}
+                svgIcon={isPaused ? PlayIcon : PauseIcon}
                 onClick={() => {
                   if (showControls) {
-                    setCurrentIndex(currentIndex - 1)
+                    togglePlayPause()
                   }
                 }}
               />
+            </Tooltip>
+            {mediaFiles.length > 1 && currentIndex > 0 && (
+              <Tooltip text="Previous" place="top">
+                <IconButton
+                  svgIcon={NextIcon}
+                  className="transform rotate-180"
+                  onClick={() => {
+                    if (showControls) {
+                      setCurrentIndex(currentIndex - 1)
+                    }
+                  }}
+                />
+              </Tooltip>
             )}
             {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-              <IconButton
-                svgIcon={NextIcon}
-                onClick={() => {
-                  if (showControls) {
-                    setCurrentIndex(currentIndex + 1)
-                  }
-                }}
-              />
+              <Tooltip text="Next" place="top">
+                <IconButton
+                  svgIcon={NextIcon}
+                  onClick={() => {
+                    if (showControls) {
+                      setCurrentIndex(currentIndex + 1)
+                    }
+                  }}
+                />
+              </Tooltip>
             )}
             <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
               <span className="pr-2">{currentTime}</span>/
@@ -466,14 +479,20 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 handlePlaybackSpeed={handlePlaybackSpeed}
               />
             </div>
-            <IconButton
-              svgIcon={isFullScreen ? ExitFullscreenIcon : FullscreenIcon}
-              onClick={() => {
-                if (showControls) {
-                  toggleFullScreen()
-                }
-              }}
-            />
+            <Tooltip
+              text={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+              place="top"
+              align="right"
+            >
+              <IconButton
+                svgIcon={isFullScreen ? ExitFullscreenIcon : FullscreenIcon}
+                onClick={() => {
+                  if (showControls) {
+                    toggleFullScreen()
+                  }
+                }}
+              />
+            </Tooltip>
           </div>
         </div>
         <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
