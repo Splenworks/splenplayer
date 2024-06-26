@@ -8,5 +8,14 @@
   },
   "footer": {
     "checkOutProduct": "Check out our other product <link />"
+  },
+  "others": {
+    "close": "Close",
+    "play": "Play",
+    "pause": "Pause",
+    "previous": "Previous",
+    "next": "Next",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit Fullscreen"
   }
 }

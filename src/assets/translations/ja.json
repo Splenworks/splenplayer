@@ -8,5 +8,14 @@
   },
   "footer": {
     "checkOutProduct": "弊社の他のプロダクト<link />もご確認ください"
+  },
+  "others": {
+    "close": "閉じる",
+    "play": "再生",
+    "pause": "一時停止",
+    "previous": "前へ",
+    "next": "次へ",
+    "fullscreen": "フルスクリーン",
+    "exitFullscreen": "フルスクリーンを終了"
   }
 }
