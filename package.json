@@ -17,6 +17,7 @@
     "audiomotion-analyzer": "github:roylory/audioMotion-analyzer",
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^7.2.1",
+    "matroska-subtitles": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.1.0",
