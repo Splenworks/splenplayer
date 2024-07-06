@@ -17,7 +17,17 @@ const PlaySpeedControl: React.FC<PlaySpeedControlProps> = ({
   return (
     <>
       <div className="overflow-hidden cursor-pointer h-10 hover:h-auto max-h-10 hover:max-h-60 flex flex-col-reverse items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-all duration-300 ease-in-out peer">
-        <div className="w-10 h-10">
+        <div
+          className="w-10 h-10"
+          onClick={() => {
+            const currentPlaySpeedIndex = playSpeedOptions.indexOf(playSpeed)
+            handlePlaybackSpeed(
+              playSpeedOptions[
+                (currentPlaySpeedIndex + 1) % playSpeedOptions.length
+              ],
+            )
+          }}
+        >
           <PlaybackSpeedIcon className="w-6 h-6 text-white m-2" />
         </div>
         {playSpeedOptions.map((speed, index) => (
