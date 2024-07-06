@@ -36,6 +36,7 @@ const PlaySpeedControl: React.FC<PlaySpeedControlProps> = ({
             onClick={() => handlePlaybackSpeed(speed)}
             isSelected={playSpeed === speed}
             className={index === playSpeedOptions.length - 1 ? "h-8 pt-1" : ""}
+            key={speed}
           />
         ))}
       </div>
