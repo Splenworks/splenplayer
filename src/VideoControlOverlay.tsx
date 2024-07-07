@@ -4,6 +4,7 @@ import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import { useWindowSize } from "usehooks-ts"
+import { useTranslation } from "react-i18next"
 
 import {
   MediaFile,
@@ -15,6 +16,7 @@ import { replaceBasicHtmlEntities } from "./utils/html"
 import PlaySpeedControl from "./PlaySpeedControl"
 import VolumeControl from "./VolumeControl"
 import CaptionButton from "./CaptionButton"
+import Tooltip from "./Tooltip"
 
 import IconButton from "./IconButton"
 import PlayIcon from "./assets/play.svg?react"
@@ -23,8 +25,6 @@ import NextIcon from "./assets/next.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
-import Tooltip from "./Tooltip"
-import { useTranslation } from "react-i18next"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -88,6 +88,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           subtitleFile.name.endsWith(".srt") ||
           subtitleFile.name.endsWith(".vtt")
         ) {
+          console.log(srtVttParse(content))
           subtitles.current = srtVttParse(content).entries.map((entry) => ({
             startTime: entry.from,
             endTime: entry.to,
