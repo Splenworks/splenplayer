@@ -1,4 +1,4 @@
-import { DarkModeSwitch as DarkModeSwitchIcon } from "react-toggle-dark-mode"
+import DarkModeSwitchIcon from "./DarkModeSwitchIcon"
 import { useState } from "react"
 import { twJoin } from "tailwind-merge"
 
@@ -39,13 +39,9 @@ const DarkModeSwitch = () => {
         />
         <span className="block w-6 m-[5px] bg-white absolute top-0 bottom-0 right-10 rounded-full transition-all duration-300 ease-in peer-checked:group-[]:right-0">
           <DarkModeSwitchIcon
-            size={16}
-            checked={darkMode}
+            darkMode={darkMode}
             sunColor="black"
             moonColor="black"
-            style={{ margin: "4px" }}
-            onChange={() => {}}
-            className="text-black"
           />
         </span>
       </label>
