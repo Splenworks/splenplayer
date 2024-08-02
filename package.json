@@ -14,7 +14,7 @@
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.1.1",
     "@plussub/srt-vtt-parser": "^1.1.1",
-    "audiomotion-analyzer": "github:roylory/audioMotion-analyzer",
+    "audiomotion-analyzer": "^4.5.0",
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^7.2.1",
     "react": "^18.2.0",

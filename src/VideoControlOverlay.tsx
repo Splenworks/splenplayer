@@ -183,7 +183,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               {
                 source: video,
                 smoothing: 0.8,
-                hideScaleX: true,
+                showScaleX: false,
               },
             )
           }
