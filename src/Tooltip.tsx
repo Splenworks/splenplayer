@@ -22,7 +22,7 @@ const Tooltip: React.FC<PropsWithChildren<TooltipProps>> = ({
       <div className="peer">{children}</div>
       <div
         className={twJoin(
-          "absolute transform opacity-0 peer-hover:opacity-100 transition-opacity duration-300 ease-in-out",
+          "absolute transform opacity-0 transition-opacity duration-300 ease-in-out peer-hover:opacity-100",
           place === "top"
             ? "bottom-full -translate-y-2"
             : "top-full translate-y-2",
@@ -34,16 +34,16 @@ const Tooltip: React.FC<PropsWithChildren<TooltipProps>> = ({
         )}
         style={{ width: "max-content" }}
       >
-        <div className="px-2 py-1 bg-zinc-400 dark:bg-zinc-500 rounded bg-opacity-50">
-          <p className="font-normal text-xs text-white">{text}</p>
+        <div className="rounded bg-zinc-400 bg-opacity-50 px-2 py-1 dark:bg-zinc-500">
+          <p className="text-xs font-normal text-white">{text}</p>
         </div>
       </div>
       <div
         className={twJoin(
-          "absolute border-solid border-opacity-50 border-x-transparent border-x-[6px] left-1/2 transform -translate-x-1/2 opacity-0 peer-hover:opacity-100 transition-opacity duration-300 ease-in-out",
+          "absolute left-1/2 -translate-x-1/2 transform border-x-[6px] border-solid border-x-transparent border-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out peer-hover:opacity-100",
           place === "bottom"
-            ? "border-b-zinc-400 dark:border-b-zinc-500 border-b-[6px] border-t-0 top-full translate-y-[2px]"
-            : "border-t-zinc-400 dark:border-t-zinc-500 border-t-[6px] border-b-0 bottom-full -translate-y-[2px]",
+            ? "top-full translate-y-[2px] border-b-[6px] border-t-0 border-b-zinc-400 dark:border-b-zinc-500"
+            : "bottom-full -translate-y-[2px] border-b-0 border-t-[6px] border-t-zinc-400 dark:border-t-zinc-500",
         )}
       ></div>
     </div>

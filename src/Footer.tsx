@@ -18,9 +18,9 @@ const Footer: React.FC = () => {
     otherProducts[Math.floor(Math.random() * otherProducts.length)]
   return (
     <footer className="absolute bottom-0 left-0 right-0 bg-white dark:bg-neutral-900">
-      <div className="flex items-center justify-center h-16 mx-8 md:mx-16">
-        <div className="flex-1 hidden sm:block"></div>
-        <p className="text-gray-800 dark:text-gray-300 text-sm">
+      <div className="mx-8 flex h-16 items-center justify-center md:mx-16">
+        <div className="hidden flex-1 sm:block"></div>
+        <p className="text-sm text-gray-800 dark:text-gray-300">
           <Trans
             i18nKey="footer.checkOutProduct"
             components={{
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
             }}
           />
         </p>
-        <div className="flex-1 text-sm text-right text-white dark:text-neutral-900 hidden sm:block">
+        <div className="hidden flex-1 text-right text-sm text-white sm:block dark:text-neutral-900">
           Version {APP_VERSION}.{CommitHash.substring(0, 7)}
         </div>
       </div>

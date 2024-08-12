@@ -336,14 +336,14 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0">
+    <div className="fixed bottom-0 left-0 right-0 top-0">
       <div
         ref={analyzerContainer}
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
       />
       {showSubtitle && subtitles.current.length > 0 && (
         <p
-          className="absolute left-4 right-4 font-sans sm:text-xl md:text-2xl lg:text-3xl text-center text-white font-semibold flex justify-center items-center h-10"
+          className="absolute left-4 right-4 flex h-10 items-center justify-center text-center font-sans font-semibold text-white sm:text-xl md:text-2xl lg:text-3xl"
           style={{ textShadow: "0 0 8px black", bottom: captionBottomPosition }}
         >
           {currentSubtitle}
@@ -352,7 +352,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       <div
         className={twJoin(
           "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
-          showControls ? "opacity-100 cursor-auto" : "opacity-0 cursor-none",
+          showControls ? "cursor-auto opacity-100" : "cursor-none opacity-0",
         )}
         style={{
           background:
@@ -389,8 +389,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
       >
-        <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
-          <span className="font-semibold text-xl">
+        <div className="absolute left-6 right-4 top-4 flex items-center justify-between">
+          <span className="text-xl font-semibold">
             {mediaFiles[currentIndex].file.name}{" "}
             {mediaFiles.length > 1 && (
               <>
@@ -412,7 +412,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           )}
         </div>
         <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Tooltip
               text={isPaused ? t("others.play") : t("others.pause")}
               place="top"
@@ -432,7 +432,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               <Tooltip text={t("others.previous")} place="top">
                 <IconButton
                   svgIcon={NextIcon}
-                  className="transform rotate-180"
+                  className="rotate-180 transform"
                   onClick={() => {
                     if (showControls) {
                       setCurrentIndex(currentIndex - 1)
@@ -453,12 +453,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 />
               </Tooltip>
             )}
-            <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
+            <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
               <span className="pr-2">{currentTime}</span>/
               <span className="pl-2">{totalTime}</span>
             </div>
           </div>
-          <div className="flex justify-center items-end gap-2">
+          <div className="flex items-end justify-center gap-2">
             <VolumeControl
               volume={volume}
               handleVolumeChange={handleVolumeChange}
@@ -502,13 +502,13 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             </Tooltip>
           </div>
         </div>
-        <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
+        <div className="absolute bottom-2 left-2 right-2 mx-4 flex h-8 items-center justify-center">
           <input
             autoFocus
             className={twJoin(
               isSafari
-                ? "appearance-none accent-white bg-transparent w-full cursor-pointer outline-none rounded-full h-2 border border-neutral-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-                : "accent-white w-full cursor-pointer outline-none",
+                ? "h-2 w-full cursor-pointer appearance-none rounded-full border border-neutral-500 bg-transparent accent-white outline-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                : "w-full cursor-pointer accent-white outline-none",
             )}
             type="range"
             min="0"

@@ -15,10 +15,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     const videoSrc = URL.createObjectURL(blob)
 
     return (
-      <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black">
+      <div className="fixed bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-black">
         <video
           ref={videoRef}
-          className="max-h-full max-w-full min-h-full min-w-full"
+          className="max-h-full min-h-full min-w-full max-w-full"
           src={videoSrc}
         />
       </div>

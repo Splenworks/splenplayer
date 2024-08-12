@@ -54,8 +54,8 @@ export const getMediaFiles = (files: File[]): MediaFile[] => {
       type: looksLikeVideo(file.name)
         ? "video"
         : looksLikeAudio(file.name)
-        ? "audio"
-        : null,
+          ? "audio"
+          : null,
       file,
       subtitleFile:
         subtitleFiles.find((subtitleFile) =>
