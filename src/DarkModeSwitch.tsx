@@ -1,6 +1,6 @@
-import DarkModeSwitchIcon from "./DarkModeSwitchIcon"
 import { useState } from "react"
 import { twJoin } from "tailwind-merge"
+import DarkModeSwitchIcon from "./DarkModeSwitchIcon"
 import { getDarkmode, toggleDarkmode } from "./utils/darkmode"
 
 const DarkModeSwitch = () => {
