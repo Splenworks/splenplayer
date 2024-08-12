@@ -17,14 +17,14 @@ const PlaySpeedButton: React.FC<PlaySpeedButtonProps> = ({
   return (
     <div
       className={twMerge(
-        "play-speed-button w-full h-7 min-h-7 flex justify-center items-center cursor-pointer bg-opacity-50 hover:bg-opacity-50 z-10",
+        "play-speed-button z-10 flex h-7 min-h-7 w-full cursor-pointer items-center justify-center bg-opacity-50 hover:bg-opacity-50",
         isSelected ? "bg-zinc-400 hover:bg-zinc-400" : "hover:bg-zinc-500",
         className,
       )}
       data-play-speed={playSpeed}
       onClick={onClick}
     >
-      <span className="text-white text-xs">{playSpeed.toFixed(1)}</span>
+      <span className="text-xs text-white">{playSpeed.toFixed(1)}</span>
     </div>
   )
 }

@@ -3,13 +3,13 @@ import DarkModeSwitch from "./DarkModeSwitch"
 
 const Header: React.FC = () => {
   return (
-    <header className="absolute top-0 left-0 right-0 bg-white dark:bg-neutral-900">
-      <div className="flex items-center justify-center h-16 mx-8 md:mx-16">
+    <header className="absolute left-0 right-0 top-0 bg-white dark:bg-neutral-900">
+      <div className="mx-8 flex h-16 items-center justify-center md:mx-16">
         <div className="flex-1"></div>
-        <p className="text-black dark:text-white text-lg font-semibold">
+        <p className="text-lg font-semibold text-black dark:text-white">
           <span className="text-pink-900 dark:text-pink-700">Splen</span>Player
         </p>
-        <div className="flex-1 flex justify-end items-center">
+        <div className="flex flex-1 items-center justify-end">
           <DarkModeSwitch />
         </div>
       </div>
