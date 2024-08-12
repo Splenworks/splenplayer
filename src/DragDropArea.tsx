@@ -1,9 +1,9 @@
-import React, { useRef, useState } from "react"
-import { twJoin } from "tailwind-merge"
-import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 import { PlayCircleIcon } from "@heroicons/react/24/solid"
+import React, { useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
+import { twJoin } from "tailwind-merge"
 import { useMediaQuery } from "usehooks-ts"
+import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 
 interface DragDropAreaProps {
   setMedia: (files: MediaFile[]) => void
