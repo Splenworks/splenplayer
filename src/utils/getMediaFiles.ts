@@ -16,7 +16,8 @@ const looksLikeAudio = (name: string) => {
     lowerCasedName.endsWith(".wav") ||
     lowerCasedName.endsWith(".ogg") ||
     lowerCasedName.endsWith(".flac") ||
-    lowerCasedName.endsWith(".aac")
+    lowerCasedName.endsWith(".aac") ||
+    lowerCasedName.endsWith(".m4a")
   )
 }
 
@@ -54,8 +55,8 @@ export const getMediaFiles = (files: File[]): MediaFile[] => {
       type: looksLikeVideo(file.name)
         ? "video"
         : looksLikeAudio(file.name)
-        ? "audio"
-        : null,
+          ? "audio"
+          : null,
       file,
       subtitleFile:
         subtitleFiles.find((subtitleFile) =>
