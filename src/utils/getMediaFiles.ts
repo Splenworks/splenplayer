@@ -16,7 +16,8 @@ const looksLikeAudio = (name: string) => {
     lowerCasedName.endsWith(".wav") ||
     lowerCasedName.endsWith(".ogg") ||
     lowerCasedName.endsWith(".flac") ||
-    lowerCasedName.endsWith(".aac")
+    lowerCasedName.endsWith(".aac") ||
+    lowerCasedName.endsWith(".m4a")
   )
 }
 
