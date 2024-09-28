@@ -72,9 +72,9 @@ function App() {
         androidReceiverCompatible: true,
       })
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       context.addEventListener(
         window.cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (event: any) => {
           switch (event.sessionState) {
             case window.cast.framework.SessionState.SESSION_STARTED:
