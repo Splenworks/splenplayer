@@ -54,6 +54,58 @@ function App() {
     [setMediaFiles, setCurrentIndex],
   )
 
+  useEffect(() => {
+    const initializeCastApi = () => {
+      console.log("initializeCastApi")
+      const context = window.cast.framework.CastContext.getInstance()
+      context.setOptions({
+        receiverApplicationId:
+          window.chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+
+        // Auto join policy can be one of the following three:
+        // ORIGIN_SCOPED - Auto connect from same appId and page origin
+        // TAB_AND_ORIGIN_SCOPED - Auto connect from same appId, page origin, and tab
+        // PAGE_SCOPED - No auto connect
+        autoJoinPolicy: window.chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
+
+        // The following flag enables Cast Connect(requires Chrome 87 or higher)
+        androidReceiverCompatible: true,
+      })
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      context.addEventListener(
+        window.cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+        (event: any) => {
+          switch (event.sessionState) {
+            case window.cast.framework.SessionState.SESSION_STARTED:
+            case window.cast.framework.SessionState.SESSION_RESUMED:
+              console.log("Cast session started or resumed")
+              break
+            case window.cast.framework.SessionState.SESSION_ENDED:
+              console.log("Cast session ended")
+              break
+            default:
+              break
+          }
+        },
+      )
+    }
+
+    if (
+      !window.chrome ||
+      !window.chrome.cast ||
+      !window.chrome.cast.isAvailable
+    ) {
+      window["__onGCastApiAvailable"] = (isAvailable: boolean) => {
+        if (isAvailable) {
+          initializeCastApi()
+        }
+      }
+    } else {
+      initializeCastApi()
+    }
+  }, [])
+
   if (mediaFiles.length > 0) {
     return (
       <div id="fullscreenSection">
