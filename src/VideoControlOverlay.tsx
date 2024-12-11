@@ -1,31 +1,33 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { twJoin } from "tailwind-merge"
-import AudioMotionAnalyzer from "audiomotion-analyzer"
-import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
+import AudioMotionAnalyzer from "audiomotion-analyzer"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { ParseResult, parse as samiParse } from "sami-parser"
+import { twJoin } from "tailwind-merge"
 import { useWindowSize } from "usehooks-ts"
 
+import CaptionButton from "./CaptionButton"
+import PlaySpeedControl from "./PlaySpeedControl"
+import Tooltip from "./Tooltip"
+import VolumeControl from "./VolumeControl"
+import { isMac, isSafari } from "./utils/browser"
 import {
   MediaFile,
   getMediaFiles,
   getSubtitleFiles,
 } from "./utils/getMediaFiles"
-import { isSafari, isMac } from "./utils/browser"
 import { replaceBasicHtmlEntities } from "./utils/html"
-import PlaySpeedControl from "./PlaySpeedControl"
-import VolumeControl from "./VolumeControl"
-import CaptionButton from "./CaptionButton"
 
 import IconButton from "./IconButton"
-import PlayIcon from "./assets/play.svg?react"
-import PauseIcon from "./assets/pause.svg?react"
-import NextIcon from "./assets/next.svg?react"
-import CloseIcon from "./assets/xmark.svg?react"
-import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
+import FullscreenIcon from "./assets/expand.svg?react"
+import NextIcon from "./assets/next.svg?react"
+import PauseIcon from "./assets/pause.svg?react"
+import PlayIcon from "./assets/play.svg?react"
+import CloseIcon from "./assets/xmark.svg?react"
 
 interface VideoControlOverlayProps {
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   mediaFiles: MediaFile[]
   exit: () => void
   currentIndex: number
@@ -58,6 +60,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [showSubtitle, setShowSubtitle] = useState(true)
   const [videoRatio, setVideoRatio] = useState(0)
   const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
+  const { t } = useTranslation()
 
   const captionBottomPosition = useMemo(() => {
     if (
@@ -85,6 +88,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           subtitleFile.name.endsWith(".srt") ||
           subtitleFile.name.endsWith(".vtt")
         ) {
+          console.log(srtVttParse(content))
           subtitles.current = srtVttParse(content).entries.map((entry) => ({
             startTime: entry.from,
             endTime: entry.to,
@@ -179,7 +183,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               {
                 source: video,
                 smoothing: 0.8,
-                hideScaleX: true,
+                showScaleX: false,
               },
             )
           }
@@ -332,14 +336,14 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0">
+    <div className="fixed bottom-0 left-0 right-0 top-0">
       <div
         ref={analyzerContainer}
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
       />
       {showSubtitle && subtitles.current.length > 0 && (
         <p
-          className="absolute left-4 right-4 font-sans sm:text-xl md:text-2xl lg:text-3xl text-center text-white font-semibold flex justify-center items-center h-10"
+          className="absolute left-4 right-4 flex h-10 items-center justify-center text-center font-sans font-semibold text-white sm:text-xl md:text-2xl lg:text-3xl"
           style={{ textShadow: "0 0 8px black", bottom: captionBottomPosition }}
         >
           {currentSubtitle}
@@ -348,7 +352,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       <div
         className={twJoin(
           "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
-          showControls ? "opacity-100 cursor-auto" : "opacity-0 cursor-none",
+          showControls ? "cursor-auto opacity-100" : "cursor-none opacity-0",
         )}
         style={{
           background:
@@ -385,8 +389,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
       >
-        <div className="absolute top-4 left-6 right-4 flex justify-between items-center">
-          <span className="font-semibold text-xl">
+        <div className="absolute left-6 right-4 top-4 flex items-center justify-between">
+          <span className="text-xl font-semibold">
             {mediaFiles[currentIndex].file.name}{" "}
             {mediaFiles.length > 1 && (
               <>
@@ -395,54 +399,66 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             )}
           </span>
           {!isFullScreen && (
-            <IconButton
-              svgIcon={CloseIcon}
-              onClick={() => {
-                if (showControls) {
-                  exit()
-                }
-              }}
-            />
+            <Tooltip text={t("others.close")} place="bottom" align="right">
+              <IconButton
+                svgIcon={CloseIcon}
+                onClick={() => {
+                  if (showControls) {
+                    exit()
+                  }
+                }}
+              />
+            </Tooltip>
           )}
         </div>
         <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
-          <div className="flex justify-center items-center gap-2">
-            <IconButton
-              className={twJoin(isPaused && "pl-0.5")}
-              svgIcon={isPaused ? PlayIcon : PauseIcon}
-              onClick={() => {
-                if (showControls) {
-                  togglePlayPause()
-                }
-              }}
-            />
-            {mediaFiles.length > 1 && currentIndex > 0 && (
+          <div className="flex items-center justify-center gap-2">
+            <Tooltip
+              text={isPaused ? t("others.play") : t("others.pause")}
+              place="top"
+              align="left"
+            >
               <IconButton
-                svgIcon={NextIcon}
-                className="transform rotate-180"
+                className={twJoin(isPaused && "pl-0.5")}
+                svgIcon={isPaused ? PlayIcon : PauseIcon}
                 onClick={() => {
                   if (showControls) {
-                    setCurrentIndex(currentIndex - 1)
+                    togglePlayPause()
                   }
                 }}
               />
+            </Tooltip>
+            {mediaFiles.length > 1 && currentIndex > 0 && (
+              <Tooltip text={t("others.previous")} place="top">
+                <IconButton
+                  svgIcon={NextIcon}
+                  className="rotate-180 transform"
+                  onClick={() => {
+                    if (showControls) {
+                      setCurrentIndex(currentIndex - 1)
+                    }
+                  }}
+                />
+              </Tooltip>
             )}
             {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-              <IconButton
-                svgIcon={NextIcon}
-                onClick={() => {
-                  if (showControls) {
-                    setCurrentIndex(currentIndex + 1)
-                  }
-                }}
-              />
+              <Tooltip text={t("others.next")} place="top">
+                <IconButton
+                  svgIcon={NextIcon}
+                  onClick={() => {
+                    if (showControls) {
+                      setCurrentIndex(currentIndex + 1)
+                    }
+                  }}
+                />
+              </Tooltip>
             )}
-            <div className="hidden sm:block font-mono text-sm font-semibold pl-2">
+            <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
               <span className="pr-2">{currentTime}</span>/
               <span className="pl-2">{totalTime}</span>
             </div>
           </div>
-          <div className="flex justify-center items-end gap-2">
+          <div className="flex items-end justify-center gap-2">
             <VolumeControl
               volume={volume}
               handleVolumeChange={handleVolumeChange}
@@ -466,23 +482,33 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 handlePlaybackSpeed={handlePlaybackSpeed}
               />
             </div>
-            <IconButton
-              svgIcon={isFullScreen ? ExitFullscreenIcon : FullscreenIcon}
-              onClick={() => {
-                if (showControls) {
-                  toggleFullScreen()
-                }
-              }}
-            />
+            <Tooltip
+              text={
+                isFullScreen
+                  ? t("others.exitFullscreen")
+                  : t("others.fullscreen")
+              }
+              place="top"
+              align="right"
+            >
+              <IconButton
+                svgIcon={isFullScreen ? ExitFullscreenIcon : FullscreenIcon}
+                onClick={() => {
+                  if (showControls) {
+                    toggleFullScreen()
+                  }
+                }}
+              />
+            </Tooltip>
           </div>
         </div>
-        <div className="absolute bottom-2 left-2 right-2 h-8 flex justify-center items-center mx-4">
+        <div className="absolute bottom-2 left-2 right-2 mx-4 flex h-8 items-center justify-center">
           <input
             autoFocus
             className={twJoin(
               isSafari
-                ? "appearance-none accent-white bg-transparent w-full cursor-pointer outline-none rounded-full h-2 border border-neutral-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-                : "accent-white w-full cursor-pointer outline-none",
+                ? "h-2 w-full cursor-pointer appearance-none rounded-full border border-neutral-500 bg-transparent accent-white outline-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                : "w-full cursor-pointer accent-white outline-none",
             )}
             type="range"
             min="0"

@@ -9,13 +9,13 @@ interface CaptionButtonProps {
 const CaptionButton: React.FC<CaptionButtonProps> = ({ filled, onToggle }) => {
   return (
     <div
-      className="cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-zinc-500 hover:bg-opacity-50 rounded-full transition-colors duration-300 ease-in-out"
+      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500 hover:bg-opacity-50"
       onClick={onToggle}
     >
       <button
         tabIndex={-1}
         className={twMerge(
-          "w-6 h-5 transition-colors duration-300 ease-in-out outline-none focus:outline-none font-mono font-semibold text-white text-xs border-2 rounded-md border-white",
+          "h-5 w-6 rounded-md border-2 border-white font-mono text-xs font-semibold text-white outline-none transition-colors duration-300 ease-in-out focus:outline-none",
           filled ? "bg-white text-black" : "bg-transparent",
         )}
       >

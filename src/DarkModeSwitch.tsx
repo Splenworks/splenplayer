@@ -1,51 +1,40 @@
-import { DarkModeSwitch as DarkModeSwitchIcon } from "react-toggle-dark-mode"
 import { useState } from "react"
 import { twJoin } from "tailwind-merge"
+import DarkModeSwitchIcon from "./DarkModeSwitchIcon"
+import { getDarkmode, toggleDarkmode } from "./utils/darkmode"
 
 const DarkModeSwitch = () => {
-  const [darkMode, setDarkMode] = useState(
-    document.documentElement.classList.contains("dark"),
-  )
+  const [darkMode, setDarkMode] = useState(getDarkmode())
   return (
-    <div className="relative inline-block text-left w-[75px]">
+    <div className="relative inline-block w-[75px] text-left">
       <input
         type="checkbox"
-        className="hidden peer"
+        className="peer hidden"
         name="darkModeSwitch"
         id="darkModeSwitch"
         checked={darkMode}
         onChange={() => {
           setDarkMode((darkMode) => !darkMode)
-          document.documentElement.classList.toggle("dark")
-          localStorage.setItem(
-            "theme",
-            document.documentElement.classList.contains("dark")
-              ? "dark"
-              : "light",
-          )
+          toggleDarkmode()
         }}
       />
       <label
-        className="block overflow-hidden cursor-pointer rounded-full group"
+        className="group block cursor-pointer overflow-hidden rounded-full"
         htmlFor="darkModeSwitch"
       >
         <span
           className={twJoin(
-            "inner block w-[200%] -ml-[100%] transition-[margin] ease-in duration-300",
-            "both:content-[''] both:block both:float-left both:w-1/2 both:h-9 both:p-0 both:leading-9 both:text-white both:font-bold both:box-border",
-            "before:pl-[10px] before:bg-neutral-600 after:pr-[10px] after:bg-neutral-200 after:text-right",
+            "inner -ml-[100%] block w-[200%] transition-[margin] duration-300 ease-in",
+            "both:float-left both:box-border both:block both:h-9 both:w-1/2 both:p-0 both:font-bold both:leading-9 both:text-white both:content-['']",
+            "before:bg-neutral-600 before:pl-[10px] after:bg-neutral-200 after:pr-[10px] after:text-right",
             "peer-checked:group-[]:ml-0",
           )}
         />
-        <span className="block w-6 m-[5px] bg-white absolute top-0 bottom-0 right-10 rounded-full transition-all duration-300 ease-in peer-checked:group-[]:right-0">
+        <span className="absolute bottom-0 right-10 top-0 m-[5px] block w-6 rounded-full bg-white transition-all duration-300 ease-in peer-checked:group-[]:right-0">
           <DarkModeSwitchIcon
-            size={16}
-            checked={darkMode}
+            darkMode={darkMode}
             sunColor="black"
             moonColor="black"
-            style={{ margin: "4px" }}
-            onChange={() => {}}
-            className="text-black"
           />
         </span>
       </label>
