@@ -1,33 +1,33 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { twJoin } from "tailwind-merge"
-import AudioMotionAnalyzer from "audiomotion-analyzer"
-import { parse as samiParse, ParseResult } from "sami-parser"
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
-import { useWindowSize } from "usehooks-ts"
+import AudioMotionAnalyzer from "audiomotion-analyzer"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { ParseResult, parse as samiParse } from "sami-parser"
+import { twJoin } from "tailwind-merge"
+import { useWindowSize } from "usehooks-ts"
 
+import CaptionButton from "./CaptionButton"
+import PlaySpeedControl from "./PlaySpeedControl"
+import Tooltip from "./Tooltip"
+import VolumeControl from "./VolumeControl"
+import { isMac, isSafari } from "./utils/browser"
 import {
   MediaFile,
   getMediaFiles,
   getSubtitleFiles,
 } from "./utils/getMediaFiles"
-import { isSafari, isMac } from "./utils/browser"
 import { replaceBasicHtmlEntities } from "./utils/html"
-import PlaySpeedControl from "./PlaySpeedControl"
-import VolumeControl from "./VolumeControl"
-import CaptionButton from "./CaptionButton"
-import Tooltip from "./Tooltip"
 
 import IconButton from "./IconButton"
-import PlayIcon from "./assets/play.svg?react"
-import PauseIcon from "./assets/pause.svg?react"
-import NextIcon from "./assets/next.svg?react"
-import CloseIcon from "./assets/xmark.svg?react"
-import FullscreenIcon from "./assets/expand.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
+import FullscreenIcon from "./assets/expand.svg?react"
+import NextIcon from "./assets/next.svg?react"
+import PauseIcon from "./assets/pause.svg?react"
+import PlayIcon from "./assets/play.svg?react"
+import CloseIcon from "./assets/xmark.svg?react"
 
 interface VideoControlOverlayProps {
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   mediaFiles: MediaFile[]
   exit: () => void
   currentIndex: number
