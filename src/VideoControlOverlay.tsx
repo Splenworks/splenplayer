@@ -19,7 +19,6 @@ import {
 import { replaceBasicHtmlEntities } from "./utils/html"
 
 import IconButton from "./IconButton"
-import ChromecastIcon from "./assets/chromecast.svg?react"
 import ExitFullscreenIcon from "./assets/compress.svg?react"
 import FullscreenIcon from "./assets/expand.svg?react"
 import NextIcon from "./assets/next.svg?react"
@@ -28,7 +27,7 @@ import PlayIcon from "./assets/play.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
 
 interface VideoControlOverlayProps {
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   mediaFiles: MediaFile[]
   exit: () => void
   currentIndex: number
@@ -89,6 +88,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           subtitleFile.name.endsWith(".srt") ||
           subtitleFile.name.endsWith(".vtt")
         ) {
+          console.log(srtVttParse(content))
           subtitles.current = srtVttParse(content).entries.map((entry) => ({
             startTime: entry.from,
             endTime: entry.to,
@@ -334,86 +334,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       localStorage.setItem("volume", value)
     }
   }
-  const sessionListener = (e) => {
-    console.log("New session ID: " + e.sessionId)
-  }
-
-  const receiverListener = (e) => {
-    if (e === window.chrome.cast.ReceiverAvailability.AVAILABLE) {
-      console.log("Receivers available")
-    }
-  }
-
-  const onInitSuccess = () => {
-    console.log("Initialization succeeded")
-  }
-
-  const onError = (message) => {
-    console.log("Error: " + JSON.stringify(message))
-  }
-
-  const handleCastButtonClick = (session) => {
-    if (session && videoRef.current) {
-      console.log(videoRef.current.src)
-      // const videoUrl = "https://www3.cde.ca.gov/download/rod/big_buck_bunny.mp4"
-      const videoUrl = videoRef.current.src
-      const mediaInfo = new window.chrome.cast.media.MediaInfo("", "video/mp4")
-      const request = new window.chrome.cast.media.LoadRequest(mediaInfo)
-      const media = new MediaSource()
-      const sourceBuffer = media.addSourceBuffer(
-        'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
-      )
-      fetch(videoUrl)
-        .then((response) => response.arrayBuffer())
-        .then((arrayBuffer) => {
-          sourceBuffer.addEventListener("updateend", () => {
-            if (!sourceBuffer.updating && media.readyState === "open") {
-              media.endOfStream()
-              if (videoRef.current) {
-                videoRef.current.src = URL.createObjectURL(media)
-              }
-              session
-                .loadMedia(request)
-                .then(() => {
-                  console.log("Load succeed")
-                })
-                .catch((error) => {
-                  console.error("Error loading media", error)
-                })
-            }
-          })
-          sourceBuffer.appendBuffer(arrayBuffer)
-        })
-        .catch((error) => {
-          console.error("Error fetching video", error)
-        })
-
-      // if (subtitleText) {
-      //   const track = new window.chrome.cast.media.Track(1, window.chrome.cast.media.TrackType.TEXT);
-      //   track.trackContentId = 'data:text/vtt;base64,' + btoa(subtitleText);
-      //   track.trackContentType = 'text/vtt';
-      //   track.subtype = window.chrome.cast.media.TextTrackType.SUBTITLES;
-      //   track.name = 'English';
-      //   track.language = 'en-US';
-      //   track.customData = null;
-
-      //   mediaInfo.textTrackStyle = new window.chrome.cast.media.TextTrackStyle();
-      //   mediaInfo.tracks = [track];
-      // }
-
-      // const request = new window.chrome.cast.media.LoadRequest(mediaInfo);
-      // session
-      //   .loadMedia(request)
-      //   .then(() => {
-      //     console.log('Load succeed');
-      //   })
-      //   .catch((error) => {
-      //     console.error('Error loading media', error);
-      //   });
-    } else {
-      console.log("No active session")
-    }
-  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 top-0">
@@ -562,39 +482,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 handlePlaybackSpeed={handlePlaybackSpeed}
               />
             </div>
-            <Tooltip text={t("others.chromecast")} place="top">
-              <IconButton
-                svgIcon={ChromecastIcon}
-                onClick={() => {
-                  const castContext =
-                    window.cast.framework.CastContext.getInstance()
-                  const session = castContext.getCurrentSession()
-
-                  if (session) {
-                    handleCastButtonClick(session)
-                  } else {
-                    const castSessionRequest =
-                      new window.chrome.cast.SessionRequest(
-                        window.chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-                      )
-                    const castApiConfig = new window.chrome.cast.ApiConfig(
-                      castSessionRequest,
-                      sessionListener,
-                      receiverListener,
-                    )
-                    window.chrome.cast.initialize(
-                      castApiConfig,
-                      onInitSuccess,
-                      onError,
-                    )
-                    window.chrome.cast.requestSession(
-                      handleCastButtonClick,
-                      onError,
-                    )
-                  }
-                }}
-              />
-            </Tooltip>
             <Tooltip
               text={
                 isFullScreen
