@@ -88,7 +88,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           subtitleFile.name.endsWith(".srt") ||
           subtitleFile.name.endsWith(".vtt")
         ) {
-          console.log(srtVttParse(content))
           subtitles.current = srtVttParse(content).entries.map((entry) => ({
             startTime: entry.from,
             endTime: entry.to,
