@@ -1,34 +1,20 @@
+const endsWith = (fileName: string, fileExtensions:string[]) => {
+  return fileExtensions.some(extension => fileName.endsWith(extension))
+}
+
 const looksLikeVideo = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return (
-    lowerCasedName.endsWith(".mp4") ||
-    lowerCasedName.endsWith(".webm") ||
-    lowerCasedName.endsWith(".mov") ||
-    lowerCasedName.endsWith(".avi") ||
-    lowerCasedName.endsWith(".mkv")
-  )
+  return endsWith(lowerCasedName, [".mp4", ".webm", ".mov", ".avi", ".mkv"])
 }
 
 const looksLikeAudio = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return (
-    lowerCasedName.endsWith(".mp3") ||
-    lowerCasedName.endsWith(".wav") ||
-    lowerCasedName.endsWith(".ogg") ||
-    lowerCasedName.endsWith(".flac") ||
-    lowerCasedName.endsWith(".aac") ||
-    lowerCasedName.endsWith(".m4a")
-  )
+  return endsWith(lowerCasedName, [".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a"])
 }
 
 const looksLikeSubtitle = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return (
-    lowerCasedName.endsWith(".smi") ||
-    lowerCasedName.endsWith(".sami") ||
-    lowerCasedName.endsWith(".vtt") ||
-    lowerCasedName.endsWith(".srt")
-  )
+  return endsWith(lowerCasedName, [".smi", ".sami", ".vtt", ".srt"])
 }
 
 const nameMatchesWithoutExtension = (name1: string, name2: string) => {
