@@ -25,6 +25,7 @@ import NextIcon from "./assets/next.svg?react"
 import PauseIcon from "./assets/pause.svg?react"
 import PlayIcon from "./assets/play.svg?react"
 import CloseIcon from "./assets/xmark.svg?react"
+import { hashCode } from "./utils/hashCode"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
@@ -61,6 +62,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [videoRatio, setVideoRatio] = useState(0)
   const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
   const { t } = useTranslation()
+  const videoFileHash = useMemo(() => {
+    const allMediaFilesAndSizes = mediaFiles
+      .map((mediaFile) => mediaFile.file.name + mediaFile.file.size)
+      .join("")
+    return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
+  }, [mediaFiles, currentIndex])
 
   const captionBottomPosition = useMemo(() => {
     if (
@@ -153,6 +160,18 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           setCurrentTime(`${hour}:${minute}:${second}`)
         }
         setSeekValue((video.currentTime / video.duration) * 100 + "")
+        if (
+          video.currentTime >= 30 &&
+          video.duration > 90 &&
+          video.currentTime < video.duration - 30
+        ) {
+          localStorage.setItem(videoFileHash, video.currentTime + "")
+        } else if (
+          video.duration > 90 &&
+          video.currentTime >= video.duration - 30
+        ) {
+          localStorage.removeItem(videoFileHash)
+        }
         if (subtitles.current.length > 0) {
           const currentSubtitle = subtitles.current.find(
             (subtitle) =>
@@ -203,13 +222,21 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setTotalTime(`${hour}:${minute}:${second}`)
         }
-        setSeekValue("0")
+        const savedPlaybackPosition = localStorage.getItem(videoFileHash)
+        if (video.videoWidth > 0 && savedPlaybackPosition) {
+          const newCurrentTime = Number(savedPlaybackPosition)
+          video.currentTime = newCurrentTime > 10 ? newCurrentTime - 10 : 0
+          setSeekValue((video.currentTime / video.duration) * 100 + "")
+        } else {
+          setSeekValue("0")
+        }
         setVideoRatio(video.videoWidth / video.videoHeight)
         video.play().then(() => {
           setIsPaused(false)
         })
       }
       video.onended = () => {
+        localStorage.removeItem(videoFileHash)
         if (currentIndex < mediaFiles.length - 1) {
           setCurrentIndex(currentIndex + 1)
           setShowControls(true)
@@ -322,6 +349,9 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     if (video) {
       const seekTime = (video.duration / 100) * Number(e.currentTarget.value)
       video.currentTime = seekTime
+      if (seekTime < 30) {
+        localStorage.removeItem(videoFileHash)
+      }
     }
   }
 
