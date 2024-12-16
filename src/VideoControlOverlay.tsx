@@ -62,12 +62,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [videoRatio, setVideoRatio] = useState(0)
   const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
   const { t } = useTranslation()
-  const fileName = mediaFiles[currentIndex].file.name
-  const fileSize = mediaFiles[currentIndex].file.size
-  const videoFileHash = useMemo(
-    () => "video-hash-" + hashCode(fileName + fileSize),
-    [mediaFiles[currentIndex].file],
-  )
+  const videoFileHash = useMemo(() => {
+    const allMediaFilesAndSizes = mediaFiles
+      .map((mediaFile) => mediaFile.file.name + mediaFile.file.size)
+      .join("")
+    return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
+  }, [mediaFiles, currentIndex])
 
   const captionBottomPosition = useMemo(() => {
     if (
@@ -160,14 +160,16 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           setCurrentTime(`${hour}:${minute}:${second}`)
         }
         setSeekValue((video.currentTime / video.duration) * 100 + "")
-        if (video.currentTime < 30) {
-          localStorage.removeItem(videoFileHash)
-        } else if (
+        if (
           video.currentTime >= 30 &&
-          video.currentTime < video.duration - 90
+          video.duration > 90 &&
+          video.currentTime < video.duration - 30
         ) {
           localStorage.setItem(videoFileHash, video.currentTime + "")
-        } else if (video.currentTime >= video.duration - 90) {
+        } else if (
+          video.duration > 90 &&
+          video.currentTime >= video.duration - 30
+        ) {
           localStorage.removeItem(videoFileHash)
         }
         if (subtitles.current.length > 0) {
@@ -347,6 +349,9 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     if (video) {
       const seekTime = (video.duration / 100) * Number(e.currentTarget.value)
       video.currentTime = seekTime
+      if (seekTime < 30) {
+        localStorage.removeItem(videoFileHash)
+      }
     }
   }
 
