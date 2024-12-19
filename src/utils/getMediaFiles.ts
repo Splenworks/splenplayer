@@ -1,5 +1,5 @@
-const endsWith = (fileName: string, fileExtensions:string[]) => {
-  return fileExtensions.some(extension => fileName.endsWith(extension))
+const endsWith = (fileName: string, fileExtensions: string[]) => {
+  return fileExtensions.some((extension) => fileName.endsWith(extension))
 }
 
 const looksLikeVideo = (name: string) => {
@@ -9,7 +9,14 @@ const looksLikeVideo = (name: string) => {
 
 const looksLikeAudio = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return endsWith(lowerCasedName, [".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a"])
+  return endsWith(lowerCasedName, [
+    ".mp3",
+    ".wav",
+    ".ogg",
+    ".flac",
+    ".aac",
+    ".m4a",
+  ])
 }
 
 const looksLikeSubtitle = (name: string) => {
