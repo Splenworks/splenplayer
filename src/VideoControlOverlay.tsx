@@ -19,10 +19,9 @@ import {
 import { replaceBasicHtmlEntities } from "./utils/html"
 
 import Caption from "./Caption"
+import FullScreenButton from "./FullScreenButton"
 import IconButton from "./IconButton"
 import ProgressBar from "./ProgressBar"
-import ExitFullscreenIcon from "./assets/compress.svg?react"
-import FullscreenIcon from "./assets/expand.svg?react"
 import NextIcon from "./assets/next.svg?react"
 import PauseIcon from "./assets/pause.svg?react"
 import PlayIcon from "./assets/play.svg?react"
@@ -519,24 +518,14 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 handlePlaybackSpeed={handlePlaybackSpeed}
               />
             </div>
-            <Tooltip
-              text={
-                isFullScreen
-                  ? t("others.exitFullscreen")
-                  : t("others.fullscreen")
-              }
-              place="top"
-              align="right"
-            >
-              <IconButton
-                svgIcon={isFullScreen ? ExitFullscreenIcon : FullscreenIcon}
-                onClick={() => {
-                  if (showControls) {
-                    toggleFullScreen()
-                  }
-                }}
-              />
-            </Tooltip>
+            <FullScreenButton
+              isFullScreen={isFullScreen}
+              onClick={() => {
+                if (showControls) {
+                  toggleFullScreen()
+                }
+              }}
+            />
           </div>
         </div>
         <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
