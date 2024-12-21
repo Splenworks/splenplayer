@@ -537,9 +537,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             </Tooltip>
           </div>
         </div>
-        <div className="absolute bottom-2 left-2 right-2 mx-4 flex h-8 items-center justify-center">
-          <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
-        </div>
+        <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
       </div>
     </div>
   )
