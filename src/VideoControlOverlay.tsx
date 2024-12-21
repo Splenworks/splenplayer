@@ -123,7 +123,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
-      const video = videoRef && typeof videoRef === "object" && videoRef.current
+      const video = getVideo()
       if (video) {
         video.playbackRate = speed
         setPlaySpeed(speed)
@@ -137,14 +137,14 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }, [playSpeed, handlePlaybackSpeed])
 
   useEffect(() => {
-    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    const video = getVideo()
     if (video) {
       video.volume = Number(volume)
     }
   }, [volume, videoRef])
 
   useEffect(() => {
-    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    const video = getVideo()
     if (video) {
       video.ontimeupdate = () => {
         const hour = Math.floor(video.currentTime / 3600)
@@ -283,7 +283,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }
 
   const togglePlayPause = useCallback(() => {
-    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    const video = getVideo()
     if (video) {
       if (video.paused || video.ended) {
         video.play()
@@ -328,7 +328,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const video = videoRef && typeof videoRef === "object" && videoRef.current
+      const video = getVideo()
       if (!video) return
       if (event.key === "Escape") {
         if (!document.fullscreenElement) {
@@ -353,7 +353,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }, [exit, videoRef, togglePlayPause, toggleFullScreen])
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    const video = getVideo()
     if (video) {
       const seekTime = (video.duration / 100) * Number(e.currentTarget.value)
       video.currentTime = seekTime
@@ -364,12 +364,16 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }
 
   const handleVolumeChange = (value: string) => {
-    const video = videoRef && typeof videoRef === "object" && videoRef.current
+    const video = getVideo()
     if (video) {
       setVolume(value)
       video.volume = Number(value)
       localStorage.setItem("volume", value)
     }
+  }
+
+  const getVideo = () => {
+    return videoRef && typeof videoRef === "object" && videoRef.current
   }
 
   return (
@@ -394,8 +398,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             "linear-gradient(to bottom, rgba(0,0,0,75%), rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
         }}
         onMouseEnter={() => {
-          const video =
-            videoRef && typeof videoRef === "object" && videoRef.current
+          const video = getVideo()
           const videoPaused = video && video.paused
           if (document.hasFocus() || videoPaused) {
             setShowControls(true)
@@ -407,8 +410,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           if (mouseMoveTimeout.current) {
             clearTimeout(mouseMoveTimeout.current)
           }
-          const video =
-            videoRef && typeof videoRef === "object" && videoRef.current
+          const video = getVideo()
           const videoPaused = video && video.paused
           if (document.hasFocus() || videoPaused) {
             setShowControls(true)
