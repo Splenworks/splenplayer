@@ -70,6 +70,10 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])
 
+  const getVideo = useCallback(() => {
+    return videoRef && typeof videoRef === "object" && videoRef.current
+  }, [videoRef])
+
   const captionBottomPosition = useMemo(() => {
     if (
       windowWidth === 0 ||
@@ -128,7 +132,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         setPlaySpeed(speed)
       }
     },
-    [videoRef],
+    [getVideo],
   )
 
   useEffect(() => {
@@ -140,7 +144,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     if (video) {
       video.volume = Number(volume)
     }
-  }, [volume, videoRef])
+  }, [volume, getVideo])
 
   useEffect(() => {
     const video = getVideo()
@@ -260,7 +264,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       }
     }
   }, [
-    videoRef,
+    getVideo,
     mediaFiles.length,
     currentIndex,
     setCurrentIndex,
@@ -292,7 +296,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         setIsPaused(true)
       }
     }
-  }, [videoRef])
+  }, [getVideo])
 
   useEffect(() => {
     const fullscreenChange = () => {
@@ -349,7 +353,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [exit, videoRef, togglePlayPause, toggleFullScreen])
+  }, [exit, getVideo, togglePlayPause, toggleFullScreen])
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = getVideo()
@@ -369,10 +373,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       video.volume = Number(value)
       localStorage.setItem("volume", value)
     }
-  }
-
-  const getVideo = () => {
-    return videoRef && typeof videoRef === "object" && videoRef.current
   }
 
   return (
