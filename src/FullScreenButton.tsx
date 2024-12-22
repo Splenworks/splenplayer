@@ -2,8 +2,8 @@ import React from "react"
 import { useTranslation } from "react-i18next"
 import IconButton from "./IconButton"
 import Tooltip from "./Tooltip"
-import ExitFullscreenIcon from "./assets/compress.svg?react"
-import FullscreenIcon from "./assets/expand.svg?react"
+import ExitFullscreenIcon from "./assets/icons/compress.svg?react"
+import FullscreenIcon from "./assets/icons/expand.svg?react"
 
 interface FullScreenButtonProps {
   isFullScreen: boolean

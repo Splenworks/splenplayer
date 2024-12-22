@@ -1,6 +1,6 @@
 import React from "react"
-import VolumeIcon from "./assets/volume-max.svg?react"
-import MuteIcon from "./assets/volume-mute.svg?react"
+import VolumeIcon from "./assets/icons/volume-max.svg?react"
+import MuteIcon from "./assets/icons/volume-mute.svg?react"
 
 interface VolumeControlProps {
   volume: string
