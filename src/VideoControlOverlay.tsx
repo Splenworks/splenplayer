@@ -27,6 +27,7 @@ import NextIcon from "./assets/icons/next.svg?react"
 import PauseIcon from "./assets/icons/pause.svg?react"
 import PlayIcon from "./assets/icons/play.svg?react"
 import CloseIcon from "./assets/icons/xmark.svg?react"
+import { useFullScreen } from "./hooks/useFullScreen"
 import { hashCode } from "./utils/hashCode"
 
 interface VideoControlOverlayProps {
@@ -48,7 +49,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
 }) => {
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
-  const [isFullScreen, setIsFullScreen] = useState(false)
   const [currentTime, setCurrentTime] = useState("00:00")
   const [totalTime, setTotalTime] = useState("00:00")
   const [seekValue, setSeekValue] = useState("0")
@@ -63,6 +63,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [showSubtitle, setShowSubtitle] = useState(true)
   const [videoRatio, setVideoRatio] = useState(0)
   const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
+  const { isFullScreen, toggleFullScreen } = useFullScreen()
   const { t } = useTranslation()
   const videoFileHash = useMemo(() => {
     const allMediaFilesAndSizes = mediaFiles
@@ -300,33 +301,9 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }, [getVideo])
 
   useEffect(() => {
-    const fullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        setIsFullScreen(false)
-      } else {
-        setIsFullScreen(true)
-      }
-    }
-    addEventListener("fullscreenchange", fullscreenChange)
     return () => {
-      removeEventListener("fullscreenchange", fullscreenChange)
       analyzer.current?.destroy()
       analyzer.current = null
-    }
-  }, [])
-
-  const toggleFullScreen = useCallback(() => {
-    const fullscreenSection = document.querySelector("#fullscreenSection")
-    if (!fullscreenSection) return
-
-    if (!document.fullscreenElement) {
-      fullscreenSection.requestFullscreen().catch((err) => {
-        alert(
-          `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
-        )
-      })
-    } else {
-      document.exitFullscreen()
     }
   }, [])
 
@@ -335,7 +312,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       const video = getVideo()
       if (!video) return
       if (event.key === "Escape") {
-        if (!document.fullscreenElement) {
+        if (!isFullScreen) {
           exit()
         }
       } else if (event.key === "ArrowLeft") {
@@ -354,7 +331,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [exit, getVideo, togglePlayPause, toggleFullScreen])
+  }, [exit, getVideo, togglePlayPause, isFullScreen, toggleFullScreen])
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = getVideo()
