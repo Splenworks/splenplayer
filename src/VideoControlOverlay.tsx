@@ -21,6 +21,7 @@ import { replaceBasicHtmlEntities } from "./utils/html"
 import Caption from "./Caption"
 import FullScreenButton from "./FullScreenButton"
 import IconButton from "./IconButton"
+import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import NextIcon from "./assets/icons/next.svg?react"
 import PauseIcon from "./assets/icons/pause.svg?react"
@@ -387,149 +388,124 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           captionBottomPosition={captionBottomPosition}
         />
       )}
-      <div
-        className={twJoin(
-          "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
-          showControls ? "cursor-auto opacity-100" : "cursor-none opacity-0",
-        )}
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,75%), rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
-        }}
-        onMouseEnter={() => {
-          const video = getVideo()
-          const videoPaused = video && video.paused
-          if (document.hasFocus() || videoPaused) {
-            setShowControls(true)
-          } else {
-            setShowControls(false)
-          }
-        }}
-        onMouseMove={() => {
-          if (mouseMoveTimeout.current) {
-            clearTimeout(mouseMoveTimeout.current)
-          }
-          const video = getVideo()
-          const videoPaused = video && video.paused
-          if (document.hasFocus() || videoPaused) {
-            setShowControls(true)
-            mouseMoveTimeout.current = window.setTimeout(() => {
-              if (!videoPaused) {
-                setShowControls(false)
-              }
-            }, 1000)
-          } else {
-            setShowControls(false)
-          }
-        }}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
+      <MouseMoveOverlay
+        showControls={showControls}
+        setShowControls={setShowControls}
+        mouseMoveTimeout={mouseMoveTimeout}
+        videoPaused={isPaused}
       >
-        <div className="absolute left-6 right-4 top-4 flex items-center justify-between">
-          <span className="text-xl font-semibold">
-            {mediaFiles[currentIndex].file.name}{" "}
-            {mediaFiles.length > 1 && (
-              <>
-                [{currentIndex + 1}/{mediaFiles.length}]
-              </>
-            )}
-          </span>
-          {!isFullScreen && (
-            <Tooltip text={t("others.close")} place="bottom" align="right">
-              <IconButton
-                svgIcon={CloseIcon}
-                onClick={() => {
-                  if (showControls) {
-                    exit()
-                  }
-                }}
-              />
-            </Tooltip>
-          )}
-        </div>
-        <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
-          <div className="flex items-center justify-center gap-2">
-            <Tooltip
-              text={isPaused ? t("others.play") : t("others.pause")}
-              place="top"
-              align="left"
-            >
-              <IconButton
-                className={twJoin(isPaused && "pl-0.5")}
-                svgIcon={isPaused ? PlayIcon : PauseIcon}
-                onClick={() => {
-                  if (showControls) {
-                    togglePlayPause()
-                  }
-                }}
-              />
-            </Tooltip>
-            {mediaFiles.length > 1 && currentIndex > 0 && (
-              <Tooltip text={t("others.previous")} place="top">
+        <div
+          className="absolute inset-0"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+        >
+          <div className="absolute left-6 right-4 top-4 flex items-center justify-between">
+            <span className="text-xl font-semibold">
+              {mediaFiles[currentIndex].file.name}{" "}
+              {mediaFiles.length > 1 && (
+                <>
+                  [{currentIndex + 1}/{mediaFiles.length}]
+                </>
+              )}
+            </span>
+            {!isFullScreen && (
+              <Tooltip text={t("others.close")} place="bottom" align="right">
                 <IconButton
-                  svgIcon={NextIcon}
-                  className="rotate-180 transform"
+                  svgIcon={CloseIcon}
                   onClick={() => {
                     if (showControls) {
-                      setCurrentIndex(currentIndex - 1)
+                      exit()
                     }
                   }}
                 />
               </Tooltip>
             )}
-            {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-              <Tooltip text={t("others.next")} place="top">
-                <IconButton
-                  svgIcon={NextIcon}
-                  onClick={() => {
-                    if (showControls) {
-                      setCurrentIndex(currentIndex + 1)
-                    }
-                  }}
-                />
-              </Tooltip>
-            )}
-            <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
-              <span className="pr-2">{currentTime}</span>/
-              <span className="pl-2">{totalTime}</span>
-            </div>
           </div>
-          <div className="flex items-end justify-center gap-2">
-            <VolumeControl
-              volume={volume}
-              handleVolumeChange={handleVolumeChange}
-            />
-            {subtitles.current.length > 0 && (
-              <div className="mr-0.5">
-                <CaptionButton
-                  filled={showSubtitle}
-                  onToggle={() => setShowSubtitle((prev) => !prev)}
+          <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
+            <div className="flex items-center justify-center gap-2">
+              <Tooltip
+                text={isPaused ? t("others.play") : t("others.pause")}
+                place="top"
+                align="left"
+              >
+                <IconButton
+                  className={twJoin(isPaused && "pl-0.5")}
+                  svgIcon={isPaused ? PlayIcon : PauseIcon}
+                  onClick={() => {
+                    if (showControls) {
+                      togglePlayPause()
+                    }
+                  }}
+                />
+              </Tooltip>
+              {mediaFiles.length > 1 && currentIndex > 0 && (
+                <Tooltip text={t("others.previous")} place="top">
+                  <IconButton
+                    svgIcon={NextIcon}
+                    className="rotate-180 transform"
+                    onClick={() => {
+                      if (showControls) {
+                        setCurrentIndex(currentIndex - 1)
+                      }
+                    }}
+                  />
+                </Tooltip>
+              )}
+              {mediaFiles.length > 1 &&
+                currentIndex < mediaFiles.length - 1 && (
+                  <Tooltip text={t("others.next")} place="top">
+                    <IconButton
+                      svgIcon={NextIcon}
+                      onClick={() => {
+                        if (showControls) {
+                          setCurrentIndex(currentIndex + 1)
+                        }
+                      }}
+                    />
+                  </Tooltip>
+                )}
+              <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
+                <span className="pr-2">{currentTime}</span>/
+                <span className="pl-2">{totalTime}</span>
+              </div>
+            </div>
+            <div className="flex items-end justify-center gap-2">
+              <VolumeControl
+                volume={volume}
+                handleVolumeChange={handleVolumeChange}
+              />
+              {subtitles.current.length > 0 && (
+                <div className="mr-0.5">
+                  <CaptionButton
+                    filled={showSubtitle}
+                    onToggle={() => setShowSubtitle((prev) => !prev)}
+                  />
+                </div>
+              )}
+              <div
+                className={twJoin(
+                  "relative",
+                  subtitles.current.length === 0 && "mr-0.5",
+                )}
+              >
+                <PlaySpeedControl
+                  playSpeed={playSpeed}
+                  handlePlaybackSpeed={handlePlaybackSpeed}
                 />
               </div>
-            )}
-            <div
-              className={twJoin(
-                "relative",
-                subtitles.current.length === 0 && "mr-0.5",
-              )}
-            >
-              <PlaySpeedControl
-                playSpeed={playSpeed}
-                handlePlaybackSpeed={handlePlaybackSpeed}
+              <FullScreenButton
+                isFullScreen={isFullScreen}
+                onClick={() => {
+                  if (showControls) {
+                    toggleFullScreen()
+                  }
+                }}
               />
             </div>
-            <FullScreenButton
-              isFullScreen={isFullScreen}
-              onClick={() => {
-                if (showControls) {
-                  toggleFullScreen()
-                }
-              }}
-            />
           </div>
+          <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
         </div>
-        <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
-      </div>
+      </MouseMoveOverlay>
     </div>
   )
 }
