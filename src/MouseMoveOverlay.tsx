@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react"
-import { twJoin } from "tailwind-merge"
+import { twMerge } from "tailwind-merge"
 
 interface MouseMoveOverlayProps {
   showControls: boolean
@@ -19,7 +19,7 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
 }) => {
   return (
     <div
-      className={twJoin(
+      className={twMerge(
         "absolute inset-0 text-white transition-opacity duration-300 ease-in-out",
         showControls ? "cursor-auto opacity-100" : "cursor-none opacity-0",
       )}
