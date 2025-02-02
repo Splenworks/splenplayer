@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react-swc"
 import { defineConfig } from "vite"
 import { CommitHashPlugin } from "vite-plugin-commit-hash"
@@ -8,6 +9,7 @@ import svgr from "vite-plugin-svgr"
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     svgr(),
     CommitHashPlugin({ noPrefix: false, noVirtual: false }),
     VitePWA({ registerType: "autoUpdate" }),
