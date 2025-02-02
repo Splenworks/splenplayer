@@ -9,7 +9,7 @@ const DarkModeSwitch = () => {
     <div className="relative inline-block w-[75px] text-left">
       <input
         type="checkbox"
-        className="peer hidden"
+        className="hidden"
         name="darkModeSwitch"
         id="darkModeSwitch"
         checked={darkMode}
@@ -19,18 +19,23 @@ const DarkModeSwitch = () => {
         }}
       />
       <label
-        className="group block cursor-pointer overflow-hidden rounded-full"
+        className="block cursor-pointer overflow-hidden rounded-full"
         htmlFor="darkModeSwitch"
       >
         <span
           className={twJoin(
-            "inner -ml-[100%] block w-[200%] transition-[margin] duration-300 ease-in",
+            "inner block w-[200%] transition-[margin] duration-300 ease-in",
             "both:float-left both:box-border both:block both:h-9 both:w-1/2 both:p-0 both:font-bold both:leading-9 both:text-white both:content-['']",
             "before:bg-neutral-600 before:pl-[10px] after:bg-neutral-200 after:pr-[10px] after:text-right",
-            "peer-checked:group-[]:ml-0",
+            darkMode ? "ml-0" : "-ml-[100%]",
           )}
         />
-        <span className="absolute bottom-0 right-10 top-0 m-[5px] block w-6 rounded-full bg-white transition-all duration-300 ease-in peer-checked:group-[]:right-0">
+        <span
+          className={twJoin(
+            "absolute top-0 bottom-0 m-[5px] block w-6 rounded-full bg-white transition-all duration-300 ease-in",
+            darkMode ? "right-0" : "right-10",
+          )}
+        >
           <DarkModeSwitchIcon
             darkMode={darkMode}
             sunColor="black"

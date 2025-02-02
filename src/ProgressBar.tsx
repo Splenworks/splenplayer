@@ -9,13 +9,13 @@ interface ProgressBarProps {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ handleSeek, seekValue }) => {
   return (
-    <div className="absolute bottom-2 left-2 right-2 mx-4 flex h-8 items-center justify-center">
+    <div className="absolute right-2 bottom-2 left-2 mx-4 flex h-8 items-center justify-center">
       <input
         autoFocus
         className={twJoin(
           isSafari
-            ? "h-2 w-full cursor-pointer appearance-none rounded-full border border-neutral-500 bg-transparent accent-white outline-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-            : "w-full cursor-pointer accent-white outline-none",
+            ? "h-2 w-full cursor-pointer appearance-none rounded-full border border-neutral-500 bg-transparent accent-white outline-hidden [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+            : "w-full cursor-pointer accent-white outline-hidden",
         )}
         type="range"
         min="0"
