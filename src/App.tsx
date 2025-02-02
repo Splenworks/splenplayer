@@ -8,6 +8,7 @@ import koTranslation from "./assets/translations/ko.json"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
+import { FullScreenProvider } from "./providers/FullScreenProvider"
 import { MediaFile } from "./utils/getMediaFiles"
 import VideoControlOverlay from "./VideoControlOverlay"
 import VideoPlayer from "./VideoPlayer"
@@ -108,7 +109,7 @@ function App() {
 
   if (mediaFiles.length > 0) {
     return (
-      <div id="fullscreenSection">
+      <FullScreenProvider>
         <VideoPlayer
           mediaFiles={mediaFiles}
           currentIndex={currentIndex}
@@ -122,7 +123,7 @@ function App() {
           videoRef={videoRef}
           setMedia={setMedia}
         />
-      </div>
+      </FullScreenProvider>
     )
   }
 

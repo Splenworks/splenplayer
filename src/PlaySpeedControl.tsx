@@ -1,8 +1,8 @@
 import React from "react"
 import { twJoin } from "tailwind-merge"
 import PlaySpeedButton from "./PlaySpeedButton"
-import PlaybackSpeedIcon from "./assets/playback-speed.svg?react"
-import CloseIcon from "./assets/xmark.svg?react"
+import PlaybackSpeedIcon from "./assets/icons/playback-speed.svg?react"
+import CloseIcon from "./assets/icons/xmark.svg?react"
 
 interface PlaySpeedControlProps {
   playSpeed: number
