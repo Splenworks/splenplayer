@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect } from "react"
-import { FullScreenContext } from "../context/FullScreenContext"
+import { FullScreenContext } from "../contexts/FullScreenContext"
 
 const FULLSCREEN_ELEMENT_ID = "fullscreenSection"
 
