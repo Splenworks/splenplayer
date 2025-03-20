@@ -1,12 +1,5 @@
-import React, { PropsWithChildren, createContext, useEffect } from "react"
-
-export const FullScreenContext = createContext<{
-  isFullScreen: boolean
-  toggleFullScreen: () => void
-}>({
-  isFullScreen: false,
-  toggleFullScreen: () => {},
-})
+import React, { PropsWithChildren, useEffect } from "react"
+import { FullScreenContext } from "../contexts/FullScreenContext"
 
 const FULLSCREEN_ELEMENT_ID = "fullscreenSection"
 
