@@ -1,6 +1,6 @@
 // https://stackoverflow.com/a/8831937
 
-export function hashCode(str: string) {
+export function hashCode(str: string): number {
   let hash = 0
   for (let i = 0, len = str.length; i < len; i++) {
     const chr = str.charCodeAt(i)

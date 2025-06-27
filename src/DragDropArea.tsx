@@ -29,7 +29,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     e.preventDefault()
   }
 
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setDragging(false)
     const files = Array.from(e.dataTransfer.files)
@@ -45,9 +45,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     fileInputRef.current?.click()
   }
 
-  const handleFileInputChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     const mediaFiles = getMediaFiles(files)
     if (mediaFiles.length === 0) {
