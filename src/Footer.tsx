@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { Trans } from "react-i18next"
 import CommitHash from "virtual:commit-hash"
 
@@ -14,8 +14,10 @@ const otherProducts = [
 ]
 
 const Footer: React.FC = () => {
-  const randomProduct =
-    otherProducts[Math.floor(Math.random() * otherProducts.length)]
+  const randomProduct = useMemo(
+    () => otherProducts[Math.floor(Math.random() * otherProducts.length)],
+    [],
+  )
   return (
     <footer className="absolute bottom-0 left-0 right-0 bg-white dark:bg-neutral-900">
       <div className="mx-8 flex h-16 items-center justify-center md:mx-16">
@@ -28,6 +30,7 @@ const Footer: React.FC = () => {
                 <a
                   href={randomProduct.url}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="underline"
                 >
                   {randomProduct.name}

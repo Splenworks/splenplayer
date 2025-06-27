@@ -1,8 +1,8 @@
-export const getDarkmode = () => {
+export const getDarkmode = (): boolean => {
   return document.documentElement.classList.contains("dark")
 }
 
-export const toggleDarkmode = () => {
+export const toggleDarkmode = (): void => {
   document.documentElement.classList.toggle("dark")
   localStorage.setItem(
     "theme",
