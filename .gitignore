@@ -25,3 +25,4 @@ dist-ssr
 
 # Sample files
 /samples/*
+.yarn/install-state.gz
