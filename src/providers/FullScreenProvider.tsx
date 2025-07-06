@@ -34,9 +34,9 @@ export const FullScreenProvider: React.FC<PropsWithChildren> = ({
         setIsFullScreen(true)
       }
     }
-    window.addEventListener("fullscreenchange", onFullScreenChange)
+    document.addEventListener("fullscreenchange", onFullScreenChange)
     return () => {
-      window.removeEventListener("fullscreenchange", onFullScreenChange)
+      document.removeEventListener("fullscreenchange", onFullScreenChange)
     }
   }, [])
 
