@@ -13,7 +13,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
-  const smallScreen = useMediaQuery("(max-width: 640px) or (max-height: 640px)")
+  const smallScreen = useMediaQuery("(max-width: 640px), (max-height: 640px)")
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -61,7 +61,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
         className={twJoin(
           "absolute inset-x-8 inset-y-0 flex cursor-pointer flex-col items-center justify-center rounded-xl border-4 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
           dragging &&
-            "border-pink-900 bg-neutral-200 dark:border-pink-700 dark:bg-neutral-600",
+          "border-pink-900 bg-neutral-200 dark:border-pink-700 dark:bg-neutral-600",
         )}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
