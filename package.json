@@ -18,7 +18,7 @@
     "i18next-browser-languagedetector": "^8.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-i18next": "^15.4.0",
+    "react-i18next": "^15.6.0",
     "react-router-dom": "^7.0.2",
     "react-toggle-dark-mode": "^1.1.1",
     "sami-parser": "^0.5.3",
