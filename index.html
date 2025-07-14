@@ -8,15 +8,30 @@
       href="/src/assets/icons/favicon.svg"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SplenPlayer - Caption Support, Audio Visualizer</title>
+    <title>SplenPlayer - Play Audio & Video with Subtitles, No Upload Needed</title>
     <meta
       name="keywords"
       content="video, music, player, SAMI, .smi, ,vtt, .srt, subtitle, simple"
     />
     <meta
       name="description"
-      content="A simple video/music player that can handle subtitle files too. We never store your data in the server. This app only runs in your browser. Enjoy!"
+      content="Play audio and video files with synced subtitles in your browser. Splenplayer remembers playback, supports multiple files, and requires no upload or install."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SplenPlayer - Play Audio & Video with Subtitles, No Upload Needed" />
+    <meta
+      property="og:description"
+      content="Play audio and video files with synced subtitles in your browser. Splenplayer remembers playback, supports multiple files, and requires no upload or install."
+    />
+    <meta property="og:url" content="https://splenplayer.com" />
+    <meta property="og:image" content="/src/assets/icons/favicon.svg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="SplenPlayer - Play Audio & Video with Subtitles, No Upload Needed" />
+    <meta
+      name="twitter:description"
+      content="Play audio and video files with synced subtitles in your browser. Splenplayer remembers playback, supports multiple files, and requires no upload or install."
+    />
+    <meta name="twitter:image" content="/src/assets/icons/favicon.svg" />
     <meta
       name="google-site-verification"
       content="RCLKMwYRX6-zLav99q8APoanOQrgWxQzDXGqmL8m4kE"
@@ -37,6 +52,22 @@
       data-domain="splenplayer.com"
       src="https://plausible.io/js/script.js"
     ></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "SplenPlayer",
+        "url": "https://splenplayer.com",
+        "description": "Splenplayer is a fast, privacy-first media player that runs entirely in your browser. It supports both audio and video files, displays synced subtitles or captions, and remembers your playback position — all with no uploads, installs, or accounts required.",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "All",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
