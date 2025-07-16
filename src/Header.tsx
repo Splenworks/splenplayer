@@ -6,7 +6,7 @@ const Header: React.FC = () => {
     <header className="absolute left-0 right-0 top-0 bg-white dark:bg-neutral-900">
       <div className="mx-8 flex h-16 items-center justify-center md:mx-16">
         <div className="flex-1"></div>
-        <p className="text-lg font-semibold text-black dark:text-white">
+        <p className="text-xl font-semibold text-black dark:text-white">
           <span className="text-pink-900 dark:text-pink-700">Splen</span>Player
         </p>
         <div className="flex flex-1 items-center justify-end">
