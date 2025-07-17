@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useMemo } from "react"
+import { forwardRef, useState, useEffect } from "react"
 import { MediaFile } from "./utils/getMediaFiles"
 
 interface VideoPlayerProps {
@@ -8,19 +8,20 @@ interface VideoPlayerProps {
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
   ({ mediaFiles, currentIndex }, videoRef) => {
-    const videoSrc = useMemo(() => {
+    const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined)
+
+    useEffect(() => {
       const blob = new Blob([mediaFiles[currentIndex].file], {
         type:
           mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
       })
-      return URL.createObjectURL(blob)
-    }, [mediaFiles, currentIndex])
+      const newUrl = URL.createObjectURL(blob)
+      setVideoSrc(newUrl)
 
-    useEffect(() => {
       return () => {
-        URL.revokeObjectURL(videoSrc)
+        URL.revokeObjectURL(newUrl)
       }
-    }, [videoSrc])
+    }, [mediaFiles, currentIndex])
 
     return (
       <div className="fixed bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-black">
