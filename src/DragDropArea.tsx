@@ -1,9 +1,9 @@
-import { PlayCircleIcon } from "@heroicons/react/24/solid"
 import React, { useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { twJoin } from "tailwind-merge"
 import { useMediaQuery } from "usehooks-ts"
 import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
+import GradientPlayCircleIcon from "./GradientPlayCircleIcon"
 
 interface DragDropAreaProps {
   setMedia: (files: MediaFile[]) => void
@@ -61,7 +61,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
         className={twJoin(
           "absolute inset-x-8 inset-y-0 flex cursor-pointer flex-col items-center justify-center rounded-xl border-4 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
           dragging &&
-          "border-pink-900 bg-neutral-200 dark:border-pink-700 dark:bg-neutral-600",
+          "border-pink-800 bg-neutral-200 dark:border-pink-600 dark:bg-neutral-600",
         )}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -89,12 +89,12 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
             </p>
           ) : (
             <div className="flex flex-col items-center justify-center">
-              <PlayCircleIcon className="mb-8 h-24 w-24 text-pink-900 dark:text-pink-700" />
+              <GradientPlayCircleIcon className="mb-8 h-24 w-24" />
               <p className="mb-4 text-center text-xl font-bold">
                 <Trans
                   i18nKey="dragDropArea.mainMessage"
                   components={{
-                    u: <span className="text-pink-900 dark:text-pink-700" />,
+                    u: <span className="text-pink-800 dark:text-pink-600" />,
                   }}
                 />
               </p>
@@ -102,7 +102,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
                 <Trans
                   i18nKey="dragDropArea.subMessage"
                   components={{
-                    u: <span className="text-pink-900 dark:text-pink-700" />,
+                    u: <span className="text-pink-800 dark:text-pink-600" />,
                   }}
                 />
               </p>
