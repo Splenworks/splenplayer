@@ -16,6 +16,7 @@
     "previous": "Previous",
     "next": "Next",
     "fullscreen": "Fullscreen",
-    "exitFullscreen": "Exit Fullscreen"
+    "exitFullscreen": "Exit Fullscreen",
+    "cast": "Cast"
   }
 }

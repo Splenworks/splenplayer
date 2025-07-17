@@ -7,6 +7,7 @@ import { twJoin } from "tailwind-merge"
 import { useWindowSize } from "usehooks-ts"
 
 import CaptionButton from "./CaptionButton"
+import CastButton from "./CastButton"
 import PlaySpeedControl from "./PlaySpeedControl"
 import Tooltip from "./Tooltip"
 import VolumeControl from "./VolumeControl"
@@ -354,7 +355,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 top-0">
+    <div className="fixed top-0 right-0 bottom-0 left-0">
       <div
         ref={analyzerContainer}
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
@@ -376,7 +377,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         >
-          <div className="absolute left-6 right-4 top-4 flex items-center justify-between">
+          <div className="absolute top-4 right-4 left-6 flex items-center justify-between">
             <span className="text-xl font-semibold">
               {mediaFiles[currentIndex].file.name}{" "}
               {mediaFiles.length > 1 && (
@@ -398,7 +399,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               </Tooltip>
             )}
           </div>
-          <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
+          <div className="absolute right-0 bottom-11 left-0 mx-4 flex items-end justify-between">
             <div className="flex items-center justify-center gap-2">
               <Tooltip
                 text={isPaused ? t("others.play") : t("others.pause")}
@@ -451,6 +452,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 volume={volume}
                 handleVolumeChange={handleVolumeChange}
               />
+              <CastButton videoRef={videoRef} />
               {subtitles.current.length > 0 && (
                 <div className="mr-0.5">
                   <CaptionButton
