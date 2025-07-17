@@ -8,7 +8,7 @@ interface VideoPlayerProps {
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
   ({ mediaFiles, currentIndex }, videoRef) => {
-    const [videoSrc, setVideoSrc] = useState<string>("")
+    const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined)
 
     useEffect(() => {
       const blob = new Blob([mediaFiles[currentIndex].file], {
