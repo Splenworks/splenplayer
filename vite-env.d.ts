@@ -47,4 +47,7 @@ interface Window {
   MatroskaSubtitles: MatroskaSubtitlesGlobal
 }
 
-declare module "matroska-subtitles/dist/matroska-subtitles.min.js" {}
+declare module "matroska-subtitles/dist/matroska-subtitles.min.js?url" {
+  const url: string
+  export default url
+}

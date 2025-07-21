@@ -1,7 +1,9 @@
 export type { ParseResult } from "sami-parser"
 import type { ParseResult as SamiParseResult } from "sami-parser"
-// The browser build exposes a global `MatroskaSubtitles` object
-// so we load it dynamically and grab the parser class from there.
+// The browser build exposes a global `MatroskaSubtitles` object.
+// We inject the minified script dynamically so it runs as a classic
+// script and attaches itself to `window`.
+import matroskaSubtitlesUrl from "matroska-subtitles/dist/matroska-subtitles.min.js?url"
 
 interface TrackInfo {
   number: number
@@ -17,12 +19,26 @@ interface ParsedSubtitle {
   [key: string]: unknown
 }
 
+let loadPromise: Promise<void> | null = null
+
+async function loadMatroskaSubtitles(): Promise<void> {
+  if (window.MatroskaSubtitles) return
+  if (!loadPromise) {
+    loadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script")
+      script.src = matroskaSubtitlesUrl
+      script.onload = () => resolve()
+      script.onerror = () => reject(new Error("Failed to load matroska-subtitles"))
+      document.head.appendChild(script)
+    })
+  }
+  await loadPromise
+}
+
 export async function extractMkvSubtitles(
   file: File,
 ): Promise<SamiParseResult> {
-  if (!window.MatroskaSubtitles) {
-    await import("matroska-subtitles/dist/matroska-subtitles.min.js")
-  }
+  await loadMatroskaSubtitles()
   const { SubtitleParser } = window.MatroskaSubtitles
   const buffer = await file.arrayBuffer()
   const parser = new SubtitleParser()
