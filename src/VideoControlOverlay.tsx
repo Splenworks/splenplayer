@@ -17,6 +17,7 @@ import {
   getSubtitleFiles,
 } from "./utils/getMediaFiles"
 import { replaceBasicHtmlEntities } from "./utils/html"
+import { extractMkvSubtitles } from "./utils/extractMkvSubtitles"
 
 import Caption from "./Caption"
 import FullScreenButton from "./FullScreenButton"
@@ -117,14 +118,65 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     reader.readAsText(subtitleFile)
   }, [])
 
+  const parseTextTrackSubtitles = useCallback((video: HTMLVideoElement) => {
+    const entries: ParseResult = []
+    for (let i = 0; i < video.textTracks.length; i++) {
+      const track = video.textTracks[i]
+      track.mode = "hidden"
+      const cues = track.cues
+      if (cues) {
+        for (let j = 0; j < cues.length; j++) {
+          const cue = cues[j]
+          entries.push({
+            startTime: cue.startTime * 1000,
+            endTime: cue.endTime * 1000,
+            languages: {
+              [track.language || "x"]: (cue as VTTCue).text,
+            },
+          })
+        }
+      }
+    }
+    if (entries.length > 0) {
+      subtitles.current = entries.sort((a, b) => a.startTime - b.startTime)
+    }
+  }, [])
+
+  const parseMkvSubtitles = useCallback(async (file: File) => {
+    const entries = await extractMkvSubtitles(file)
+    if (entries.length > 0) {
+      subtitles.current = entries
+    }
+  }, [])
+
   useEffect(() => {
     const subtitleFile = mediaFiles[currentIndex].subtitleFile
     if (subtitleFile) {
       parseSubtitle(subtitleFile)
     } else {
       subtitles.current = []
+      const mediaFile = mediaFiles[currentIndex].file
+      if (mediaFile.name.endsWith(".mkv")) {
+        parseMkvSubtitles(mediaFile)
+      } else {
+        const video = getVideo()
+        if (video) {
+          const handler = () => {
+            parseTextTrackSubtitles(video)
+          }
+          video.addEventListener("loadedmetadata", handler, { once: true })
+          return () => video.removeEventListener("loadedmetadata", handler)
+        }
+      }
     }
-  }, [currentIndex, mediaFiles, parseSubtitle])
+  }, [
+    currentIndex,
+    mediaFiles,
+    parseSubtitle,
+    getVideo,
+    parseTextTrackSubtitles,
+    parseMkvSubtitles,
+  ])
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -215,6 +267,13 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else {
           setIsAudio(false)
         }
+        if (subtitles.current.length === 0) {
+          if (mediaFiles[currentIndex].file.name.endsWith(".mkv")) {
+            parseMkvSubtitles(mediaFiles[currentIndex].file)
+          } else {
+            parseTextTrackSubtitles(video)
+          }
+        }
         const hour = Math.floor(video.duration / 3600)
         let minute = Math.floor((video.duration % 3600) / 60).toString()
         if (minute.length === 1) {
@@ -267,10 +326,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }, [
     getVideo,
-    mediaFiles.length,
+    mediaFiles,
     currentIndex,
     setCurrentIndex,
     videoFileHash,
+    parseTextTrackSubtitles,
+    parseMkvSubtitles,
   ])
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {

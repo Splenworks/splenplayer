@@ -16,6 +16,7 @@
     "audiomotion-analyzer": "^4.5.0",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.2",
+    "matroska-subtitles": "^3.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.6.0",

@@ -11,9 +11,14 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined)
 
     useEffect(() => {
+      const isMkv = mediaFiles[currentIndex].file.name.endsWith(".mkv")
       const blob = new Blob([mediaFiles[currentIndex].file], {
         type:
-          mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
+          mediaFiles[currentIndex].type === "audio"
+            ? "audio/mpeg"
+            : isMkv
+              ? "video/x-matroska"
+              : "video/mp4",
       })
       const newUrl = URL.createObjectURL(blob)
       setVideoSrc(newUrl)
