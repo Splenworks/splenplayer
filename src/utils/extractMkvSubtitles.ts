@@ -101,6 +101,9 @@ export async function extractMkvSubtitles(
       offset += sizeRes.length
       const dataEnd = offset + sizeRes.value
       switch (idRes.value) {
+        case IDS.Segment:
+          parseLevel(dataEnd)
+          break
         case IDS.TimecodeScale:
           timecodeScale = readUInt(view, offset, sizeRes.value)
           break
