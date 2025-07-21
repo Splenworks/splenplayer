@@ -14,17 +14,23 @@ const readVint = (view: DataView, offset: number): VintResult => {
     mask >>= 1
     length += 1
   }
-  let value = first & (mask - 1)
+  let value = first
   for (let i = 1; i < length; i++) {
     value = (value << 8) + view.getUint8(offset + i)
   }
   return { length, value }
 }
 
+const readVintValue = (view: DataView, offset: number): VintResult => {
+  const { length, value } = readVint(view, offset)
+  const mask = 1 << (8 * length - length)
+  return { length, value: value - mask }
+}
+
 const readUInt = (view: DataView, offset: number, length: number) => {
   let value = 0
   for (let i = 0; i < length; i++) {
-    value = (value << 8) + view.getUint8(offset + i)
+    value = value * 256 + view.getUint8(offset + i)
   }
   return value
 }
@@ -32,7 +38,7 @@ const readUInt = (view: DataView, offset: number, length: number) => {
 const readInt = (view: DataView, offset: number, length: number) => {
   const uint = readUInt(view, offset, length)
   const signMask = 1 << (length * 8 - 1)
-  return uint & signMask ? uint - (1 << (length * 8)) : uint
+  return uint & signMask ? uint - Math.pow(2, length * 8) : uint
 }
 
 const IDS = {
@@ -69,7 +75,7 @@ export async function extractMkvSubtitles(
     dataSize: number,
     withDuration?: number,
   ) => {
-    const { value: trackNumber, length: tLen } = readVint(view, dataOffset)
+    const { value: trackNumber, length: tLen } = readVintValue(view, dataOffset)
     if (trackNumber !== subtitleTrack) return
     const timecode = readInt(view, dataOffset + tLen, 2)
     const payloadOffset = dataOffset + tLen + 3
@@ -91,7 +97,7 @@ export async function extractMkvSubtitles(
     while (offset < end) {
       const idRes = readVint(view, offset)
       offset += idRes.length
-      const sizeRes = readVint(view, offset)
+      const sizeRes = readVintValue(view, offset)
       offset += sizeRes.length
       const dataEnd = offset + sizeRes.value
       switch (idRes.value) {
@@ -109,7 +115,7 @@ export async function extractMkvSubtitles(
           while (offset < trackEnd) {
             const tId = readVint(view, offset)
             offset += tId.length
-            const tSize = readVint(view, offset)
+            const tSize = readVintValue(view, offset)
             offset += tSize.length
             const tDataEnd = offset + tSize.value
             if (tId.value === IDS.TrackNumber) {
@@ -135,7 +141,7 @@ export async function extractMkvSubtitles(
           while (offset < clusterEnd) {
             const cId = readVint(view, offset)
             offset += cId.length
-            const cSize = readVint(view, offset)
+            const cSize = readVintValue(view, offset)
             offset += cSize.length
             const cEnd = offset + cSize.value
             switch (cId.value) {
@@ -149,21 +155,23 @@ export async function extractMkvSubtitles(
                 const bgEnd = cEnd
                 let duration: number | undefined
                 let blockOffset = -1
+                let blockSize = 0
                 while (offset < bgEnd) {
                   const bId = readVint(view, offset)
                   offset += bId.length
-                  const bSize = readVint(view, offset)
+                  const bSize = readVintValue(view, offset)
                   offset += bSize.length
                   const bEnd = offset + bSize.value
                   if (bId.value === IDS.Block) {
                     blockOffset = offset
+                    blockSize = bSize.value
                   } else if (bId.value === IDS.BlockDuration) {
                     duration = readUInt(view, offset, bSize.value)
                   }
                   offset = bEnd
                 }
                 if (blockOffset !== -1) {
-                  decodeBlock(blockOffset, cEnd - blockOffset, duration)
+                  decodeBlock(blockOffset, blockSize, duration)
                 }
                 break
               }
