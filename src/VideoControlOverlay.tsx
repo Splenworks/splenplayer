@@ -17,6 +17,7 @@ import {
   getSubtitleFiles,
 } from "./utils/getMediaFiles"
 import { replaceBasicHtmlEntities } from "./utils/html"
+import { extractMkvSubtitles } from "./utils/extractMkvSubtitles"
 
 import Caption from "./Caption"
 import FullScreenButton from "./FullScreenButton"
@@ -141,30 +142,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     }
   }, [])
 
-  const parseSrtTime = (time: string) => {
-    const [h, m, rest] = time.split(":")
-    const [s, ms] = rest.split(/[,.]/)
-    return (
-      Number(h) * 3600 * 1000 +
-      Number(m) * 60 * 1000 +
-      Number(s) * 1000 +
-      Number(ms)
-    )
-  }
-
   const parseMkvSubtitles = useCallback(async (file: File) => {
-    const buffer = await file.arrayBuffer()
-    const text = new TextDecoder().decode(buffer)
-    const regex = /(\d+)\s+(\d{2}:\d{2}:\d{2}[,.]\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}[,.]\d{3})\s+([^\n\r]+)/g
-    const entries: ParseResult = []
-    let match
-    while ((match = regex.exec(text))) {
-      entries.push({
-        startTime: parseSrtTime(match[2]),
-        endTime: parseSrtTime(match[3]),
-        languages: { x: match[4].trim() },
-      })
-    }
+    const entries = await extractMkvSubtitles(file)
     if (entries.length > 0) {
       subtitles.current = entries
     }
