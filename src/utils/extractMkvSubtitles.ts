@@ -1,6 +1,7 @@
 export type { ParseResult } from "sami-parser"
 import type { ParseResult as SamiParseResult } from "sami-parser"
-import { SubtitleParser } from "matroska-subtitles/dist/matroska-subtitles.min.js"
+// The browser build exposes a global `MatroskaSubtitles` object
+// so we load it dynamically and grab the parser class from there.
 
 interface TrackInfo {
   number: number
@@ -19,6 +20,10 @@ interface ParsedSubtitle {
 export async function extractMkvSubtitles(
   file: File,
 ): Promise<SamiParseResult> {
+  if (!window.MatroskaSubtitles) {
+    await import("matroska-subtitles/dist/matroska-subtitles.min.js")
+  }
+  const { SubtitleParser } = window.MatroskaSubtitles
   const buffer = await file.arrayBuffer()
   const parser = new SubtitleParser()
   const trackLang = new Map<number, string>()

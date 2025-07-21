@@ -17,26 +17,34 @@ declare module "sami-parser" {
   export function parse(str: string): { result: ParseResult; errors: Error[] }
 }
 
-declare module "matroska-subtitles/dist/matroska-subtitles.min.js" {
-  export interface SubtitleTrack {
-    number: number
-    language?: string
-    name?: string
-    type: string
-  }
-
-  export interface SubtitleBlock {
-    text: string
-    time: number
-    duration: number
-    [key: string]: unknown
-  }
-
-  export class SubtitleParser {
-    on(event: "tracks", listener: (tracks: SubtitleTrack[]) => void): this
-    on(event: "subtitle", listener: (subtitle: SubtitleBlock, track: number) => void): this
-    on(event: "finish", listener: () => void): this
-    write(data: Uint8Array): void
-    end(): void
-  }
+interface SubtitleTrack {
+  number: number
+  language?: string
+  name?: string
+  type: string
 }
+
+interface SubtitleBlock {
+  text: string
+  time: number
+  duration: number
+  [key: string]: unknown
+}
+
+interface SubtitleParser {
+  on(event: "tracks", listener: (tracks: SubtitleTrack[]) => void): this
+  on(event: "subtitle", listener: (subtitle: SubtitleBlock, track: number) => void): this
+  on(event: "finish", listener: () => void): this
+  write(data: Uint8Array): void
+  end(): void
+}
+
+interface MatroskaSubtitlesGlobal {
+  SubtitleParser: new () => SubtitleParser
+}
+
+interface Window {
+  MatroskaSubtitles: MatroskaSubtitlesGlobal
+}
+
+declare module "matroska-subtitles/dist/matroska-subtitles.min.js" {}
