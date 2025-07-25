@@ -1,0 +1,21 @@
+{
+  "dragDropArea": {
+    "dropHere": "Suelta aquí",
+    "mainMessage": "¡Arrastra y suelta cualquier archivo de <u>video</u> o <u>audio</u> aquí!",
+    "subMessage": "También puedes soltar archivos de subtítulos (vtt, srt, smi).",
+    "noMediaFilesFound": "No se encontraron archivos multimedia.",
+    "neverStoreYourData": "Nunca almacenamos tus archivos en nuestro servidor."
+  },
+  "footer": {
+    "checkOutProduct": "Consulta nuestro otro producto <link />"
+  },
+  "others": {
+    "close": "Cerrar",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa"
+  }
+}

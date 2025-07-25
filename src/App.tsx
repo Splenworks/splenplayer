@@ -5,6 +5,8 @@ import { initReactI18next } from "react-i18next"
 import enTranslation from "./assets/translations/en.json"
 import jaTranslation from "./assets/translations/ja.json"
 import koTranslation from "./assets/translations/ko.json"
+import esTranslation from "./assets/translations/es.json"
+import cnTranslation from "./assets/translations/cn.json"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
@@ -27,8 +29,14 @@ i18n
       ja: {
         translation: jaTranslation,
       },
+      es: {
+        translation: esTranslation,
+      },
+      cn: {
+        translation: cnTranslation,
+      },
     },
-    fallbackLng: "en",
+    fallbackLng: "ko",
     interpolation: {
       escapeValue: false,
     },
