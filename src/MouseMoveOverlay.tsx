@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 interface MouseMoveOverlayProps {
   showControls: boolean
   setShowControls: (showControls: boolean) => void
-  mouseMoveTimeout: React.RefObject<number | null>
+  mouseMoveTimeoutRef: React.RefObject<number | null>
   videoPaused: boolean
   delay?: number
 }
@@ -13,7 +13,7 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
   children,
   showControls,
   setShowControls,
-  mouseMoveTimeout,
+  mouseMoveTimeoutRef,
   videoPaused,
   delay = 1000,
 }) => {
@@ -35,12 +35,12 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
         }
       }}
       onMouseMove={() => {
-        if (mouseMoveTimeout.current) {
-          clearTimeout(mouseMoveTimeout.current)
+        if (mouseMoveTimeoutRef.current) {
+          clearTimeout(mouseMoveTimeoutRef.current)
         }
         if (document.hasFocus() || videoPaused) {
           setShowControls(true)
-          mouseMoveTimeout.current = window.setTimeout(() => {
+          mouseMoveTimeoutRef.current = window.setTimeout(() => {
             if (!videoPaused) {
               setShowControls(false)
             }

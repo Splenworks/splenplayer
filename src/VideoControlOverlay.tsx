@@ -368,7 +368,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       <MouseMoveOverlay
         showControls={showControls}
         setShowControls={setShowControls}
-        mouseMoveTimeout={mouseMoveTimeout}
+        mouseMoveTimeoutRef={mouseMoveTimeout}
         videoPaused={isPaused}
       >
         <div
