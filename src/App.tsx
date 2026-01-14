@@ -1,12 +1,12 @@
 import i18n from "i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
-import { createRef, useCallback, useEffect, useState } from "react"
+import { createRef, useCallback, useState } from "react"
 import { initReactI18next } from "react-i18next"
+import cnTranslation from "./assets/translations/cn.json"
 import enTranslation from "./assets/translations/en.json"
+import esTranslation from "./assets/translations/es.json"
 import jaTranslation from "./assets/translations/ja.json"
 import koTranslation from "./assets/translations/ko.json"
-import esTranslation from "./assets/translations/es.json"
-import cnTranslation from "./assets/translations/cn.json"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
@@ -49,11 +49,8 @@ function App() {
 
   const exit = () => {
     setMediaFiles([])
-  }
-
-  useEffect(() => {
     setCurrentIndex(0)
-  }, [mediaFiles])
+  }
 
   const setMedia = useCallback(
     (files: MediaFile[]) => {
