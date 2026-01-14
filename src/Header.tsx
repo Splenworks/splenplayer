@@ -1,5 +1,6 @@
 import React from "react"
 import DarkModeSwitch from "./DarkModeSwitch"
+import LanguageSelect from "./LanguageSelect"
 
 const Header: React.FC = () => {
   return (
@@ -10,7 +11,8 @@ const Header: React.FC = () => {
           <span className="bg-gradient-to-r from-pink-700 to-pink-900 dark:from-pink-700 dark:to-pink-500 text-transparent bg-clip-text">Splen</span>
           Player
         </p>
-        <div className="flex flex-1 items-center justify-end">
+        <div className="flex flex-1 items-center justify-end gap-1">
+          <LanguageSelect />
           <DarkModeSwitch />
         </div>
       </div>
