@@ -23,6 +23,7 @@ export default {
     plugin(function ({ addVariant }) {
       addVariant("hocus", ["&:hover", "&:focus"])
       addVariant("both", ["&:before", "&:after"])
+      addVariant("ff", "@supports (-moz-appearance: none)")
     }),
   ],
   darkMode: "selector",

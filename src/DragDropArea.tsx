@@ -2,8 +2,8 @@ import React, { useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { twJoin } from "tailwind-merge"
 import { useMediaQuery } from "usehooks-ts"
-import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 import GradientPlayCircleIcon from "./GradientPlayCircleIcon"
+import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 
 interface DragDropAreaProps {
   setMedia: (files: MediaFile[]) => void
@@ -59,7 +59,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     <div className="fixed bottom-16 left-0 right-0 top-16 bg-white dark:bg-neutral-900">
       <div
         className={twJoin(
-          "absolute inset-x-8 inset-y-0 flex cursor-pointer flex-col items-center justify-center rounded-xl border-4 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
+          "absolute inset-x-8 inset-y-0 flex cursor-pointer flex-col items-center justify-center rounded-xl border-4 ff:border-3 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
           "hover:bg-gradient-to-r hover:from-transparent hover:to-transparent hover:bg-[length:200%_100%] hover:animate-shimmer",
           "hover:via-pink-200/50 dark:hover:via-pink-800/20",
           dragging &&
