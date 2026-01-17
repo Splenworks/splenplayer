@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect } from "react"
 import { FullScreenContext } from "../contexts/FullScreenContext"
+import { isMac } from "../utils/browser"
 
 const FULLSCREEN_ELEMENT_ID = "fullscreenSection"
 
@@ -39,6 +40,24 @@ export const FullScreenProvider: React.FC<PropsWithChildren> = ({
       document.removeEventListener("fullscreenchange", onFullScreenChange)
     }
   }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        (isMac && event.metaKey && event.key === "Enter") ||
+        (!isMac && event.altKey && event.key === "Enter")
+      ) {
+        // F
+        // Command + Enter (Mac)
+        // Alt + Enter (Windows)
+        toggleFullScreen()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [toggleFullScreen])
 
   return (
     <FullScreenContext.Provider value={{ isFullScreen, toggleFullScreen }}>

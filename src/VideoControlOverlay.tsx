@@ -10,7 +10,7 @@ import CaptionButton from "./CaptionButton"
 import PlaySpeedControl from "./PlaySpeedControl"
 import Tooltip from "./Tooltip"
 import VolumeControl from "./VolumeControl"
-import { isMac, isSafari } from "./utils/browser"
+import { isSafari } from "./utils/browser"
 import {
   MediaFile,
   getMediaFiles,
@@ -311,21 +311,15 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     const handleKeyDown = (event: KeyboardEvent) => {
       const video = getVideo()
       if (!video) return
-      if (event.key === "Escape") {
-        if (!isFullScreen) {
-          exit()
-        }
+      if (event.key === "Escape" && !isFullScreen) {
+        exit()
       } else if (event.key === "ArrowLeft") {
         video.currentTime -= 5
       } else if (event.key === "ArrowRight") {
         video.currentTime += 5
       } else if (event.key === " ") {
         togglePlayPause()
-      } else if (
-        event.key === "f" ||
-        (isMac && event.metaKey && event.key === "Enter") ||
-        (!isMac && event.altKey && event.key === "Enter")
-      ) {
+      } else if (event.key === "f") {
         toggleFullScreen()
       }
     }
