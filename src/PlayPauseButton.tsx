@@ -6,13 +6,13 @@ import { useTranslation } from "react-i18next"
 import PauseIcon from "./assets/icons/pause.svg?react"
 import PlayIcon from "./assets/icons/play.svg?react"
 
-interface PlayPauseButton {
+interface PlayPauseButtonProps {
   isPaused: boolean
   showControls: boolean
   togglePlayPause: () => void
 }
 
-const PlayPauseButton: React.FC<PlayPauseButton> = ({
+const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({
   isPaused,
   showControls,
   togglePlayPause,

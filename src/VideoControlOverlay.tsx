@@ -19,11 +19,11 @@ import FullScreenButton from "./FullScreenButton"
 import IconButton from "./IconButton"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
-import NextIcon from "./assets/icons/next.svg?react"
 import CloseIcon from "./assets/icons/xmark.svg?react"
 import { useFullScreen } from "./hooks/useFullScreen"
 import { hashCode } from "./utils/hashCode"
 import PlayPauseButton from "./PlayPauseButton"
+import PrevNextButton from "./PrevNextButton"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
@@ -367,29 +367,20 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                 togglePlayPause={togglePlayPause}
               />
               {mediaFiles.length > 1 && currentIndex > 0 && (
-                <Tooltip text={t("others.previous")} place="top">
-                  <IconButton
-                    svgIcon={NextIcon}
-                    className="rotate-180 transform"
-                    onClick={() => {
-                      if (showControls) {
-                        setCurrentIndex(currentIndex - 1)
-                      }
-                    }}
-                  />
-                </Tooltip>
+                <PrevNextButton
+                  direction="prev"
+                  showControls={showControls}
+                  currentIndex={currentIndex}
+                  setCurrentIndex={setCurrentIndex}
+                />
               )}
               {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-                <Tooltip text={t("others.next")} place="top">
-                  <IconButton
-                    svgIcon={NextIcon}
-                    onClick={() => {
-                      if (showControls) {
-                        setCurrentIndex(currentIndex + 1)
-                      }
-                    }}
-                  />
-                </Tooltip>
+                <PrevNextButton
+                  direction="next"
+                  showControls={showControls}
+                  currentIndex={currentIndex}
+                  setCurrentIndex={setCurrentIndex}
+                />
               )}
               <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
                 <span className="pr-2">{currentTime}</span>/
