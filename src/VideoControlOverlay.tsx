@@ -11,11 +11,7 @@ import PlaySpeedControl from "./PlaySpeedControl"
 import Tooltip from "./Tooltip"
 import VolumeControl from "./VolumeControl"
 import { isSafari } from "./utils/browser"
-import {
-  MediaFile,
-  getMediaFiles,
-  getSubtitleFiles,
-} from "./utils/getMediaFiles"
+import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 import { replaceBasicHtmlEntities } from "./utils/html"
 
 import Caption from "./Caption"
@@ -24,11 +20,10 @@ import IconButton from "./IconButton"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import NextIcon from "./assets/icons/next.svg?react"
-import PauseIcon from "./assets/icons/pause.svg?react"
-import PlayIcon from "./assets/icons/play.svg?react"
 import CloseIcon from "./assets/icons/xmark.svg?react"
 import { useFullScreen } from "./hooks/useFullScreen"
 import { hashCode } from "./utils/hashCode"
+import PlayPauseButton from "./PlayPauseButton"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
@@ -77,13 +72,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }, [videoRef])
 
   const captionBottomPosition = useMemo(() => {
-    if (
-      windowWidth === 0 ||
-      windowHeight === 0 ||
-      videoRatio === 0 ||
-      videoRatio < 1
-    )
-      return 48
+    if (windowWidth === 0 || windowHeight === 0 || videoRatio === 0 || videoRatio < 1) return 48
     const actualVideoHeight = Math.min(windowWidth / videoRatio, windowHeight)
     const videoMarginHeight = (windowHeight - actualVideoHeight) / 2
     if (videoMarginHeight > 92) {
@@ -98,10 +87,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     reader.onload = (e) => {
       const content = e.target?.result
       if (typeof content === "string") {
-        if (
-          subtitleFile.name.endsWith(".srt") ||
-          subtitleFile.name.endsWith(".vtt")
-        ) {
+        if (subtitleFile.name.endsWith(".srt") || subtitleFile.name.endsWith(".vtt")) {
           subtitles.current = srtVttParse(content).entries.map((entry) => ({
             startTime: entry.from,
             endTime: entry.to,
@@ -173,10 +159,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           video.currentTime < video.duration - 30
         ) {
           localStorage.setItem(videoFileHash, video.currentTime + "")
-        } else if (
-          video.duration > 90 &&
-          video.currentTime >= video.duration - 30
-        ) {
+        } else if (video.duration > 90 && video.currentTime >= video.duration - 30) {
           localStorage.removeItem(videoFileHash)
         }
         if (subtitles.current.length > 0) {
@@ -198,19 +181,12 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
       video.onloadedmetadata = () => {
         if (video.videoWidth === 0) {
           setIsAudio(true)
-          if (
-            analyzerContainer.current &&
-            analyzer.current === null &&
-            !isSafari
-          ) {
-            analyzer.current = new AudioMotionAnalyzer(
-              analyzerContainer.current,
-              {
-                source: video,
-                smoothing: 0.8,
-                showScaleX: false,
-              },
-            )
+          if (analyzerContainer.current && analyzer.current === null && !isSafari) {
+            analyzer.current = new AudioMotionAnalyzer(analyzerContainer.current, {
+              source: video,
+              smoothing: 0.8,
+              showScaleX: false,
+            })
           }
         } else {
           setIsAudio(false)
@@ -265,13 +241,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         video.onended = null
       }
     }
-  }, [
-    getVideo,
-    mediaFiles.length,
-    currentIndex,
-    setCurrentIndex,
-    videoFileHash,
-  ])
+  }, [getVideo, mediaFiles.length, currentIndex, setCurrentIndex, videoFileHash])
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -348,16 +318,13 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 top-0">
+    <div className="fixed top-0 right-0 bottom-0 left-0">
       <div
         ref={analyzerContainer}
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
       />
       {showSubtitle && subtitles.current.length > 0 && (
-        <Caption
-          caption={currentSubtitle}
-          captionBottomPosition={captionBottomPosition}
-        />
+        <Caption caption={currentSubtitle} captionBottomPosition={captionBottomPosition} />
       )}
       <MouseMoveOverlay
         showControls={showControls}
@@ -370,7 +337,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         >
-          <div className="absolute left-6 right-4 top-4 flex items-center justify-between">
+          <div className="absolute top-4 right-4 left-6 flex items-center justify-between">
             <span className="text-xl font-semibold">
               {mediaFiles[currentIndex].file.name}{" "}
               {mediaFiles.length > 1 && (
@@ -392,23 +359,13 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               </Tooltip>
             )}
           </div>
-          <div className="absolute bottom-11 left-0 right-0 mx-4 flex items-end justify-between">
+          <div className="absolute right-0 bottom-11 left-0 mx-4 flex items-end justify-between">
             <div className="flex items-center justify-center gap-2">
-              <Tooltip
-                text={isPaused ? t("others.play") : t("others.pause")}
-                place="top"
-                align="left"
-              >
-                <IconButton
-                  className={twJoin(isPaused && "pl-0.5")}
-                  svgIcon={isPaused ? PlayIcon : PauseIcon}
-                  onClick={() => {
-                    if (showControls) {
-                      togglePlayPause()
-                    }
-                  }}
-                />
-              </Tooltip>
+              <PlayPauseButton
+                isPaused={isPaused}
+                showControls={showControls}
+                togglePlayPause={togglePlayPause}
+              />
               {mediaFiles.length > 1 && currentIndex > 0 && (
                 <Tooltip text={t("others.previous")} place="top">
                   <IconButton
@@ -422,29 +379,25 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                   />
                 </Tooltip>
               )}
-              {mediaFiles.length > 1 &&
-                currentIndex < mediaFiles.length - 1 && (
-                  <Tooltip text={t("others.next")} place="top">
-                    <IconButton
-                      svgIcon={NextIcon}
-                      onClick={() => {
-                        if (showControls) {
-                          setCurrentIndex(currentIndex + 1)
-                        }
-                      }}
-                    />
-                  </Tooltip>
-                )}
+              {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
+                <Tooltip text={t("others.next")} place="top">
+                  <IconButton
+                    svgIcon={NextIcon}
+                    onClick={() => {
+                      if (showControls) {
+                        setCurrentIndex(currentIndex + 1)
+                      }
+                    }}
+                  />
+                </Tooltip>
+              )}
               <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
                 <span className="pr-2">{currentTime}</span>/
                 <span className="pl-2">{totalTime}</span>
               </div>
             </div>
             <div className="flex items-end justify-center gap-2">
-              <VolumeControl
-                volume={volume}
-                handleVolumeChange={handleVolumeChange}
-              />
+              <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} />
               {subtitles.current.length > 0 && (
                 <div className="mr-0.5">
                   <CaptionButton
@@ -453,16 +406,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                   />
                 </div>
               )}
-              <div
-                className={twJoin(
-                  "relative",
-                  subtitles.current.length === 0 && "mr-0.5",
-                )}
-              >
-                <PlaySpeedControl
-                  playSpeed={playSpeed}
-                  handlePlaybackSpeed={handlePlaybackSpeed}
-                />
+              <div className={twJoin("relative", subtitles.current.length === 0 && "mr-0.5")}>
+                <PlaySpeedControl playSpeed={playSpeed} handlePlaybackSpeed={handlePlaybackSpeed} />
               </div>
               <FullScreenButton
                 isFullScreen={isFullScreen}
