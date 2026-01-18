@@ -328,9 +328,9 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             <span className="text-xl font-semibold">
               {mediaFiles[currentIndex].file.name}{" "}
               {mediaFiles.length > 1 && (
-                <>
+                <span>
                   [{currentIndex + 1}/{mediaFiles.length}]
-                </>
+                </span>
               )}
             </span>
             {!isFullScreen && (
