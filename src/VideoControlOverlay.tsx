@@ -55,6 +55,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const subtitles = useRef<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
   const [showSubtitle, setShowSubtitle] = useState(true)
+  const hasSubtitles = subtitles.current.length > 0
   const [videoRatio, setVideoRatio] = useState(0)
   const { isFullScreen, toggleFullScreen } = useFullScreen()
   const { t } = useTranslation()
@@ -149,7 +150,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         } else if (video.duration > 90 && video.currentTime >= video.duration - 30) {
           localStorage.removeItem(videoFileHash)
         }
-        if (subtitles.current.length > 0) {
+        if (hasSubtitles) {
           const currentSubtitle = subtitles.current.find(
             (subtitle) =>
               video.currentTime * 1000 >= subtitle.startTime &&
@@ -310,7 +311,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         ref={analyzerContainer}
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
       />
-      {showSubtitle && subtitles.current.length > 0 && (
+      {showSubtitle && hasSubtitles && (
         <Caption caption={currentSubtitle} videoRatio={videoRatio} />
       )}
       <MouseMoveOverlay
@@ -376,7 +377,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
             </div>
             <div className="flex items-end justify-center gap-2">
               <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} />
-              {subtitles.current.length > 0 && (
+              {hasSubtitles && (
                 <div className="mr-0.5">
                   <CaptionButton
                     filled={showSubtitle}
@@ -384,7 +385,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
                   />
                 </div>
               )}
-              <div className={twJoin("relative", subtitles.current.length === 0 && "mr-0.5")}>
+              <div className={twJoin("relative", !hasSubtitles && "mr-0.5")}>
                 <PlaySpeedControl playSpeed={playSpeed} handlePlaybackSpeed={handlePlaybackSpeed} />
               </div>
               <FullScreenButton
