@@ -7,7 +7,7 @@ import PlaySpeedControl from "./PlaySpeedControl"
 import PrevNextButton from "./PrevNextButton"
 import VolumeControl from "./VolumeControl"
 
-interface VideoControlsProps {
+interface VideoControlsBottomProps {
   showControls: boolean
   isPaused: boolean
   togglePlayPause: () => void
@@ -27,7 +27,7 @@ interface VideoControlsProps {
   toggleFullScreen: () => void
 }
 
-const VideoControls: React.FC<VideoControlsProps> = ({
+const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   showControls,
   isPaused,
   togglePlayPause,
@@ -101,4 +101,4 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   )
 }
 
-export default VideoControls
+export default VideoControlsBottom

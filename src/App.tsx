@@ -4,7 +4,7 @@ import Footer from "./Footer"
 import Header from "./Header"
 import { FullScreenProvider } from "./providers/FullScreenProvider"
 import { MediaFile } from "./utils/getMediaFiles"
-import VideoControlOverlay from "./VideoControlOverlay"
+import VideoControls from "./VideoControl"
 import VideoPlayer from "./VideoPlayer"
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
           currentIndex={currentIndex}
           ref={videoRef}
         />
-        <VideoControlOverlay
+        <VideoControls
           mediaFiles={mediaFiles}
           exit={exit}
           currentIndex={currentIndex}

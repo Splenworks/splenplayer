@@ -17,9 +17,9 @@ import IconButton from "./IconButton"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import { hashCode } from "./utils/hashCode"
-import VideoControls from "./VideoControls"
+import VideoControlsBottom from "./VideoControlsBottom"
 
-interface VideoControlOverlayProps {
+interface VideoControlsProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
   mediaFiles: MediaFile[]
   exit: () => void
@@ -28,7 +28,7 @@ interface VideoControlOverlayProps {
   setMedia: (files: MediaFile[]) => void
 }
 
-const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
+const VideoControls: React.FC<VideoControlsProps> = ({
   videoRef,
   mediaFiles,
   exit,
@@ -337,7 +337,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               </Tooltip>
             )}
           </div>
-          <VideoControls
+          <VideoControlsBottom
             showControls={showControls}
             isPaused={isPaused}
             mediaFilesCount={mediaFiles.length}
@@ -363,4 +363,4 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   )
 }
 
-export default VideoControlOverlay
+export default VideoControls
