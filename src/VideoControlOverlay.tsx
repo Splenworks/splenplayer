@@ -144,6 +144,8 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
           localStorage.setItem(videoFileHash, video.currentTime + "")
         } else if (video.duration > 90 && video.currentTime >= video.duration - 30) {
           localStorage.removeItem(videoFileHash)
+        } else if (video.duration > 90 && video.currentTime < 30) {
+          localStorage.removeItem(videoFileHash)
         }
         if (hasSubtitles) {
           const currentSubtitle = subtitles.current.find(
@@ -285,9 +287,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
     if (video) {
       const seekTime = (video.duration / 100) * Number(e.currentTarget.value)
       video.currentTime = seekTime
-      if (seekTime < 30) {
-        localStorage.removeItem(videoFileHash)
-      }
     }
   }
 
