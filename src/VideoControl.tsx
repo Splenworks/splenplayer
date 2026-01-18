@@ -1,7 +1,6 @@
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
 import { ParseResult, parse as samiParse } from "sami-parser"
 import { twJoin } from "tailwind-merge"
 
@@ -51,7 +50,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   const hasSubtitles = subtitles.current.length > 0
   const [videoRatio, setVideoRatio] = useState(0)
   const { isFullScreen, toggleFullScreen } = useFullScreen()
-  const { t } = useTranslation()
   const videoFileHash = useMemo(() => {
     const allMediaFilesAndSizes = mediaFiles
       .map((mediaFile) => mediaFile.file.name + mediaFile.file.size)
