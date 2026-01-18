@@ -224,7 +224,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         video.onended = null
       }
     }
-  }, [getVideo, mediaFiles.length, currentIndex, setCurrentIndex, videoFileHash])
+  }, [getVideo, mediaFiles.length, currentIndex, setCurrentIndex, videoFileHash, hasSubtitles])
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
