@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ParseResult, parse as samiParse } from "sami-parser"
 import { twJoin } from "tailwind-merge"
-import { useWindowSize } from "usehooks-ts"
 
 import CaptionButton from "./CaptionButton"
 import PlaySpeedControl from "./PlaySpeedControl"
@@ -18,12 +17,12 @@ import Caption from "./Caption"
 import FullScreenButton from "./FullScreenButton"
 import IconButton from "./IconButton"
 import MouseMoveOverlay from "./MouseMoveOverlay"
+import PlayPauseButton from "./PlayPauseButton"
+import PrevNextButton from "./PrevNextButton"
 import ProgressBar from "./ProgressBar"
 import CloseIcon from "./assets/icons/xmark.svg?react"
 import { useFullScreen } from "./hooks/useFullScreen"
 import { hashCode } from "./utils/hashCode"
-import PlayPauseButton from "./PlayPauseButton"
-import PrevNextButton from "./PrevNextButton"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
@@ -57,7 +56,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const [currentSubtitle, setCurrentSubtitle] = useState("")
   const [showSubtitle, setShowSubtitle] = useState(true)
   const [videoRatio, setVideoRatio] = useState(0)
-  const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
   const { isFullScreen, toggleFullScreen } = useFullScreen()
   const { t } = useTranslation()
   const videoFileHash = useMemo(() => {
@@ -70,17 +68,6 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
   const getVideo = useCallback(() => {
     return videoRef && typeof videoRef === "object" && videoRef.current
   }, [videoRef])
-
-  const captionBottomPosition = useMemo(() => {
-    if (windowWidth === 0 || windowHeight === 0 || videoRatio === 0 || videoRatio < 1) return 48
-    const actualVideoHeight = Math.min(windowWidth / videoRatio, windowHeight)
-    const videoMarginHeight = (windowHeight - actualVideoHeight) / 2
-    if (videoMarginHeight > 92) {
-      return windowHeight - videoMarginHeight - actualVideoHeight - 60
-    } else {
-      return windowHeight - videoMarginHeight - actualVideoHeight + 48
-    }
-  }, [videoRatio, windowWidth, windowHeight])
 
   const parseSubtitle = useCallback((subtitleFile: File) => {
     const reader = new FileReader()
@@ -324,7 +311,7 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
         className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
       />
       {showSubtitle && subtitles.current.length > 0 && (
-        <Caption caption={currentSubtitle} captionBottomPosition={captionBottomPosition} />
+        <Caption caption={currentSubtitle} videoRatio={videoRatio} />
       )}
       <MouseMoveOverlay
         showControls={showControls}
