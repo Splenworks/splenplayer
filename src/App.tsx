@@ -1,12 +1,4 @@
-import i18n from "i18next"
-import LanguageDetector from "i18next-browser-languagedetector"
 import { createRef, useCallback, useState } from "react"
-import { initReactI18next } from "react-i18next"
-import cnTranslation from "./assets/translations/cn.json"
-import enTranslation from "./assets/translations/en.json"
-import esTranslation from "./assets/translations/es.json"
-import jaTranslation from "./assets/translations/ja.json"
-import koTranslation from "./assets/translations/ko.json"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
@@ -14,33 +6,6 @@ import { FullScreenProvider } from "./providers/FullScreenProvider"
 import { MediaFile } from "./utils/getMediaFiles"
 import VideoControlOverlay from "./VideoControlOverlay"
 import VideoPlayer from "./VideoPlayer"
-
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: {
-        translation: enTranslation,
-      },
-      ko: {
-        translation: koTranslation,
-      },
-      ja: {
-        translation: jaTranslation,
-      },
-      es: {
-        translation: esTranslation,
-      },
-      cn: {
-        translation: cnTranslation,
-      },
-    },
-    fallbackLng: "ko",
-    interpolation: {
-      escapeValue: false,
-    },
-  })
 
 function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
