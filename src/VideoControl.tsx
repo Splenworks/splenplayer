@@ -5,19 +5,17 @@ import { useTranslation } from "react-i18next"
 import { ParseResult, parse as samiParse } from "sami-parser"
 import { twJoin } from "tailwind-merge"
 
-import Tooltip from "./Tooltip"
 import { isSafari } from "./utils/browser"
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 import { replaceBasicHtmlEntities } from "./utils/html"
 
-import CloseIcon from "./assets/icons/xmark.svg?react"
 import Caption from "./Caption"
 import { useFullScreen } from "./hooks/useFullScreen"
-import IconButton from "./IconButton"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import { hashCode } from "./utils/hashCode"
 import VideoControlsBottom from "./VideoControlsBottom"
+import VideoControlsTop from "./VideoControlsTop"
 
 interface VideoControlsProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
@@ -315,28 +313,13 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         >
-          <div className="absolute top-4 right-4 left-6 flex items-center justify-between">
-            <span className="text-xl font-semibold">
-              {mediaFiles[currentIndex].file.name}{" "}
-              {mediaFiles.length > 1 && (
-                <span>
-                  [{currentIndex + 1}/{mediaFiles.length}]
-                </span>
-              )}
-            </span>
-            {!isFullScreen && (
-              <Tooltip text={t("others.close")} place="bottom" align="right">
-                <IconButton
-                  svgIcon={CloseIcon}
-                  onClick={() => {
-                    if (showControls) {
-                      exit()
-                    }
-                  }}
-                />
-              </Tooltip>
-            )}
-          </div>
+          <VideoControlsTop
+            showControls={showControls}
+            isFullScreen={isFullScreen}
+            mediaFiles={mediaFiles}
+            currentIndex={currentIndex}
+            exit={exit}
+          />
           <VideoControlsBottom
             showControls={showControls}
             isPaused={isPaused}
