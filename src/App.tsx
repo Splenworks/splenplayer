@@ -12,18 +12,15 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const videoRef = createRef<HTMLVideoElement>()
 
-  const exit = () => {
+  const exit = useCallback(() => {
     setMediaFiles([])
     setCurrentIndex(0)
-  }
+  }, [])
 
-  const setMedia = useCallback(
-    (files: MediaFile[]) => {
-      setMediaFiles(files)
-      setCurrentIndex(0)
-    },
-    [setMediaFiles, setCurrentIndex],
-  )
+  const setMedia = useCallback((files: MediaFile[]) => {
+    setMediaFiles(files)
+    setCurrentIndex(0)
+  }, [])
 
   if (mediaFiles.length > 0) {
     return (
