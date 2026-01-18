@@ -1,4 +1,4 @@
-import { createRef, useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
@@ -10,7 +10,7 @@ import VideoPlayer from "./VideoPlayer"
 function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const videoRef = createRef<HTMLVideoElement>()
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   const exit = useCallback(() => {
     setMediaFiles([])
