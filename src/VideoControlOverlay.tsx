@@ -5,24 +5,19 @@ import { useTranslation } from "react-i18next"
 import { ParseResult, parse as samiParse } from "sami-parser"
 import { twJoin } from "tailwind-merge"
 
-import CaptionButton from "./CaptionButton"
-import PlaySpeedControl from "./PlaySpeedControl"
 import Tooltip from "./Tooltip"
-import VolumeControl from "./VolumeControl"
 import { isSafari } from "./utils/browser"
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 import { replaceBasicHtmlEntities } from "./utils/html"
 
+import CloseIcon from "./assets/icons/xmark.svg?react"
 import Caption from "./Caption"
-import FullScreenButton from "./FullScreenButton"
+import { useFullScreen } from "./hooks/useFullScreen"
 import IconButton from "./IconButton"
 import MouseMoveOverlay from "./MouseMoveOverlay"
-import PlayPauseButton from "./PlayPauseButton"
-import PrevNextButton from "./PrevNextButton"
 import ProgressBar from "./ProgressBar"
-import CloseIcon from "./assets/icons/xmark.svg?react"
-import { useFullScreen } from "./hooks/useFullScreen"
 import { hashCode } from "./utils/hashCode"
+import VideoControls from "./VideoControls"
 
 interface VideoControlOverlayProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
@@ -347,57 +342,25 @@ const VideoControlOverlay: React.FC<VideoControlOverlayProps> = ({
               </Tooltip>
             )}
           </div>
-          <div className="absolute right-0 bottom-11 left-0 mx-4 flex items-end justify-between">
-            <div className="flex items-center justify-center gap-2">
-              <PlayPauseButton
-                isPaused={isPaused}
-                showControls={showControls}
-                togglePlayPause={togglePlayPause}
-              />
-              {mediaFiles.length > 1 && currentIndex > 0 && (
-                <PrevNextButton
-                  direction="prev"
-                  showControls={showControls}
-                  currentIndex={currentIndex}
-                  setCurrentIndex={setCurrentIndex}
-                />
-              )}
-              {mediaFiles.length > 1 && currentIndex < mediaFiles.length - 1 && (
-                <PrevNextButton
-                  direction="next"
-                  showControls={showControls}
-                  currentIndex={currentIndex}
-                  setCurrentIndex={setCurrentIndex}
-                />
-              )}
-              <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
-                <span className="pr-2">{currentTime}</span>/
-                <span className="pl-2">{totalTime}</span>
-              </div>
-            </div>
-            <div className="flex items-end justify-center gap-2">
-              <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} />
-              {hasSubtitles && (
-                <div className="mr-0.5">
-                  <CaptionButton
-                    filled={showSubtitle}
-                    onToggle={() => setShowSubtitle((prev) => !prev)}
-                  />
-                </div>
-              )}
-              <div className={twJoin("relative", !hasSubtitles && "mr-0.5")}>
-                <PlaySpeedControl playSpeed={playSpeed} handlePlaybackSpeed={handlePlaybackSpeed} />
-              </div>
-              <FullScreenButton
-                isFullScreen={isFullScreen}
-                onClick={() => {
-                  if (showControls) {
-                    toggleFullScreen()
-                  }
-                }}
-              />
-            </div>
-          </div>
+          <VideoControls
+            showControls={showControls}
+            isPaused={isPaused}
+            mediaFilesCount={mediaFiles.length}
+            currentMediaIndex={currentIndex}
+            setCurrentMediaIndex={setCurrentIndex}
+            currentTime={currentTime}
+            totalTime={totalTime}
+            togglePlayPause={togglePlayPause}
+            volume={volume}
+            handleVolumeChange={handleVolumeChange}
+            hasSubtitles={hasSubtitles}
+            showSubtitle={showSubtitle}
+            toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
+            playSpeed={playSpeed}
+            handlePlaybackSpeed={handlePlaybackSpeed}
+            isFullScreen={isFullScreen}
+            toggleFullScreen={toggleFullScreen}
+          />
           <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
         </div>
       </MouseMoveOverlay>
