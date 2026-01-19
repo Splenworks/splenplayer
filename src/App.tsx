@@ -1,6 +1,7 @@
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ParseResult } from "sami-parser"
+import { twJoin } from "tailwind-merge"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
@@ -165,8 +166,12 @@ function App() {
 
   if (mediaFiles.length > 0) {
     return (
-      <>
+      <div className="fixed top-0 right-0 bottom-0 left-0">
         <VideoPlayer mediaFiles={mediaFiles} currentIndex={currentIndex} ref={videoRef} />
+        <div
+          ref={analyzerContainer}
+          className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
+        />
         <VideoControls
           mediaFiles={mediaFiles}
           exit={exit}
@@ -174,8 +179,6 @@ function App() {
           setCurrentIndex={setCurrentIndex}
           videoRef={videoRef}
           setMedia={setMedia}
-          isAudio={isAudio}
-          analyzerContainer={analyzerContainer}
           currentTime={currentTime}
           totalTime={totalTime}
           seekValue={seekValue}
@@ -189,7 +192,7 @@ function App() {
           hasSubtitles={subtitles.length > 0}
           mouseMoveTimeout={mouseMoveTimeout}
         />
-      </>
+      </div>
     )
   }
 

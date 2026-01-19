@@ -1,7 +1,6 @@
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import React, { useCallback, useEffect, useState } from "react"
 import { ParseResult, parse as samiParse } from "sami-parser"
-import { twJoin } from "tailwind-merge"
 
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 
@@ -19,8 +18,6 @@ interface VideoControlsProps {
   currentIndex: number
   setCurrentIndex: (index: number) => void
   setMedia: (files: MediaFile[]) => void
-  isAudio: boolean
-  analyzerContainer: React.RefObject<HTMLDivElement | null>
   currentTime: string
   totalTime: string
   seekValue: string
@@ -42,8 +39,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   currentIndex,
   setCurrentIndex,
   setMedia,
-  isAudio,
-  analyzerContainer,
   currentTime,
   totalTime,
   seekValue,
@@ -180,10 +175,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
 
   return (
     <div className="fixed top-0 right-0 bottom-0 left-0">
-      <div
-        ref={analyzerContainer}
-        className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
-      />
       {showSubtitle && hasSubtitles && (
         <Caption caption={currentSubtitle} videoRatio={videoRatio} />
       )}
