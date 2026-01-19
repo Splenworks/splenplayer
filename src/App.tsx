@@ -5,7 +5,6 @@ import { twJoin } from "tailwind-merge"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
-import { isSafari } from "./utils/browser"
 import { MediaFile } from "./utils/getMediaFiles"
 import { hashCode } from "./utils/hashCode"
 import { replaceBasicHtmlEntities } from "./utils/html"
@@ -103,7 +102,7 @@ function App() {
       video.onloadedmetadata = () => {
         if (video.videoWidth === 0) {
           setIsAudio(true)
-          if (analyzerContainer.current && analyzer.current === null && !isSafari) {
+          if (analyzerContainer.current && analyzer.current === null) {
             analyzer.current = new AudioMotionAnalyzer(analyzerContainer.current, {
               source: video,
               smoothing: 0.8,
