@@ -2,6 +2,7 @@ import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ParseResult } from "sami-parser"
 import { twJoin } from "tailwind-merge"
+import Caption from "./Caption"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
@@ -27,6 +28,7 @@ function App() {
       .join("")
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])
+  const [showSubtitle, setShowSubtitle] = useState(true)
   const [subtitles, setSubtitles] = useState<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
   const [videoRatio, setVideoRatio] = useState(0)
@@ -184,6 +186,9 @@ function App() {
           ref={analyzerContainer}
           className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
         />
+        {showSubtitle && subtitles.length > 0 && (
+          <Caption caption={currentSubtitle} videoRatio={videoRatio} />
+        )}
         <VideoControls
           mediaFiles={mediaFiles}
           exit={exit}
@@ -194,14 +199,14 @@ function App() {
           currentTime={currentTime}
           totalTime={totalTime}
           seekValue={seekValue}
-          currentSubtitle={currentSubtitle}
-          videoRatio={videoRatio}
           showControls={showControls}
           setShowControls={setShowControls}
           isPaused={isPaused}
           setIsPaused={setIsPaused}
           setSubtitles={setSubtitles}
           hasSubtitles={subtitles.length > 0}
+          showSubtitle={showSubtitle}
+          setShowSubtitle={setShowSubtitle}
           mouseMoveTimeout={mouseMoveTimeout}
         />
       </div>

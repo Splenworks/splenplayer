@@ -4,7 +4,6 @@ import { ParseResult, parse as samiParse } from "sami-parser"
 
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 
-import Caption from "./Caption"
 import { useFullScreen } from "./hooks/useFullScreen"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
@@ -21,14 +20,14 @@ interface VideoControlsProps {
   currentTime: string
   totalTime: string
   seekValue: string
-  currentSubtitle: string
-  videoRatio: number
   showControls: boolean
   setShowControls: React.Dispatch<React.SetStateAction<boolean>>
   isPaused: boolean
   setIsPaused: React.Dispatch<React.SetStateAction<boolean>>
   setSubtitles: React.Dispatch<React.SetStateAction<ParseResult>>
   hasSubtitles: boolean
+  showSubtitle: boolean
+  setShowSubtitle: React.Dispatch<React.SetStateAction<boolean>>
   mouseMoveTimeout: React.RefObject<number | null>
 }
 
@@ -42,17 +41,16 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   currentTime,
   totalTime,
   seekValue,
-  currentSubtitle,
-  videoRatio,
   showControls,
   setShowControls,
   isPaused,
   setIsPaused,
   setSubtitles,
   hasSubtitles,
+  showSubtitle,
+  setShowSubtitle,
   mouseMoveTimeout,
 }) => {
-  const [showSubtitle, setShowSubtitle] = useState(true)
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
   const { isFullScreen, toggleFullScreen } = useFullScreen()
@@ -174,51 +172,46 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   }
 
   return (
-    <div className="fixed top-0 right-0 bottom-0 left-0">
-      {showSubtitle && hasSubtitles && (
-        <Caption caption={currentSubtitle} videoRatio={videoRatio} />
-      )}
-      <MouseMoveOverlay
-        showControls={showControls}
-        setShowControls={setShowControls}
-        mouseMoveTimeoutRef={mouseMoveTimeout}
-        videoPaused={isPaused}
+    <MouseMoveOverlay
+      showControls={showControls}
+      setShowControls={setShowControls}
+      mouseMoveTimeoutRef={mouseMoveTimeout}
+      videoPaused={isPaused}
+    >
+      <div
+        className="absolute inset-0"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
       >
-        <div
-          className="absolute inset-0"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-        >
-          <VideoControlsTop
-            showControls={showControls}
-            isFullScreen={isFullScreen}
-            mediaFiles={mediaFiles}
-            currentIndex={currentIndex}
-            exit={exit}
-          />
-          <VideoControlsBottom
-            showControls={showControls}
-            isPaused={isPaused}
-            mediaFilesCount={mediaFiles.length}
-            currentMediaIndex={currentIndex}
-            setCurrentMediaIndex={setCurrentIndex}
-            currentTime={currentTime}
-            totalTime={totalTime}
-            togglePlayPause={togglePlayPause}
-            volume={volume}
-            handleVolumeChange={handleVolumeChange}
-            hasSubtitles={hasSubtitles}
-            showSubtitle={showSubtitle}
-            toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
-            playSpeed={playSpeed}
-            handlePlaybackSpeed={handlePlaybackSpeed}
-            isFullScreen={isFullScreen}
-            toggleFullScreen={toggleFullScreen}
-          />
-          <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
-        </div>
-      </MouseMoveOverlay>
-    </div>
+        <VideoControlsTop
+          showControls={showControls}
+          isFullScreen={isFullScreen}
+          mediaFiles={mediaFiles}
+          currentIndex={currentIndex}
+          exit={exit}
+        />
+        <VideoControlsBottom
+          showControls={showControls}
+          isPaused={isPaused}
+          mediaFilesCount={mediaFiles.length}
+          currentMediaIndex={currentIndex}
+          setCurrentMediaIndex={setCurrentIndex}
+          currentTime={currentTime}
+          totalTime={totalTime}
+          togglePlayPause={togglePlayPause}
+          volume={volume}
+          handleVolumeChange={handleVolumeChange}
+          hasSubtitles={hasSubtitles}
+          showSubtitle={showSubtitle}
+          toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
+          playSpeed={playSpeed}
+          handlePlaybackSpeed={handlePlaybackSpeed}
+          isFullScreen={isFullScreen}
+          toggleFullScreen={toggleFullScreen}
+        />
+        <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
+      </div>
+    </MouseMoveOverlay>
   )
 }
 
