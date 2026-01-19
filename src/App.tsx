@@ -1,15 +1,15 @@
+import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { ParseResult } from "sami-parser"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
+import { isSafari } from "./utils/browser"
 import { MediaFile } from "./utils/getMediaFiles"
+import { hashCode } from "./utils/hashCode"
+import { replaceBasicHtmlEntities } from "./utils/html"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
-import { hashCode } from "./utils/hashCode"
-import { ParseResult } from "sami-parser"
-import { replaceBasicHtmlEntities } from "./utils/html"
-import AudioMotionAnalyzer from "audiomotion-analyzer"
-import { isSafari } from "./utils/browser"
 
 function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
@@ -151,10 +151,8 @@ function App() {
       }
     }
   }, [
-    videoRef.current,
     mediaFiles.length,
     currentIndex,
-    setCurrentIndex,
     videoFileHash,
     hasSubtitles,
   ])
