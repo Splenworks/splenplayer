@@ -16,6 +16,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
           mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
       })
       const newUrl = URL.createObjectURL(blob)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVideoSrc(newUrl)
 
       return () => {
