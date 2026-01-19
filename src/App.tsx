@@ -4,7 +4,7 @@ import Footer from "./Footer"
 import Header from "./Header"
 import { FullScreenProvider } from "./providers/FullScreenProvider"
 import { MediaFile } from "./utils/getMediaFiles"
-import VideoControls from "./VideoControl"
+import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
 function App() {
@@ -25,11 +25,7 @@ function App() {
   if (mediaFiles.length > 0) {
     return (
       <FullScreenProvider>
-        <VideoPlayer
-          mediaFiles={mediaFiles}
-          currentIndex={currentIndex}
-          ref={videoRef}
-        />
+        <VideoPlayer mediaFiles={mediaFiles} currentIndex={currentIndex} ref={videoRef} />
         <VideoControls
           mediaFiles={mediaFiles}
           exit={exit}
