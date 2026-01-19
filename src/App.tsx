@@ -27,8 +27,7 @@ function App() {
       .join("")
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])
-  const subtitles = useRef<ParseResult>([])
-  const hasSubtitles = subtitles.current.length > 0
+  const [subtitles, setSubtitles] = useState<ParseResult>([])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
   const [videoRatio, setVideoRatio] = useState(0)
   const [showControls, setShowControls] = useState(false)
@@ -71,8 +70,8 @@ function App() {
             localStorage.removeItem(videoFileHash)
           }
         }
-        if (hasSubtitles) {
-          const currentSubtitle = subtitles.current.find(
+        if (subtitles.length > 0) {
+          const currentSubtitle = subtitles.find(
             (subtitle) =>
               video.currentTime * 1000 >= subtitle.startTime &&
               video.currentTime * 1000 <= subtitle.endTime,
@@ -154,7 +153,7 @@ function App() {
     mediaFiles.length,
     currentIndex,
     videoFileHash,
-    hasSubtitles,
+    subtitles,
   ])
 
   useEffect(() => {
@@ -186,8 +185,8 @@ function App() {
           setShowControls={setShowControls}
           isPaused={isPaused}
           setIsPaused={setIsPaused}
-          subtitles={subtitles}
-          hasSubtitles={hasSubtitles}
+          setSubtitles={setSubtitles}
+          hasSubtitles={subtitles.length > 0}
           mouseMoveTimeout={mouseMoveTimeout}
         />
       </>

@@ -30,7 +30,7 @@ interface VideoControlsProps {
   setShowControls: React.Dispatch<React.SetStateAction<boolean>>
   isPaused: boolean
   setIsPaused: React.Dispatch<React.SetStateAction<boolean>>
-  subtitles: React.RefObject<ParseResult>
+  setSubtitles: React.Dispatch<React.SetStateAction<ParseResult>>
   hasSubtitles: boolean
   mouseMoveTimeout: React.RefObject<number | null>
 }
@@ -53,7 +53,8 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   setShowControls,
   isPaused,
   setIsPaused,
-  subtitles,
+
+  setSubtitles,
   hasSubtitles,
   mouseMoveTimeout,
 }) => {
@@ -72,29 +73,29 @@ const VideoControls: React.FC<VideoControlsProps> = ({
       const content = e.target?.result
       if (typeof content === "string") {
         if (subtitleFile.name.endsWith(".srt") || subtitleFile.name.endsWith(".vtt")) {
-          subtitles.current = srtVttParse(content).entries.map((entry) => ({
+          setSubtitles(srtVttParse(content).entries.map((entry) => ({
             startTime: entry.from,
             endTime: entry.to,
             languages: {
               x: entry.text,
             },
-          }))
+          })))
         } else {
-          subtitles.current = samiParse(content)?.result || []
+          setSubtitles(samiParse(content)?.result || [])
         }
       }
     }
     reader.readAsText(subtitleFile)
-  }, [])
+  }, [setSubtitles])
 
   useEffect(() => {
     const subtitleFile = mediaFiles[currentIndex].subtitleFile
     if (subtitleFile) {
       parseSubtitle(subtitleFile)
     } else {
-      subtitles.current = []
+      setSubtitles([])
     }
-  }, [currentIndex, mediaFiles, parseSubtitle])
+  }, [currentIndex, mediaFiles, parseSubtitle, setSubtitles])
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -107,9 +108,9 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     [getVideo],
   )
 
-  useEffect(() => {
-    handlePlaybackSpeed(playSpeed)
-  }, [playSpeed, handlePlaybackSpeed])
+  // useEffect(() => {
+  //   handlePlaybackSpeed(playSpeed)
+  // }, [playSpeed, handlePlaybackSpeed])
 
   useEffect(() => {
     const video = getVideo()
@@ -133,7 +134,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   }
 
   const togglePlayPause = useCallback(() => {
-    const video = getVideo()
+    const video = videoRef?.current
     if (video) {
       if (video.paused || video.ended) {
         video.play()
@@ -143,7 +144,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         setIsPaused(true)
       }
     }
-  }, [getVideo])
+  }, [videoRef, setIsPaused])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
