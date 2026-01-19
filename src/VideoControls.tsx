@@ -189,6 +189,10 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           mediaFiles={mediaFiles}
           currentIndex={currentIndex}
           exit={exit}
+          // eslint-disable-next-line react-hooks/refs
+          width={videoRef.current?.videoWidth ?? 0}
+          // eslint-disable-next-line react-hooks/refs
+          height={videoRef.current?.videoHeight ?? 0}
         />
         <VideoControlsBottom
           showControls={showControls}
