@@ -10,6 +10,7 @@ import esTranslation from "./assets/translations/es.json"
 import jaTranslation from "./assets/translations/ja.json"
 import koTranslation from "./assets/translations/ko.json"
 import "./index.css"
+import { FullScreenProvider } from "./providers/FullScreenProvider.tsx"
 
 i18n
   .use(LanguageDetector)
@@ -40,6 +41,8 @@ i18n
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <FullScreenProvider>
+      <App />
+    </FullScreenProvider>
   </React.StrictMode>,
 )

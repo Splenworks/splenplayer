@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from "react"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
-import { FullScreenProvider } from "./providers/FullScreenProvider"
 import { MediaFile } from "./utils/getMediaFiles"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
@@ -24,7 +23,7 @@ function App() {
 
   if (mediaFiles.length > 0) {
     return (
-      <FullScreenProvider>
+      <>
         <VideoPlayer mediaFiles={mediaFiles} currentIndex={currentIndex} ref={videoRef} />
         <VideoControls
           mediaFiles={mediaFiles}
@@ -34,7 +33,7 @@ function App() {
           videoRef={videoRef}
           setMedia={setMedia}
         />
-      </FullScreenProvider>
+      </>
     )
   }
 
