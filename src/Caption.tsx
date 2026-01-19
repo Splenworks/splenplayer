@@ -12,7 +12,7 @@ const Caption: React.FC<CaptionProps> = ({
 }) => {
   const { width: windowWidth = 0, height: windowHeight = 0 } = useWindowSize()
   const captionBottomPosition = useMemo(() => {
-    if (windowWidth === 0 || windowHeight === 0 || videoRatio === 0 || videoRatio < 1) return 48
+    if (windowWidth === 0 || windowHeight === 0 || videoRatio === 0 || videoRatio < 1 || isNaN(videoRatio)) return 48
     const actualVideoHeight = Math.min(windowWidth / videoRatio, windowHeight)
     const videoMarginHeight = (windowHeight - actualVideoHeight) / 2
     if (videoMarginHeight > 92) {
