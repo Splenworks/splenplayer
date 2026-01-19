@@ -179,42 +179,42 @@ const VideoControls: React.FC<VideoControlsProps> = ({
       videoPaused={isPaused}
     >
       <div
-        className="absolute inset-0"
+        className="absolute top-30 right-0 left-0 bottom-21"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
-      >
-        <VideoControlsTop
-          showControls={showControls}
-          isFullScreen={isFullScreen}
-          mediaFiles={mediaFiles}
-          currentIndex={currentIndex}
-          exit={exit}
-          // eslint-disable-next-line react-hooks/refs
-          width={videoRef.current?.videoWidth ?? 0}
-          // eslint-disable-next-line react-hooks/refs
-          height={videoRef.current?.videoHeight ?? 0}
-        />
-        <VideoControlsBottom
-          showControls={showControls}
-          isPaused={isPaused}
-          mediaFilesCount={mediaFiles.length}
-          currentMediaIndex={currentIndex}
-          setCurrentMediaIndex={setCurrentIndex}
-          currentTime={currentTime}
-          totalTime={totalTime}
-          togglePlayPause={togglePlayPause}
-          volume={volume}
-          handleVolumeChange={handleVolumeChange}
-          hasSubtitles={hasSubtitles}
-          showSubtitle={showSubtitle}
-          toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
-          playSpeed={playSpeed}
-          handlePlaybackSpeed={handlePlaybackSpeed}
-          isFullScreen={isFullScreen}
-          toggleFullScreen={toggleFullScreen}
-        />
-        <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
-      </div>
+        onClick={togglePlayPause}
+      />
+      <VideoControlsTop
+        showControls={showControls}
+        isFullScreen={isFullScreen}
+        mediaFiles={mediaFiles}
+        currentIndex={currentIndex}
+        exit={exit}
+        // eslint-disable-next-line react-hooks/refs
+        width={videoRef.current?.videoWidth ?? 0}
+        // eslint-disable-next-line react-hooks/refs
+        height={videoRef.current?.videoHeight ?? 0}
+      />
+      <VideoControlsBottom
+        showControls={showControls}
+        isPaused={isPaused}
+        mediaFilesCount={mediaFiles.length}
+        currentMediaIndex={currentIndex}
+        setCurrentMediaIndex={setCurrentIndex}
+        currentTime={currentTime}
+        totalTime={totalTime}
+        togglePlayPause={togglePlayPause}
+        volume={volume}
+        handleVolumeChange={handleVolumeChange}
+        hasSubtitles={hasSubtitles}
+        showSubtitle={showSubtitle}
+        toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
+        playSpeed={playSpeed}
+        handlePlaybackSpeed={handlePlaybackSpeed}
+        isFullScreen={isFullScreen}
+        toggleFullScreen={toggleFullScreen}
+      />
+      <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
     </MouseMoveOverlay>
   )
 }
