@@ -53,7 +53,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   setShowControls,
   isPaused,
   setIsPaused,
-
   setSubtitles,
   hasSubtitles,
   mouseMoveTimeout,
@@ -107,10 +106,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     },
     [getVideo],
   )
-
-  // useEffect(() => {
-  //   handlePlaybackSpeed(playSpeed)
-  // }, [playSpeed, handlePlaybackSpeed])
 
   useEffect(() => {
     const video = getVideo()
