@@ -35,15 +35,28 @@ function App() {
   const [isPaused, setIsPaused] = useState(true)
   const mouseMoveTimeout = useRef<number | null>(null)
 
+  const resetAnalyzer = useCallback(() => {
+    analyzer.current?.destroy()
+    analyzer.current = null
+  }, [])
+
   const exit = useCallback(() => {
+    resetAnalyzer()
+    setIsAudio(false)
     setMediaFiles([])
     setCurrentIndex(0)
-  }, [])
+  }, [resetAnalyzer])
 
   const setMedia = useCallback((files: MediaFile[]) => {
     setMediaFiles(files)
     setCurrentIndex(0)
   }, [])
+
+  useEffect(() => {
+    if (mediaFiles.length === 0) {
+      resetAnalyzer()
+    }
+  }, [mediaFiles.length, resetAnalyzer])
 
   useEffect(() => {
     const video = videoRef.current
