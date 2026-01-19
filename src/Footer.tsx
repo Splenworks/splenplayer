@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Trans } from "react-i18next"
+import { Trans, useTranslation } from "react-i18next"
 import CommitHash from "virtual:commit-hash"
 
 const otherProducts = [
@@ -18,6 +18,7 @@ const otherProducts = [
 ]
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation()
   const [randomProduct] = useState(() =>
     otherProducts[Math.floor(Math.random() * otherProducts.length)]
   )
@@ -28,6 +29,7 @@ const Footer: React.FC = () => {
         <p className="text-sm text-gray-800 dark:text-gray-300">
           <Trans
             i18nKey="footer.checkOutProduct"
+            t={t}
             components={{
               link: (
                 <a

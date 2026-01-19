@@ -9,14 +9,7 @@ const looksLikeVideo = (name: string) => {
 
 const looksLikeAudio = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return endsWith(lowerCasedName, [
-    ".mp3",
-    ".wav",
-    ".ogg",
-    ".flac",
-    ".aac",
-    ".m4a",
-  ])
+  return endsWith(lowerCasedName, [".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a"])
 }
 
 const looksLikeSubtitle = (name: string) => {
@@ -45,11 +38,7 @@ export const getMediaFiles = (files: File[]): MediaFile[] => {
   const subtitleFiles = files.filter((file) => looksLikeSubtitle(file.name))
   return files
     .map((file) => ({
-      type: looksLikeVideo(file.name)
-        ? "video"
-        : looksLikeAudio(file.name)
-          ? "audio"
-          : null,
+      type: looksLikeVideo(file.name) ? "video" : looksLikeAudio(file.name) ? "audio" : null,
       file,
       subtitleFile:
         subtitleFiles.find((subtitleFile) =>
