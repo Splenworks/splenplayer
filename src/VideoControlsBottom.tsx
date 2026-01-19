@@ -71,18 +71,14 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
           />
         )}
         <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
-          <span className="pr-2">{currentTime}</span>/
-          <span className="pl-2">{totalTime}</span>
+          <span className="pr-2">{currentTime}</span>/<span className="pl-2">{totalTime}</span>
         </div>
       </div>
       <div className="flex items-end justify-center gap-2">
         <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} />
         {hasSubtitles && (
           <div className="mr-0.5">
-            <CaptionButton
-              filled={showSubtitle}
-              onToggle={toggleShowSubtitle}
-            />
+            <CaptionButton filled={showSubtitle} onToggle={toggleShowSubtitle} />
           </div>
         )}
         <div className={twMerge("relative", !hasSubtitles && "mr-0.5")}>
