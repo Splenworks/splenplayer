@@ -15,7 +15,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
     <div className="hover:bg-opacity-50 flex h-10 w-10 cursor-pointer flex-row-reverse items-center overflow-hidden rounded-full p-1 transition-all duration-300 ease-in-out hover:w-40 hover:bg-zinc-500">
       <button
         tabIndex={-1}
-        className="mx-2 h-6 w-6 outline-hidden focus:outline-hidden"
+        className="cursor-pointer mx-2 h-6 w-6 outline-hidden focus:outline-hidden"
         onClick={() => {
           handleVolumeChange(volume === "0" ? "0.5" : "0")
         }}
