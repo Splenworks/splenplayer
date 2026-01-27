@@ -4,11 +4,13 @@ import PlayIcon from "./assets/icons/play.svg?react"
 
 interface ActionOverlayProps {
   isPaused: boolean
+  isAudio: boolean
 }
 
-const ActionOverlay: FC<ActionOverlayProps> = ({ isPaused }) => {
+const ActionOverlay: FC<ActionOverlayProps> = ({ isPaused, isAudio }) => {
   const [isActive, setIsActive] = useState(false)
   const hasPlayedOnce = useRef(false)
+  const showPausedAudioOverlay = isAudio && isPaused
 
   useEffect(() => {
     if (!hasPlayedOnce.current && isPaused) {
@@ -26,8 +28,9 @@ const ActionOverlay: FC<ActionOverlayProps> = ({ isPaused }) => {
     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
       <div
         className={[
-          "flex items-center justify-center rounded-full bg-black/50 p-5 sm:p-6 md:p-7 opacity-0",
-          isActive && "animate-actionPulse",
+          "flex items-center justify-center rounded-full bg-black/50 p-5 sm:p-6 md:p-7",
+          showPausedAudioOverlay ? "opacity-100" : "opacity-0",
+          !showPausedAudioOverlay && isActive && "animate-actionPulse",
         ].join(" ")}
         onAnimationEnd={() => {
           if (isActive) {

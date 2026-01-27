@@ -164,12 +164,7 @@ function App() {
         video.onended = null
       }
     }
-  }, [
-    mediaFiles.length,
-    currentIndex,
-    videoFileHash,
-    subtitles,
-  ])
+  }, [mediaFiles.length, currentIndex, videoFileHash, subtitles])
 
   if (mediaFiles.length > 0) {
     return (
@@ -195,6 +190,7 @@ function App() {
           showControls={showControls}
           setShowControls={setShowControls}
           isPaused={isPaused}
+          isAudio={isAudio}
           setIsPaused={setIsPaused}
           setSubtitles={setSubtitles}
           hasSubtitles={subtitles.length > 0}

@@ -24,6 +24,7 @@ interface VideoControlsProps {
   showControls: boolean
   setShowControls: React.Dispatch<React.SetStateAction<boolean>>
   isPaused: boolean
+  isAudio: boolean
   setIsPaused: React.Dispatch<React.SetStateAction<boolean>>
   setSubtitles: React.Dispatch<React.SetStateAction<ParseResult>>
   hasSubtitles: boolean
@@ -45,6 +46,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   showControls,
   setShowControls,
   isPaused,
+  isAudio,
   setIsPaused,
   setSubtitles,
   hasSubtitles,
@@ -60,26 +62,31 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     return videoRef && typeof videoRef === "object" && videoRef.current
   }, [videoRef])
 
-  const parseSubtitle = useCallback((subtitleFile: File) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const content = e.target?.result
-      if (typeof content === "string") {
-        if (subtitleFile.name.endsWith(".srt") || subtitleFile.name.endsWith(".vtt")) {
-          setSubtitles(srtVttParse(content).entries.map((entry) => ({
-            startTime: entry.from,
-            endTime: entry.to,
-            languages: {
-              x: entry.text,
-            },
-          })))
-        } else {
-          setSubtitles(samiParse(content)?.result || [])
+  const parseSubtitle = useCallback(
+    (subtitleFile: File) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const content = e.target?.result
+        if (typeof content === "string") {
+          if (subtitleFile.name.endsWith(".srt") || subtitleFile.name.endsWith(".vtt")) {
+            setSubtitles(
+              srtVttParse(content).entries.map((entry) => ({
+                startTime: entry.from,
+                endTime: entry.to,
+                languages: {
+                  x: entry.text,
+                },
+              })),
+            )
+          } else {
+            setSubtitles(samiParse(content)?.result || [])
+          }
         }
       }
-    }
-    reader.readAsText(subtitleFile)
-  }, [setSubtitles])
+      reader.readAsText(subtitleFile)
+    },
+    [setSubtitles],
+  )
 
   useEffect(() => {
     const subtitleFile = mediaFiles[currentIndex].subtitleFile
@@ -180,12 +187,12 @@ const VideoControls: React.FC<VideoControlsProps> = ({
       videoPaused={isPaused}
     >
       <div
-        className="absolute top-30 right-0 left-0 bottom-21"
+        className="absolute top-30 right-0 bottom-21 left-0"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         onClick={togglePlayPause}
       />
-      <ActionOverlay isPaused={isPaused} />
+      <ActionOverlay isPaused={isPaused} isAudio={isAudio} />
       <VideoControlsTop
         showControls={showControls}
         isFullScreen={isFullScreen}
