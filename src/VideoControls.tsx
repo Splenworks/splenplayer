@@ -214,7 +214,12 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         isFullScreen={isFullScreen}
         toggleFullScreen={toggleFullScreen}
       />
-      <ProgressBar handleSeek={handleSeek} seekValue={seekValue} />
+      <ProgressBar
+        handleSeek={handleSeek}
+        seekValue={seekValue}
+        // eslint-disable-next-line react-hooks/refs
+        duration={videoRef.current?.duration ?? 0}
+      />
     </MouseMoveOverlay>
   )
 }
