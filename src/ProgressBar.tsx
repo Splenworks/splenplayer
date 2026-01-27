@@ -22,14 +22,14 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ handleSeek, seekValue, durati
     }
   }, [isSeeking, seekValue])
 
-  const tooltipValue = isSeeking ? localSeekValue : seekValue
+  const inputValue = isSeeking ? localSeekValue : seekValue
 
   const tooltipPercent = useMemo(() => {
-    const value = Number(tooltipValue)
+    const value = Number(inputValue)
     const percent = (!Number.isFinite(value)) ? 0 : Math.min(100, Math.max(0, value))
     if (isSeeking) return percent
     return hoverPercent ?? percent
-  }, [hoverPercent, isSeeking, tooltipValue])
+  }, [hoverPercent, isSeeking, inputValue])
 
   const tooltipTime = useMemo(() => {
     if (!Number.isFinite(duration) || duration <= 0) return "00:00"
@@ -83,7 +83,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ handleSeek, seekValue, durati
           onKeyDown={(e) => {
             e.preventDefault()
           }}
-          value={tooltipValue}
+          value={inputValue}
         />
       </div>
     </div>
