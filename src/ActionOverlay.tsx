@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from "react"
+import { useEffect, useRef, useState, type FC } from "react"
 import PauseIcon from "./assets/icons/pause.svg?react"
 import PlayIcon from "./assets/icons/play.svg?react"
 
@@ -8,8 +8,16 @@ interface ActionOverlayProps {
 
 const ActionOverlay: FC<ActionOverlayProps> = ({ isPaused }) => {
   const [isActive, setIsActive] = useState(false)
+  const hasPlayedOnce = useRef(false)
 
   useEffect(() => {
+    if (!hasPlayedOnce.current && isPaused) {
+      return
+    }
+    if (!hasPlayedOnce.current && !isPaused) {
+      hasPlayedOnce.current = true
+      return
+    }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsActive(true)
   }, [isPaused])
