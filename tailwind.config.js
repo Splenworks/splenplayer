@@ -10,11 +10,18 @@ export default {
       },
       animation: {
         shimmer: "shimmer 5s infinite",
+        actionPulse: "actionPulse 1s ease-out",
       },
       keyframes: {
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
+        },
+        actionPulse: {
+          "0%": { opacity: "0", transform: "scale(0.6)" },
+          "15%": { opacity: "1", transform: "scale(1)" },
+          "70%": { opacity: "1", transform: "scale(1.02)" },
+          "100%": { opacity: "0", transform: "scale(1.08)" },
         },
       },
     },

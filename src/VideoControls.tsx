@@ -4,6 +4,7 @@ import { ParseResult, parse as samiParse } from "sami-parser"
 
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 
+import ActionOverlay from "./ActionOverlay"
 import { useFullScreen } from "./hooks/useFullScreen"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
@@ -184,6 +185,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         onDrop={handleDrop}
         onClick={togglePlayPause}
       />
+      <ActionOverlay isPaused={isPaused} />
       <VideoControlsTop
         showControls={showControls}
         isFullScreen={isFullScreen}
