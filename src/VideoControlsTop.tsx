@@ -39,12 +39,18 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
         </span>
         {mediaFiles.length > 1 && (
           <div className="mt-2 max-w-full">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-base font-semibold">
+                {t("others.nowPlayingStatus", {
+                  current: currentIndex + 1,
+                  total: mediaFiles.length,
+                })}
+              </span>
               <button
                 tabIndex={-1}
                 aria-label={showMediaList ? t("others.hidePlaylist") : t("others.showPlaylist")}
                 className={twMerge(
-                  "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
+                  "hover:bg-opacity-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full outline-hidden transition-colors duration-300 ease-in-out hover:bg-zinc-500 focus:outline-hidden",
                   showMediaList && "bg-white/20",
                 )}
                 onClick={() => {
@@ -62,12 +68,6 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
                     showMediaList ? "rotate-180" : "rotate-0",
                   )}
                 />
-                <span>
-                  {t("others.nowPlayingStatus", {
-                    current: currentIndex + 1,
-                    total: mediaFiles.length,
-                  })}
-                </span>
               </button>
             </div>
             <div
