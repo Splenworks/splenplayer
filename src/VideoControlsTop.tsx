@@ -44,7 +44,7 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
                 tabIndex={-1}
                 aria-label={showMediaList ? t("others.hidePlaylist") : t("others.showPlaylist")}
                 className={twMerge(
-                  "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-base font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
+                  "flex cursor-pointer items-center gap-2 rounded-md px-2 -ml-2 py-1 text-lg font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
                   showMediaList && "bg-white/20",
                 )}
                 onClick={() => {
@@ -56,18 +56,18 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
                   e.preventDefault()
                 }}
               >
-                <ChevronDownIcon
-                  className={twMerge(
-                    "h-4 w-4 transition-transform duration-300 ease-in-out",
-                    showMediaList ? "rotate-180" : "rotate-0",
-                  )}
-                />
                 <span>
                   {t("others.nowPlayingStatus", {
                     current: currentIndex + 1,
                     total: mediaFiles.length,
                   })}
                 </span>
+                <ChevronDownIcon
+                  className={twMerge(
+                    "h-4 w-4 transition-transform duration-300 ease-in-out",
+                    showMediaList ? "rotate-180" : "rotate-0",
+                  )}
+                />
               </button>
             </div>
             <div
