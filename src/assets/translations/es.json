@@ -18,6 +18,7 @@
     "fullscreen": "Pantalla completa",
     "exitFullscreen": "Salir de pantalla completa",
     "playlist": "Lista",
+    "nowPlayingStatus": "Reproduciendo ahora: {{current}} de {{total}}",
     "showPlaylist": "Mostrar lista",
     "hidePlaylist": "Ocultar lista",
     "audio": "Audio",

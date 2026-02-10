@@ -1,9 +1,9 @@
 import React from "react"
+import { ChevronDownIcon } from "@heroicons/react/24/solid"
 import { useTranslation } from "react-i18next"
 import { twMerge } from "tailwind-merge"
 import IconButton from "./IconButton"
 import Tooltip from "./Tooltip"
-import NextIcon from "./assets/icons/next.svg?react"
 import CloseIcon from "./assets/icons/xmark.svg?react"
 import { MediaFile } from "./utils/getMediaFiles"
 
@@ -39,29 +39,12 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
         </span>
         {mediaFiles.length > 1 && (
           <div className="mt-2 max-w-full">
-            <div className="flex items-center gap-1">
-              <button
-                tabIndex={-1}
-                className={twMerge(
-                  "cursor-pointer rounded-md px-2 py-1 text-sm font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
-                  showMediaList && "bg-white/20",
-                )}
-                onClick={() => {
-                  if (showControls) {
-                    setShowMediaList((prev) => !prev)
-                  }
-                }}
-                onKeyDown={(e) => {
-                  e.preventDefault()
-                }}
-              >
-                {t("others.playlist")}
-              </button>
+            <div className="flex items-center">
               <button
                 tabIndex={-1}
                 aria-label={showMediaList ? t("others.hidePlaylist") : t("others.showPlaylist")}
                 className={twMerge(
-                  "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
+                  "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
                   showMediaList && "bg-white/20",
                 )}
                 onClick={() => {
@@ -73,16 +56,19 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
                   e.preventDefault()
                 }}
               >
-                <NextIcon
+                <ChevronDownIcon
                   className={twMerge(
                     "h-4 w-4 transition-transform duration-300 ease-in-out",
-                    showMediaList ? "rotate-90" : "rotate-0",
+                    showMediaList ? "rotate-180" : "rotate-0",
                   )}
                 />
+                <span>
+                  {t("others.nowPlayingStatus", {
+                    current: currentIndex + 1,
+                    total: mediaFiles.length,
+                  })}
+                </span>
               </button>
-              <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[11px] leading-none text-zinc-100">
-                {mediaFiles.length}
-              </span>
             </div>
             <div
               className={twMerge(
