@@ -1,5 +1,5 @@
-import React from "react"
 import { ChevronDownIcon } from "@heroicons/react/24/solid"
+import React from "react"
 import { useTranslation } from "react-i18next"
 import { twMerge } from "tailwind-merge"
 import IconButton from "./IconButton"
@@ -33,7 +33,7 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
 
   return (
     <div className="absolute top-4 right-4 left-6 flex items-start justify-between gap-4">
-      <div className="flex min-w-0 max-w-2xl flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <span className="text-xl font-semibold">
           {file.name}
         </span>
