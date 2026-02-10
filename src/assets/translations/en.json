@@ -16,6 +16,11 @@
     "previous": "Previous",
     "next": "Next",
     "fullscreen": "Fullscreen",
-    "exitFullscreen": "Exit Fullscreen"
+    "exitFullscreen": "Exit Fullscreen",
+    "playlist": "Playlist",
+    "showPlaylist": "Show playlist",
+    "hidePlaylist": "Hide playlist",
+    "audio": "Audio",
+    "video": "Video"
   }
 }

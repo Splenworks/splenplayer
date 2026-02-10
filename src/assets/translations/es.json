@@ -16,6 +16,11 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "fullscreen": "Pantalla completa",
-    "exitFullscreen": "Salir de pantalla completa"
+    "exitFullscreen": "Salir de pantalla completa",
+    "playlist": "Lista",
+    "showPlaylist": "Mostrar lista",
+    "hidePlaylist": "Ocultar lista",
+    "audio": "Audio",
+    "video": "Video"
   }
 }
