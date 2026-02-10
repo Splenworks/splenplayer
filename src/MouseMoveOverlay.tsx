@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, useEffect } from "react"
 import { twMerge } from "tailwind-merge"
 
 interface MouseMoveOverlayProps {
@@ -17,6 +17,29 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
   videoPaused,
   delay = 1000,
 }) => {
+  useEffect(() => {
+    if (mouseMoveTimeoutRef.current) {
+      clearTimeout(mouseMoveTimeoutRef.current)
+      mouseMoveTimeoutRef.current = null
+    }
+
+    if (videoPaused) {
+      setShowControls(true)
+      return
+    }
+
+    mouseMoveTimeoutRef.current = window.setTimeout(() => {
+      setShowControls(false)
+    }, delay)
+
+    return () => {
+      if (mouseMoveTimeoutRef.current) {
+        clearTimeout(mouseMoveTimeoutRef.current)
+        mouseMoveTimeoutRef.current = null
+      }
+    }
+  }, [videoPaused, delay, setShowControls, mouseMoveTimeoutRef])
+
   return (
     <div className="fixed top-0 right-0 bottom-0 left-0">
       <div
