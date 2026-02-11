@@ -6,6 +6,7 @@ interface MouseMoveOverlayProps {
   setShowControls: (showControls: boolean) => void
   mouseMoveTimeoutRef: React.RefObject<number | null>
   videoPaused: boolean
+  preventAutoHide?: boolean
   delay?: number
 }
 
@@ -15,6 +16,7 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
   setShowControls,
   mouseMoveTimeoutRef,
   videoPaused,
+  preventAutoHide = false,
   delay = 1000,
 }) => {
   useEffect(() => {
@@ -23,13 +25,15 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
       mouseMoveTimeoutRef.current = null
     }
 
-    if (videoPaused) {
+    if (videoPaused || preventAutoHide) {
       setShowControls(true)
       return
     }
 
     mouseMoveTimeoutRef.current = window.setTimeout(() => {
-      setShowControls(false)
+      if (!videoPaused) {
+        setShowControls(false)
+      }
     }, delay)
 
     return () => {
@@ -38,7 +42,7 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
         mouseMoveTimeoutRef.current = null
       }
     }
-  }, [videoPaused, delay, setShowControls, mouseMoveTimeoutRef])
+  }, [videoPaused, preventAutoHide, delay, setShowControls, mouseMoveTimeoutRef])
 
   return (
     <div className="fixed top-0 right-0 bottom-0 left-0">
@@ -52,7 +56,7 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
             "linear-gradient(to bottom, rgba(0,0,0,75%), rgba(0,0,0,0%), rgba(0,0,0,0%), rgba(0,0,0,75%)",
         }}
         onMouseEnter={() => {
-          if (document.hasFocus() || videoPaused) {
+          if (document.hasFocus() || videoPaused || preventAutoHide) {
             setShowControls(true)
           } else {
             setShowControls(false)
@@ -62,13 +66,13 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
           if (mouseMoveTimeoutRef.current) {
             clearTimeout(mouseMoveTimeoutRef.current)
           }
-          if (document.hasFocus() || videoPaused) {
+          if (document.hasFocus() || videoPaused || preventAutoHide) {
             setShowControls(true)
-            mouseMoveTimeoutRef.current = window.setTimeout(() => {
-              if (!videoPaused) {
+            if (!videoPaused && !preventAutoHide) {
+              mouseMoveTimeoutRef.current = window.setTimeout(() => {
                 setShowControls(false)
-              }
-            }, delay)
+              }, delay)
+            }
           } else {
             setShowControls(false)
           }

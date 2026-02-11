@@ -14,6 +14,7 @@ interface VideoControlsTopProps {
   mediaFiles: MediaFile[]
   currentIndex: number
   setCurrentIndex: (index: number) => void
+  setIsMediaListHovered: (isHovered: boolean) => void
   exit: () => void
 }
 
@@ -23,6 +24,7 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
   mediaFiles,
   currentIndex,
   setCurrentIndex,
+  setIsMediaListHovered,
   exit,
 }) => {
   const { t } = useTranslation()
@@ -35,7 +37,17 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
           {file.name}
         </span>
         {mediaFiles.length > 1 && (
-          <div className="group mt-2 max-w-full">
+          <div
+            className="group mt-2 inline-flex max-w-2xl flex-col items-start"
+            onMouseEnter={() => {
+              if (showControls) {
+                setIsMediaListHovered(true)
+              }
+            }}
+            onMouseLeave={() => {
+              setIsMediaListHovered(false)
+            }}
+          >
             <div className="flex items-center">
               <button
                 tabIndex={-1}
