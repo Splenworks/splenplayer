@@ -16,6 +16,12 @@
     "previous": "이전",
     "next": "다음",
     "fullscreen": "전체화면",
-    "exitFullscreen": "전체화면 나가기"
+    "exitFullscreen": "전체화면 나가기",
+    "playlist": "재생목록",
+    "nowPlayingStatus": "지금 재생 중: {{current}} / {{total}}",
+    "showPlaylist": "재생목록 보기",
+    "hidePlaylist": "재생목록 숨기기",
+    "audio": "오디오",
+    "video": "비디오"
   }
 }

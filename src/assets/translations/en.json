@@ -16,6 +16,12 @@
     "previous": "Previous",
     "next": "Next",
     "fullscreen": "Fullscreen",
-    "exitFullscreen": "Exit Fullscreen"
+    "exitFullscreen": "Exit Fullscreen",
+    "playlist": "Playlist",
+    "nowPlayingStatus": "Now Playing: {{current}} of {{total}}",
+    "showPlaylist": "Show playlist",
+    "hidePlaylist": "Hide playlist",
+    "audio": "Audio",
+    "video": "Video"
   }
 }

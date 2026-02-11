@@ -15,7 +15,7 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({ filled, onToggle }) => {
       <button
         tabIndex={-1}
         className={twMerge(
-          "h-5 w-6 rounded-md border-2 border-white font-mono text-xs font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
+          "cursor-pointer h-5 w-6 rounded-md border-2 border-white font-mono text-xs font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
           filled ? "bg-white text-black" : "bg-transparent",
         )}
       >
