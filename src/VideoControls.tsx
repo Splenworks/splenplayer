@@ -56,7 +56,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
 }) => {
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
-  const [showMediaList, setShowMediaList] = useState(false)
   const { isFullScreen, toggleFullScreen } = useFullScreen()
 
   const getVideo = useCallback(() => {
@@ -115,12 +114,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
       video.volume = Number(volume)
     }
   }, [volume, getVideo])
-
-  useEffect(() => {
-    if (mediaFiles.length < 2) {
-      setShowMediaList(false)
-    }
-  }, [mediaFiles.length])
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -206,8 +199,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         mediaFiles={mediaFiles}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
-        showMediaList={showMediaList}
-        setShowMediaList={setShowMediaList}
         exit={exit}
       />
       <VideoControlsBottom

@@ -6,7 +6,6 @@ interface MediaListProps {
   mediaFiles: MediaFile[]
   currentIndex: number
   setCurrentIndex: (index: number) => void
-  showMediaList: boolean
   showControls: boolean
 }
 
@@ -14,14 +13,15 @@ const MediaList: React.FC<MediaListProps> = ({
   mediaFiles,
   currentIndex,
   setCurrentIndex,
-  showMediaList,
   showControls,
 }) => {
   return (
     <div
       className={twMerge(
         "-ml-2 max-w-2xl overflow-hidden transition-all duration-300 ease-in-out",
-        showMediaList ? "mt-2 max-h-56 opacity-100" : "max-h-0 opacity-0",
+        showControls
+          ? "mt-0 max-h-0 opacity-0 group-hover:mt-2 group-hover:max-h-56 group-hover:opacity-100"
+          : "max-h-0 opacity-0",
       )}
     >
       <div className="max-h-56 overflow-y-auto rounded-xl border border-white/20 bg-black/55 p-2 backdrop-blur-md">

@@ -14,8 +14,6 @@ interface VideoControlsTopProps {
   mediaFiles: MediaFile[]
   currentIndex: number
   setCurrentIndex: (index: number) => void
-  showMediaList: boolean
-  setShowMediaList: React.Dispatch<React.SetStateAction<boolean>>
   exit: () => void
 }
 
@@ -25,8 +23,6 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
   mediaFiles,
   currentIndex,
   setCurrentIndex,
-  showMediaList,
-  setShowMediaList,
   exit,
 }) => {
   const { t } = useTranslation()
@@ -39,23 +35,15 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
           {file.name}
         </span>
         {mediaFiles.length > 1 && (
-          <div className="mt-2 max-w-full">
+          <div className="group mt-2 max-w-full">
             <div className="flex items-center">
               <button
                 tabIndex={-1}
-                aria-label={showMediaList ? t("others.hidePlaylist") : t("others.showPlaylist")}
+                aria-label={t("others.showPlaylist")}
                 className={twMerge(
                   "flex cursor-pointer items-center gap-2 rounded-md px-2 -ml-2 py-1 text-lg font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
-                  showMediaList && "bg-white/20",
+                  showControls && "group-hover:bg-white/20",
                 )}
-                onClick={() => {
-                  if (showControls) {
-                    setShowMediaList((prev) => !prev)
-                  }
-                }}
-                onKeyDown={(e) => {
-                  e.preventDefault()
-                }}
               >
                 <span>
                   {t("others.nowPlayingStatus", {
@@ -66,7 +54,7 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
                 <ChevronDownIcon
                   className={twMerge(
                     "h-4 w-4 transition-transform duration-300 ease-in-out",
-                    showMediaList ? "rotate-180" : "rotate-0",
+                    showControls && "group-hover:rotate-180",
                   )}
                 />
               </button>
@@ -75,7 +63,6 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
               mediaFiles={mediaFiles}
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
-              showMediaList={showMediaList}
               showControls={showControls}
             />
           </div>
