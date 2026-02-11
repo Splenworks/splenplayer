@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { ParseResult, parse as samiParse } from "sami-parser"
 
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
+import { extractMkvSubtitleParseResult } from "./utils/mkvSubtitles"
 
 import ActionOverlay from "./ActionOverlay"
 import { useFullScreen } from "./hooks/useFullScreen"
@@ -63,40 +64,71 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     return videoRef && typeof videoRef === "object" && videoRef.current
   }, [videoRef])
 
+  const parseSubtitleFile = useCallback(async (subtitleFile: File): Promise<ParseResult> => {
+    const content = await subtitleFile.text()
+    const lowerCaseSubtitleFileName = subtitleFile.name.toLowerCase()
+    if (lowerCaseSubtitleFileName.endsWith(".srt") || lowerCaseSubtitleFileName.endsWith(".vtt")) {
+      return srtVttParse(content).entries.map((entry) => ({
+        startTime: entry.from,
+        endTime: entry.to,
+        languages: {
+          x: entry.text,
+        },
+      }))
+    }
+    return samiParse(content)?.result || []
+  }, [])
+
   const parseSubtitle = useCallback(
-    (subtitleFile: File) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const content = e.target?.result
-        if (typeof content === "string") {
-          if (subtitleFile.name.endsWith(".srt") || subtitleFile.name.endsWith(".vtt")) {
-            setSubtitles(
-              srtVttParse(content).entries.map((entry) => ({
-                startTime: entry.from,
-                endTime: entry.to,
-                languages: {
-                  x: entry.text,
-                },
-              })),
-            )
-          } else {
-            setSubtitles(samiParse(content)?.result || [])
-          }
-        }
+    async (subtitleFile: File) => {
+      try {
+        setSubtitles(await parseSubtitleFile(subtitleFile))
+      } catch (error) {
+        console.error("Failed to parse subtitle file:", error)
+        setSubtitles([])
       }
-      reader.readAsText(subtitleFile)
     },
-    [setSubtitles],
+    [parseSubtitleFile, setSubtitles],
   )
 
   useEffect(() => {
-    const subtitleFile = mediaFiles[currentIndex].subtitleFile
-    if (subtitleFile) {
-      parseSubtitle(subtitleFile)
-    } else {
+    const currentMedia = mediaFiles[currentIndex]
+    if (!currentMedia) {
       setSubtitles([])
+      return
     }
-  }, [currentIndex, mediaFiles, parseSubtitle, setSubtitles])
+
+    let shouldIgnoreResult = false
+    const setSubtitlesSafely = (parsedSubtitles: ParseResult) => {
+      if (!shouldIgnoreResult) {
+        setSubtitles(parsedSubtitles)
+      }
+    }
+
+    const loadSubtitles = async () => {
+      try {
+        if (currentMedia.subtitleFile) {
+          setSubtitlesSafely(await parseSubtitleFile(currentMedia.subtitleFile))
+          return
+        }
+
+        if (currentMedia.file.name.toLowerCase().endsWith(".mkv")) {
+          setSubtitlesSafely(await extractMkvSubtitleParseResult(currentMedia.file))
+          return
+        }
+
+        setSubtitlesSafely([])
+      } catch (error) {
+        console.error("Failed to parse subtitles:", error)
+        setSubtitlesSafely([])
+      }
+    }
+
+    void loadSubtitles()
+    return () => {
+      shouldIgnoreResult = true
+    }
+  }, [currentIndex, mediaFiles, parseSubtitleFile, setSubtitles])
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -129,7 +161,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     if (mediaFiles.length === 0) {
       const subtitleFiles = getSubtitleFiles(files)
       if (subtitleFiles.length > 0) {
-        parseSubtitle(subtitleFiles[0])
+        void parseSubtitle(subtitleFiles[0])
       }
     } else {
       setMedia(mediaFiles)
