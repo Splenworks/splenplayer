@@ -49,6 +49,7 @@ type ElementHeader = {
 type SubtitleTrack = {
   trackNumber: number
   codecId: string
+  language: string
   isDefault: boolean
 }
 
@@ -218,6 +219,7 @@ const parseTrackEntry = (bytes: Uint8Array, start: number, end: number): Subtitl
   let trackNumber = 0
   let trackType = 0
   let codecId = ""
+  let language = "und"
   let isDefault = true
 
   let offset = start
@@ -235,7 +237,9 @@ const parseTrackEntry = (bytes: Uint8Array, start: number, end: number): Subtitl
       codecId = readUtf8String(bytes, element.dataOffset, element.end)
     } else if (element.id === TRACK_DEFAULT_ID) {
       isDefault = readUnsignedInt(bytes, element.dataOffset, element.end) !== 0
-    } else if (element.id === LANGUAGE_ID || element.id === TRACK_NAME_ID) {
+    } else if (element.id === LANGUAGE_ID) {
+      language = readUtf8String(bytes, element.dataOffset, element.end).toLowerCase() || "und"
+    } else if (element.id === TRACK_NAME_ID) {
       // Kept for compatibility with future track-selection UI.
       readUtf8String(bytes, element.dataOffset, element.end)
     }
@@ -257,6 +261,7 @@ const parseTrackEntry = (bytes: Uint8Array, start: number, end: number): Subtitl
   return {
     trackNumber,
     codecId,
+    language,
     isDefault,
   }
 }
@@ -365,9 +370,17 @@ const parseClusters = (
   bytes: Uint8Array,
   start: number,
   end: number,
-  selectedTrack: SubtitleTrack,
+  subtitleTracksByNumber: Map<number, SubtitleTrack>,
 ) => {
-  const events: SubtitleEvent[] = []
+  const eventsByTrack = new Map<number, SubtitleEvent[]>()
+  const addEvent = (trackNumber: number, event: SubtitleEvent) => {
+    const trackEvents = eventsByTrack.get(trackNumber)
+    if (trackEvents) {
+      trackEvents.push(event)
+      return
+    }
+    eventsByTrack.set(trackNumber, [event])
+  }
 
   let offset = start
   while (offset < end) {
@@ -387,13 +400,14 @@ const parseClusters = (
           clusterTimecode = readUnsignedInt(bytes, clusterElement.dataOffset, clusterElement.end)
         } else if (clusterElement.id === SIMPLE_BLOCK_ID) {
           const block = parseBlock(bytes, clusterElement.dataOffset, clusterElement.end)
-          if (block && block.trackNumber === selectedTrack.trackNumber) {
+          const track = block ? subtitleTracksByNumber.get(block.trackNumber) : null
+          if (track && block) {
             const text = decodeSubtitlePayload(
-              selectedTrack.codecId,
+              track.codecId,
               bytes.subarray(block.payloadStart, block.payloadEnd),
             )
             if (text.length > 0) {
-              events.push({
+              addEvent(track.trackNumber, {
                 startUnit: clusterTimecode + block.relativeTimecode,
                 text,
               })
@@ -405,13 +419,14 @@ const parseClusters = (
             clusterElement.dataOffset,
             clusterElement.end,
           )
-          if (block && block.trackNumber === selectedTrack.trackNumber) {
+          const track = block ? subtitleTracksByNumber.get(block.trackNumber) : null
+          if (track && block) {
             const text = decodeSubtitlePayload(
-              selectedTrack.codecId,
+              track.codecId,
               bytes.subarray(block.payloadStart, block.payloadEnd),
             )
             if (text.length > 0) {
-              events.push({
+              addEvent(track.trackNumber, {
                 startUnit: clusterTimecode + block.relativeTimecode,
                 durationUnit,
                 text,
@@ -433,7 +448,7 @@ const parseClusters = (
     offset = segmentElement.end
   }
 
-  return events
+  return eventsByTrack
 }
 
 const findSegment = (bytes: Uint8Array): { start: number; end: number } | null => {
@@ -456,10 +471,18 @@ const findSegment = (bytes: Uint8Array): { start: number; end: number } | null =
 
 const getMkvSubtitleEvents = (
   bytes: Uint8Array,
-): { timecodeScale: number; selectedTrack: SubtitleTrack | null; events: SubtitleEvent[] } => {
+): {
+  timecodeScale: number
+  tracks: SubtitleTrack[]
+  eventsByTrack: Map<number, SubtitleEvent[]>
+} => {
   const segment = findSegment(bytes)
   if (!segment) {
-    return { timecodeScale: DEFAULT_TIMECODE_SCALE_NS, selectedTrack: null, events: [] }
+    return {
+      timecodeScale: DEFAULT_TIMECODE_SCALE_NS,
+      tracks: [],
+      eventsByTrack: new Map<number, SubtitleEvent[]>(),
+    }
   }
 
   let timecodeScale = DEFAULT_TIMECODE_SCALE_NS
@@ -485,22 +508,24 @@ const getMkvSubtitleEvents = (
   }
 
   if (tracks.length === 0) {
-    return { timecodeScale, selectedTrack: null, events: [] }
+    return { timecodeScale, tracks: [], eventsByTrack: new Map<number, SubtitleEvent[]>() }
   }
 
-  const selectedTrack =
-    tracks.find((track) => track.isDefault) ||
-    tracks.find((track) => track.codecId === "S_TEXT/UTF8") ||
-    tracks[0]
+  const orderedTracks = [...tracks].sort((trackA, trackB) => {
+    if (trackA.isDefault !== trackB.isDefault) {
+      return trackA.isDefault ? -1 : 1
+    }
+    return trackA.trackNumber - trackB.trackNumber
+  })
 
-  if (!selectedTrack) {
-    return { timecodeScale, selectedTrack: null, events: [] }
-  }
+  const subtitleTracksByNumber = new Map<number, SubtitleTrack>(
+    orderedTracks.map((track) => [track.trackNumber, track]),
+  )
 
   return {
     timecodeScale,
-    selectedTrack,
-    events: parseClusters(bytes, segment.start, segment.end, selectedTrack),
+    tracks: orderedTracks,
+    eventsByTrack: parseClusters(bytes, segment.start, segment.end, subtitleTracksByNumber),
   }
 }
 
@@ -529,49 +554,74 @@ const getEndTime = (
 
 export const extractMkvSubtitleParseResult = async (file: File): Promise<ParseResult> => {
   const bytes = new Uint8Array(await file.arrayBuffer())
-  const { timecodeScale, selectedTrack, events } = getMkvSubtitleEvents(bytes)
-  if (!selectedTrack || events.length === 0) {
+  const { timecodeScale, tracks, eventsByTrack } = getMkvSubtitleEvents(bytes)
+  if (tracks.length === 0 || eventsByTrack.size === 0) {
     return []
   }
 
-  const orderedEvents = [...events].sort((a, b) => a.startUnit - b.startUnit)
   const timeScaleToMs = timecodeScale / 1_000_000
-  const groupedSubtitles = new Map<string, { startTime: number; endTime: number; lines: string[] }>()
+  const parseResult: ParseResult = []
+  const usedTrackKeys = new Set<string>()
 
-  for (let index = 0; index < orderedEvents.length; index += 1) {
-    const event = orderedEvents[index]
-    const startMs = Math.max(0, event.startUnit * timeScaleToMs)
-    const endMs = getEndTime(orderedEvents, index, timeScaleToMs, startMs)
-    if (endMs <= startMs || event.text.length === 0) {
+  for (const track of tracks) {
+    const trackEvents = eventsByTrack.get(track.trackNumber)
+    if (!trackEvents || trackEvents.length === 0) {
       continue
     }
 
-    const startTime = Math.floor(startMs)
-    const endTime = Math.ceil(endMs)
-    const key = `${startTime}`
-    const subtitleGroup = groupedSubtitles.get(key)
-    if (!subtitleGroup) {
-      groupedSubtitles.set(key, {
-        startTime,
-        endTime,
-        lines: [event.text],
-      })
-      continue
+    const normalizedLanguage = track.language.replace(/[^a-z0-9]/gi, "").toLowerCase() || "und"
+    const trackKey = usedTrackKeys.has(normalizedLanguage)
+      ? `${normalizedLanguage}-${track.trackNumber}`
+      : normalizedLanguage
+    usedTrackKeys.add(trackKey)
+
+    const orderedEvents = [...trackEvents].sort((a, b) => a.startUnit - b.startUnit)
+    const groupedSubtitles = new Map<
+      string,
+      {
+        startTime: number
+        endTime: number
+        lines: string[]
+      }
+    >()
+
+    for (let index = 0; index < orderedEvents.length; index += 1) {
+      const event = orderedEvents[index]
+      const startMs = Math.max(0, event.startUnit * timeScaleToMs)
+      const endMs = getEndTime(orderedEvents, index, timeScaleToMs, startMs)
+      if (endMs <= startMs || event.text.length === 0) {
+        continue
+      }
+
+      const startTime = Math.floor(startMs)
+      const endTime = Math.ceil(endMs)
+      const key = `${startTime}`
+      const subtitleGroup = groupedSubtitles.get(key)
+      if (!subtitleGroup) {
+        groupedSubtitles.set(key, {
+          startTime,
+          endTime,
+          lines: [event.text],
+        })
+        continue
+      }
+
+      subtitleGroup.endTime = Math.max(subtitleGroup.endTime, endTime)
+      if (!subtitleGroup.lines.includes(event.text)) {
+        subtitleGroup.lines.push(event.text)
+      }
     }
 
-    subtitleGroup.endTime = Math.max(subtitleGroup.endTime, endTime)
-    if (!subtitleGroup.lines.includes(event.text)) {
-      subtitleGroup.lines.push(event.text)
-    }
+    parseResult.push(
+      ...Array.from(groupedSubtitles.values()).map((subtitleGroup) => ({
+        startTime: subtitleGroup.startTime,
+        endTime: subtitleGroup.endTime,
+        languages: {
+          [trackKey]: subtitleGroup.lines.join("\n"),
+        },
+      })),
+    )
   }
 
-  return Array.from(groupedSubtitles.values())
-    .sort((a, b) => a.startTime - b.startTime)
-    .map((subtitleGroup) => ({
-      startTime: subtitleGroup.startTime,
-      endTime: subtitleGroup.endTime,
-      languages: {
-        x: subtitleGroup.lines.join("\n"),
-      },
-    }))
+  return parseResult.sort((a, b) => a.startTime - b.startTime)
 }

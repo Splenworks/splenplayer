@@ -31,6 +31,9 @@ interface VideoControlsProps {
   hasSubtitles: boolean
   showSubtitle: boolean
   setShowSubtitle: React.Dispatch<React.SetStateAction<boolean>>
+  subtitleTracks: string[]
+  selectedSubtitleTrack: string | null
+  setSelectedSubtitleTrack: React.Dispatch<React.SetStateAction<string | null>>
   mouseMoveTimeout: React.RefObject<number | null>
 }
 
@@ -53,6 +56,9 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   hasSubtitles,
   showSubtitle,
   setShowSubtitle,
+  subtitleTracks,
+  selectedSubtitleTrack,
+  setSelectedSubtitleTrack,
   mouseMoveTimeout,
 }) => {
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
@@ -256,6 +262,12 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         hasSubtitles={hasSubtitles}
         showSubtitle={showSubtitle}
         toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
+        subtitleTracks={subtitleTracks}
+        selectedSubtitleTrack={selectedSubtitleTrack}
+        handleSubtitleTrackChange={(track) => {
+          setSelectedSubtitleTrack(track)
+          setShowSubtitle(true)
+        }}
         playSpeed={playSpeed}
         handlePlaybackSpeed={handlePlaybackSpeed}
         isFullScreen={isFullScreen}

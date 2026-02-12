@@ -21,6 +21,9 @@ interface VideoControlsBottomProps {
   hasSubtitles: boolean
   showSubtitle: boolean
   toggleShowSubtitle: () => void
+  subtitleTracks: string[]
+  selectedSubtitleTrack: string | null
+  handleSubtitleTrackChange: (track: string) => void
   playSpeed: number
   handlePlaybackSpeed: (speed: number) => void
   isFullScreen: boolean
@@ -41,6 +44,9 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   hasSubtitles,
   showSubtitle,
   toggleShowSubtitle,
+  subtitleTracks,
+  selectedSubtitleTrack,
+  handleSubtitleTrackChange,
   playSpeed,
   handlePlaybackSpeed,
   isFullScreen,
@@ -77,8 +83,14 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
       <div className="flex items-end justify-center gap-2">
         <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} />
         {hasSubtitles && (
-          <div className="mr-0.5">
-            <CaptionButton filled={showSubtitle} onToggle={toggleShowSubtitle} />
+          <div className="relative mr-0.5">
+            <CaptionButton
+              filled={showSubtitle}
+              onToggle={toggleShowSubtitle}
+              subtitleTracks={subtitleTracks}
+              selectedSubtitleTrack={selectedSubtitleTrack}
+              onSelectSubtitleTrack={handleSubtitleTrackChange}
+            />
           </div>
         )}
         <div className={twMerge("relative", !hasSubtitles && "mr-0.5")}>

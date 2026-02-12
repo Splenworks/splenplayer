@@ -30,6 +30,31 @@ function App() {
   }, [mediaFiles, currentIndex])
   const [showSubtitle, setShowSubtitle] = useState(true)
   const [subtitles, setSubtitles] = useState<ParseResult>([])
+  const subtitleTracks = useMemo(() => {
+    const trackSet = new Set<string>()
+    subtitles.forEach((subtitle) => {
+      Object.entries(subtitle.languages).forEach(([track, text]) => {
+        if (text.trim().length > 0) {
+          trackSet.add(track)
+        }
+      })
+    })
+    return Array.from(trackSet)
+  }, [subtitles])
+  const [preferredSubtitleTrack, setPreferredSubtitleTrack] = useState<string | null>(null)
+  const selectedSubtitleTrack = useMemo(() => {
+    if (subtitleTracks.length === 0) {
+      return null
+    }
+    if (preferredSubtitleTrack && subtitleTracks.includes(preferredSubtitleTrack)) {
+      return preferredSubtitleTrack
+    }
+    return (
+      subtitleTracks.find((track) => track === "und") ||
+      subtitleTracks.find((track) => track.startsWith("en")) ||
+      subtitleTracks[0]
+    )
+  }, [preferredSubtitleTrack, subtitleTracks])
   const [currentSubtitle, setCurrentSubtitle] = useState("")
   const [videoRatio, setVideoRatio] = useState(0)
   const [showControls, setShowControls] = useState(false)
@@ -89,10 +114,13 @@ function App() {
           const currentSubtitle = subtitles.find(
             (subtitle) =>
               video.currentTime * 1000 >= subtitle.startTime &&
-              video.currentTime * 1000 <= subtitle.endTime,
+              video.currentTime * 1000 <= subtitle.endTime &&
+              (selectedSubtitleTrack ? subtitle.languages[selectedSubtitleTrack] : true),
           )
           if (currentSubtitle) {
-            const text = Object.values(currentSubtitle.languages)[0]
+            const text =
+              (selectedSubtitleTrack && currentSubtitle.languages[selectedSubtitleTrack]) ||
+              Object.values(currentSubtitle.languages)[0]
             setCurrentSubtitle(replaceBasicHtmlEntities(text))
           } else {
             setCurrentSubtitle("")
@@ -164,7 +192,7 @@ function App() {
         video.onended = null
       }
     }
-  }, [mediaFiles.length, currentIndex, videoFileHash, subtitles])
+  }, [mediaFiles.length, currentIndex, selectedSubtitleTrack, videoFileHash, subtitles])
 
   if (mediaFiles.length > 0) {
     return (
@@ -193,9 +221,12 @@ function App() {
           isAudio={isAudio}
           setIsPaused={setIsPaused}
           setSubtitles={setSubtitles}
-          hasSubtitles={subtitles.length > 0}
+          hasSubtitles={subtitleTracks.length > 0}
           showSubtitle={showSubtitle}
           setShowSubtitle={setShowSubtitle}
+          subtitleTracks={subtitleTracks}
+          selectedSubtitleTrack={selectedSubtitleTrack}
+          setSelectedSubtitleTrack={setPreferredSubtitleTrack}
           mouseMoveTimeout={mouseMoveTimeout}
         />
       </div>
