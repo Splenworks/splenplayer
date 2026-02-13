@@ -13,7 +13,10 @@ import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
 function App() {
-  const [exited, setExited] = useState(false)
+  const [exitedSession, setExitedSession] = useState<{
+    mediaFiles: MediaFile[]
+    currentIndex: number
+  } | null>(null)
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -68,16 +71,30 @@ function App() {
   }, [])
 
   const exit = useCallback(() => {
+    setExitedSession({
+      mediaFiles,
+      currentIndex,
+    })
     resetAnalyzer()
     setIsAudio(false)
     setMediaFiles([])
     setCurrentIndex(0)
-  }, [resetAnalyzer])
+  }, [currentIndex, mediaFiles, resetAnalyzer])
 
   const setMedia = useCallback((files: MediaFile[]) => {
+    setExitedSession(null)
     setMediaFiles(files)
     setCurrentIndex(0)
   }, [])
+
+  const goBack = useCallback(() => {
+    if (!exitedSession || exitedSession.mediaFiles.length === 0) {
+      return
+    }
+    setMediaFiles(exitedSession.mediaFiles)
+    setCurrentIndex(Math.min(exitedSession.currentIndex, exitedSession.mediaFiles.length - 1))
+    setExitedSession(null)
+  }, [exitedSession])
 
   useEffect(() => {
     if (mediaFiles.length === 0) {
@@ -236,7 +253,7 @@ function App() {
 
   return (
     <>
-      <Header exited={exited} goBack={() => setExited(false)} />
+      <Header exited={Boolean(exitedSession)} goBack={goBack} />
       <DragDropArea setMedia={setMedia} />
       <Footer />
     </>
