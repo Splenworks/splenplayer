@@ -13,6 +13,7 @@ import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
 function App() {
+  const [exited, setExited] = useState(false)
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -235,7 +236,7 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header exited={exited} goBack={() => setExited(false)} />
       <DragDropArea setMedia={setMedia} />
       <Footer />
     </>

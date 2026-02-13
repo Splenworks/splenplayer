@@ -1,4 +1,7 @@
 {
+  "header": {
+    "goBack": "戻る"
+  },
   "dragDropArea": {
     "dropHere": "ここにドロップしてください",
     "mainMessage": "ここに<u>ビデオ</u>や、<u>オーディオ</u>ファイルをドロップしてください！",

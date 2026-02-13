@@ -1,4 +1,7 @@
 {
+  "header": {
+    "goBack": "Go back"
+  },
   "dragDropArea": {
     "dropHere": "Drop here",
     "mainMessage": "Drag and drop any <u>video</u> or <u>audio</u> files here!",

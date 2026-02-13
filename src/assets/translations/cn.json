@@ -1,4 +1,7 @@
 {
+  "header": {
+    "goBack": "返回"
+  },
   "dragDropArea": {
     "dropHere": "拖放到此处",
     "mainMessage": "将任何 <u>视频</u> 或 <u>音频</u> 文件拖放到这里！",
