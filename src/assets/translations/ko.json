@@ -2,7 +2,7 @@
   "dragDropArea": {
     "dropHere": "여기에 드롭하세요",
     "mainMessage": "여기에 당신의 <u>비디오</u>나 <u>오디오</u>를 드래그 드롭하세요!",
-    "subMessage": "자막(vtt, srt, smi) 파일도 가능합니다.",
+    "subMessage": "MKV 파일과 자막(vtt, srt, smi) 파일도 가능합니다.",
     "noMediaFilesFound": "미디어 파일을 찾을 수 없습니다.",
     "neverStoreYourData": "저희는 절대로 파일 정보를 서버에 저장하지 않습니다."
   },

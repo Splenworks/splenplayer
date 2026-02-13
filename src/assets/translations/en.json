@@ -2,7 +2,7 @@
   "dragDropArea": {
     "dropHere": "Drop here",
     "mainMessage": "Drag and drop any <u>video</u> or <u>audio</u> files here!",
-    "subMessage": "You can drop subtitle files(vtt, srt, smi) too.",
+    "subMessage": "You can drop MKV files and subtitle files(vtt, srt, smi) too.",
     "noMediaFilesFound": "No media files found.",
     "neverStoreYourData": "We never store your files on our server."
   },

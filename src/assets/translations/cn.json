@@ -2,7 +2,7 @@
   "dragDropArea": {
     "dropHere": "拖放到此处",
     "mainMessage": "将任何 <u>视频</u> 或 <u>音频</u> 文件拖放到这里！",
-    "subMessage": "你也可以拖放字幕文件（vtt、srt、smi）。",
+    "subMessage": "你也可以拖放 MKV 文件和字幕文件（vtt、srt、smi）。",
     "noMediaFilesFound": "未找到媒体文件。",
     "neverStoreYourData": "我们绝不会将你的文件存储在服务器上。"
   },
