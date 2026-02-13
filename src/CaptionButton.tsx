@@ -10,7 +10,10 @@ interface CaptionButtonProps {
 }
 
 const getTrackPreview = (track: string) => {
-  const normalizedTrack = track.split("-")[0]
+  const normalizedTrack = track.split("-")[0].toLowerCase()
+  if (normalizedTrack === "und" || normalizedTrack === "un") {
+    return "CC"
+  }
   const alphaChars = normalizedTrack.replace(/[^a-z]/gi, "")
   if (alphaChars.length > 0) {
     return alphaChars.slice(0, 2).toUpperCase()
@@ -34,7 +37,7 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
         <button
           tabIndex={-1}
           className={twMerge(
-            "cursor-pointer h-5 w-6 rounded-md border-2 border-white font-mono text-xs font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
+            "flex h-5 w-6 cursor-pointer items-center justify-center rounded-md border-2 border-white font-mono text-xs leading-none font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
             filled ? "bg-white text-black" : "bg-transparent",
           )}
         >
@@ -48,36 +51,38 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
   const selectedTrackLabel = getTrackPreview(activeTrack)
 
   return (
-    <div className="peer flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500 hover:bg-opacity-50">
+    <div className="flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500 hover:bg-opacity-50">
       <div
-        className="hover:bg-opacity-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500"
+        className="hover:bg-opacity-50 flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500"
         onClick={onToggle}
       >
         <button
           tabIndex={-1}
           className={twMerge(
-            "cursor-pointer h-5 w-6 rounded-md border-2 border-white font-mono text-xs font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
+            "flex h-5 w-6 cursor-pointer items-center justify-center rounded-md border-2 border-white font-mono text-xs leading-none font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
             filled ? "bg-white text-black" : "bg-transparent",
           )}
         >
           {selectedTrackLabel}
         </button>
       </div>
-      {subtitleTracks.map((track, index) => (
-        <div
-          key={track}
-          className={twMerge(
-            "z-10 flex h-7 min-h-7 w-full cursor-pointer items-center justify-center bg-opacity-50 hover:bg-opacity-50",
-            selectedSubtitleTrack === track
-              ? "bg-zinc-400 hover:bg-zinc-400"
-              : "hover:bg-zinc-500",
-            index === subtitleTracks.length - 1 && "h-8 pt-1",
-          )}
-          onClick={() => onSelectSubtitleTrack(track)}
-        >
-          <span className="text-xs text-white">{getTrackPreview(track)}</span>
-        </div>
-      ))}
+      {subtitleTracks.length > 0 && (
+        subtitleTracks.map((track, index) => (
+          <div
+            key={track}
+            className={twMerge(
+              "z-10 flex h-7 min-h-7 w-full shrink-0 cursor-pointer items-center justify-center bg-opacity-50 hover:bg-opacity-50",
+              track === activeTrack
+                ? "bg-zinc-400 hover:bg-zinc-400"
+                : "hover:bg-zinc-500",
+              index === subtitleTracks.length - 1 && "h-8 pt-1",
+            )}
+            onClick={() => onSelectSubtitleTrack(track)}
+          >
+            <span className="text-xs leading-none text-white">{getTrackPreview(track)}</span>
+          </div>
+        ))
+      )}
     </div>
   )
 }
