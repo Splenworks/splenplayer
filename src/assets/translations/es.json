@@ -1,4 +1,7 @@
 {
+  "header": {
+    "goBack": "Volver"
+  },
   "dragDropArea": {
     "dropHere": "Suelta aquí",
     "mainMessage": "¡Arrastra y suelta cualquier archivo de <u>video</u> o <u>audio</u> aquí!",
