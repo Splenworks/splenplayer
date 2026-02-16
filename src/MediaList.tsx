@@ -7,6 +7,9 @@ interface MediaListProps {
   currentIndex: number
   setCurrentIndex: (index: number) => void
   showControls: boolean
+  isMediaListHovered: boolean
+  onMouseEnter: React.MouseEventHandler<HTMLDivElement>
+  onMouseLeave: React.MouseEventHandler<HTMLDivElement>
 }
 
 const MediaList: React.FC<MediaListProps> = ({
@@ -14,14 +17,19 @@ const MediaList: React.FC<MediaListProps> = ({
   currentIndex,
   setCurrentIndex,
   showControls,
+  isMediaListHovered,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
   return (
     <div
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={twMerge(
         "-ml-2 max-w-2xl overflow-hidden transition-all duration-300 ease-in-out",
-        showControls
-          ? "mt-0 max-h-0 opacity-0 group-hover:mt-2 group-hover:max-h-56 group-hover:opacity-100"
-          : "max-h-0 opacity-0",
+        showControls && isMediaListHovered
+          ? "max-h-60 pt-2 opacity-100 pointer-events-auto"
+          : "max-h-0 pt-0 opacity-0 pointer-events-none",
       )}
     >
       <div className="max-h-56 overflow-y-auto rounded-xl border border-white/20 bg-black/55 p-2 backdrop-blur-md">
