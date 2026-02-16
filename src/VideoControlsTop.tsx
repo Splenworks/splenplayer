@@ -1,9 +1,8 @@
-import { ChevronDownIcon } from "@heroicons/react/24/solid"
 import React from "react"
 import { useTranslation } from "react-i18next"
-import { twMerge } from "tailwind-merge"
 import IconButton from "./IconButton"
 import MediaList from "./MediaList"
+import MediaListButton from "./MediaListButton"
 import Tooltip from "./Tooltip"
 import CloseIcon from "./assets/icons/xmark.svg?react"
 import { MediaFile } from "./utils/getMediaFiles"
@@ -48,29 +47,11 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
               setIsMediaListHovered(false)
             }}
           >
-            <div className="flex items-center">
-              <button
-                tabIndex={-1}
-                aria-label={t("others.showPlaylist")}
-                className={twMerge(
-                  "flex cursor-pointer items-center gap-2 rounded-md px-2 -ml-2 py-1 text-lg font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
-                  showControls && "group-hover:bg-white/20",
-                )}
-              >
-                <span>
-                  {t("others.nowPlayingStatus", {
-                    current: currentIndex + 1,
-                    total: mediaFiles.length,
-                  })}
-                </span>
-                <ChevronDownIcon
-                  className={twMerge(
-                    "h-4 w-4 transition-transform duration-300 ease-in-out",
-                    showControls && "group-hover:rotate-180",
-                  )}
-                />
-              </button>
-            </div>
+            <MediaListButton
+              currentIndex={currentIndex}
+              mediaFilesLength={mediaFiles.length}
+              showControls={showControls}
+            />
             <MediaList
               mediaFiles={mediaFiles}
               currentIndex={currentIndex}
