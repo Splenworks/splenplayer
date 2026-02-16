@@ -245,6 +245,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         mediaFiles={mediaFiles}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
+        isMediaListHovered={isMediaListHovered}
         setIsMediaListHovered={setIsMediaListHovered}
         exit={exit}
       />

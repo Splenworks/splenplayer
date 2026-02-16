@@ -13,6 +13,7 @@ interface VideoControlsTopProps {
   mediaFiles: MediaFile[]
   currentIndex: number
   setCurrentIndex: (index: number) => void
+  isMediaListHovered: boolean
   setIsMediaListHovered: (isHovered: boolean) => void
   exit: () => void
 }
@@ -23,11 +24,22 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
   mediaFiles,
   currentIndex,
   setCurrentIndex,
+  isMediaListHovered,
   setIsMediaListHovered,
   exit,
 }) => {
   const { t } = useTranslation()
   const file = mediaFiles[currentIndex].file
+
+  const handleMediaListMouseEnter = () => {
+    if (showControls) {
+      setIsMediaListHovered(true)
+    }
+  }
+
+  const handleMediaListMouseLeave = () => {
+    setIsMediaListHovered(false)
+  }
 
   return (
     <div className="absolute top-4 right-4 left-6 flex items-start justify-between gap-4">
@@ -36,27 +48,23 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
           {file.name}
         </span>
         {mediaFiles.length > 1 && (
-          <div
-            className="group mt-2 inline-flex max-w-2xl flex-col items-start"
-            onMouseEnter={() => {
-              if (showControls) {
-                setIsMediaListHovered(true)
-              }
-            }}
-            onMouseLeave={() => {
-              setIsMediaListHovered(false)
-            }}
-          >
+          <div className="mt-2 inline-flex max-w-2xl flex-col items-start">
             <MediaListButton
               currentIndex={currentIndex}
               mediaFilesLength={mediaFiles.length}
               showControls={showControls}
+              isMediaListHovered={isMediaListHovered}
+              onMouseEnter={handleMediaListMouseEnter}
+              onMouseLeave={handleMediaListMouseLeave}
             />
             <MediaList
               mediaFiles={mediaFiles}
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
               showControls={showControls}
+              isMediaListHovered={isMediaListHovered}
+              onMouseEnter={handleMediaListMouseEnter}
+              onMouseLeave={handleMediaListMouseLeave}
             />
           </div>
         )}
