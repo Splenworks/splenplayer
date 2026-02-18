@@ -28,8 +28,8 @@ const MediaListButton: React.FC<MediaListButtonProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={twMerge(
-        "flex cursor-pointer items-center gap-2 rounded-md px-2 -ml-2 py-1 text-lg font-semibold transition-colors duration-200 ease-in-out hover:bg-white/15 focus:outline-hidden",
-        showControls && isMediaListHovered && "bg-white/20",
+        "flex cursor-pointer items-center gap-2 rounded-md px-2 -ml-2 py-1 text-lg font-semibold transition-colors duration-200 ease-in-out hover:bg-zinc-500/50 focus:outline-hidden",
+        showControls && isMediaListHovered && "bg-zinc-500/50",
       )}
     >
       <span>

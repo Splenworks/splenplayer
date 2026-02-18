@@ -16,14 +16,14 @@ const PlaySpeedControl: React.FC<PlaySpeedControlProps> = ({
   const playSpeedOptions = [1, 1.2, 1.4, 1.6, 1.8, 2]
   return (
     <>
-      <div className="peer flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500 hover:bg-opacity-50">
+      <div className="peer flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500/50 focus:outline-hidden">
         <div
           className="h-10 w-10"
           onClick={() => {
             const currentPlaySpeedIndex = playSpeedOptions.indexOf(playSpeed)
             handlePlaybackSpeed(
               playSpeedOptions[
-                (currentPlaySpeedIndex + 1) % playSpeedOptions.length
+              (currentPlaySpeedIndex + 1) % playSpeedOptions.length
               ],
             )
           }}

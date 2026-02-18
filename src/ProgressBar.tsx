@@ -51,7 +51,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ handleSeek, seekValue, durati
       <div className="relative flex w-full items-center">
         {(isSeeking || hoverPercent !== null) && (
           <div
-            className="pointer-events-none absolute -top-7 rounded bg-neutral-800/80 px-2 py-0.5 text-xs font-medium text-white"
+            className="pointer-events-none absolute -top-7 rounded bg-zinc-800/80 px-2 py-0.5 text-xs font-medium text-white"
             style={{ left: `${tooltipPercent}%`, transform: "translateX(-50%)" }}
           >
             {tooltipTime}
@@ -62,7 +62,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ handleSeek, seekValue, durati
           ref={inputRef}
           className={twJoin(
             isSafari
-              ? "h-2 w-full cursor-pointer appearance-none rounded-full border border-neutral-500 bg-transparent accent-white outline-hidden [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+              ? "h-2 w-full cursor-pointer appearance-none rounded-full border border-zinc-500 bg-transparent accent-white outline-hidden [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
               : "w-full cursor-pointer accent-white outline-hidden",
           )}
           type="range"

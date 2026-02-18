@@ -31,7 +31,7 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
   if (subtitleTracks.length <= 1) {
     return (
       <div
-        className="hover:bg-opacity-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500"
+        className="hover:bg-opacity-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 focus:outline-hidden"
         onClick={onToggle}
       >
         <button
@@ -51,9 +51,9 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
   const selectedTrackLabel = getTrackPreview(activeTrack)
 
   return (
-    <div className="flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500 hover:bg-opacity-50">
+    <div className="flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500/50 focus:outline-hidden">
       <div
-        className="hover:bg-opacity-50 flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500"
+        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50"
         onClick={onToggle}
       >
         <button
@@ -71,10 +71,10 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
           <div
             key={track}
             className={twMerge(
-              "z-10 flex h-7 min-h-7 w-full shrink-0 cursor-pointer items-center justify-center bg-opacity-50 hover:bg-opacity-50",
+              "z-10 flex h-7 min-h-7 w-full shrink-0 cursor-pointer items-center justify-center",
               track === activeTrack
-                ? "bg-zinc-400 hover:bg-zinc-400"
-                : "hover:bg-zinc-500",
+                ? "bg-zinc-400/50 hover:bg-zinc-400/50"
+                : "hover:bg-zinc-500/50",
               index === subtitleTracks.length - 1 && "h-8 pt-1",
             )}
             onClick={() => onSelectSubtitleTrack(track)}
