@@ -1,5 +1,6 @@
 import React from "react"
 import { twJoin } from "tailwind-merge"
+import PlusMinusIcon from "./assets/icons/plus-minus.svg?react"
 import SubtitleSyncActionButton from "./SubtitleSyncActionButton"
 import { formatSubtitleOffset } from "./utils/subtitleOffset"
 
@@ -24,7 +25,7 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
           className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-b-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 group-hover:bg-zinc-500/50 focus:outline-hidden"
           onClick={increaseSubtitleOffset}
         >
-          <span className="font-mono text-xs leading-none font-semibold text-white">+/-</span>
+          <PlusMinusIcon className="m-2 h-6 w-6 text-white" />
         </button>
         <SubtitleSyncActionButton label="+0.1s" onClick={increaseSubtitleOffset} />
         <SubtitleSyncActionButton label="-0.1s" onClick={decreaseSubtitleOffset} />
