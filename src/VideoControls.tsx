@@ -1,9 +1,14 @@
 import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { ParseResult, parse as samiParse } from "sami-parser"
 
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 import { extractMkvSubtitleParseResult } from "./utils/mkvSubtitles"
+import {
+  SUBTITLE_OFFSET_STEP_MS,
+  clampSubtitleOffset,
+  formatSubtitleOffset,
+} from "./utils/subtitleOffset"
 
 import ActionOverlay from "./ActionOverlay"
 import { useFullScreen } from "./hooks/useFullScreen"
@@ -34,7 +39,25 @@ interface VideoControlsProps {
   subtitleTracks: string[]
   selectedSubtitleTrack: string | null
   setSelectedSubtitleTrack: React.Dispatch<React.SetStateAction<string | null>>
+  subtitleOffsetMs: number
+  setSubtitleOffsetMs: React.Dispatch<React.SetStateAction<number>>
   mouseMoveTimeout: React.RefObject<number | null>
+}
+
+const isEditableTarget = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) {
+    return false
+  }
+  const editableTagNames = ["input", "textarea", "select"]
+  return target.isContentEditable || editableTagNames.includes(target.tagName.toLowerCase())
+}
+
+const isSubtitleOffsetIncreaseKey = (event: KeyboardEvent) => {
+  return event.key === "+" || event.code === "NumpadAdd" || (event.code === "Equal" && event.shiftKey)
+}
+
+const isSubtitleOffsetDecreaseKey = (event: KeyboardEvent) => {
+  return event.key === "-" || event.code === "NumpadSubtract"
 }
 
 const VideoControls: React.FC<VideoControlsProps> = ({
@@ -59,16 +82,25 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   subtitleTracks,
   selectedSubtitleTrack,
   setSelectedSubtitleTrack,
+  subtitleOffsetMs,
+  setSubtitleOffsetMs,
   mouseMoveTimeout,
 }) => {
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
+  const [subtitleDelayToast, setSubtitleDelayToast] = useState<string | null>(null)
+  const subtitleDelayToastTimeoutRef = useRef<number | null>(null)
+  const subtitleOffsetRef = useRef(subtitleOffsetMs)
   const { isFullScreen, toggleFullScreen } = useFullScreen()
 
   const getVideo = useCallback(() => {
     return videoRef && typeof videoRef === "object" && videoRef.current
   }, [videoRef])
+
+  useEffect(() => {
+    subtitleOffsetRef.current = subtitleOffsetMs
+  }, [subtitleOffsetMs])
 
   const parseSubtitleFile = useCallback(async (subtitleFile: File): Promise<ParseResult> => {
     const content = await subtitleFile.text()
@@ -160,6 +192,14 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     }
   }, [showControls, mediaFiles.length])
 
+  useEffect(() => {
+    return () => {
+      if (subtitleDelayToastTimeoutRef.current !== null) {
+        window.clearTimeout(subtitleDelayToastTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const files = Array.from(e.dataTransfer.files)
@@ -187,10 +227,44 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     }
   }, [videoRef, setIsPaused])
 
+  const showSubtitleDelayToast = useCallback((offsetMs: number) => {
+    if (subtitleDelayToastTimeoutRef.current !== null) {
+      window.clearTimeout(subtitleDelayToastTimeoutRef.current)
+    }
+    setSubtitleDelayToast(`Subtitle delay: ${formatSubtitleOffset(offsetMs)}`)
+    subtitleDelayToastTimeoutRef.current = window.setTimeout(() => {
+      setSubtitleDelayToast(null)
+      subtitleDelayToastTimeoutRef.current = null
+    }, 1200)
+  }, [])
+
+  const applySubtitleOffset = useCallback(
+    (nextOffsetMs: number) => {
+      const clampedOffsetMs = clampSubtitleOffset(nextOffsetMs)
+      subtitleOffsetRef.current = clampedOffsetMs
+      setSubtitleOffsetMs(clampedOffsetMs)
+      showSubtitleDelayToast(clampedOffsetMs)
+    },
+    [setSubtitleOffsetMs, showSubtitleDelayToast],
+  )
+
+  const increaseSubtitleOffset = useCallback(() => {
+    applySubtitleOffset(subtitleOffsetRef.current + SUBTITLE_OFFSET_STEP_MS)
+  }, [applySubtitleOffset])
+
+  const decreaseSubtitleOffset = useCallback(() => {
+    applySubtitleOffset(subtitleOffsetRef.current - SUBTITLE_OFFSET_STEP_MS)
+  }, [applySubtitleOffset])
+
+  const resetSubtitleOffset = useCallback(() => {
+    applySubtitleOffset(0)
+  }, [applySubtitleOffset])
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const video = getVideo()
       if (!video) return
+      if (isEditableTarget(event.target)) return
       if (event.key === "Escape" && !isFullScreen) {
         exit()
       } else if (event.key === "ArrowLeft") {
@@ -198,14 +272,46 @@ const VideoControls: React.FC<VideoControlsProps> = ({
       } else if (event.key === "ArrowRight") {
         video.currentTime += 5
       } else if (event.key === " ") {
+        event.preventDefault()
         togglePlayPause()
       } else if (event.key === "f") {
         toggleFullScreen()
+      } else if (
+        hasSubtitles &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        isSubtitleOffsetIncreaseKey(event)
+      ) {
+        event.preventDefault()
+        increaseSubtitleOffset()
+      } else if (
+        hasSubtitles &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        isSubtitleOffsetDecreaseKey(event)
+      ) {
+        event.preventDefault()
+        decreaseSubtitleOffset()
+      } else if (hasSubtitles && !event.metaKey && !event.ctrlKey && !event.altKey && event.key === "0") {
+        event.preventDefault()
+        resetSubtitleOffset()
       }
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [exit, getVideo, togglePlayPause, isFullScreen, toggleFullScreen])
+  }, [
+    decreaseSubtitleOffset,
+    exit,
+    getVideo,
+    hasSubtitles,
+    increaseSubtitleOffset,
+    isFullScreen,
+    resetSubtitleOffset,
+    toggleFullScreen,
+    togglePlayPause,
+  ])
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = getVideo()
@@ -239,6 +345,11 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         onClick={togglePlayPause}
       />
       <ActionOverlay isPaused={isPaused} isAudio={isAudio} />
+      {subtitleDelayToast && (
+        <div className="pointer-events-none absolute top-20 left-1/2 z-30 -translate-x-1/2 rounded-md bg-zinc-900/80 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
+          {subtitleDelayToast}
+        </div>
+      )}
       <VideoControlsTop
         showControls={showControls}
         isFullScreen={isFullScreen}
@@ -269,6 +380,10 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           setSelectedSubtitleTrack(track)
           setShowSubtitle(true)
         }}
+        subtitleOffsetMs={subtitleOffsetMs}
+        increaseSubtitleOffset={increaseSubtitleOffset}
+        decreaseSubtitleOffset={decreaseSubtitleOffset}
+        resetSubtitleOffset={resetSubtitleOffset}
         playSpeed={playSpeed}
         handlePlaybackSpeed={handlePlaybackSpeed}
         isFullScreen={isFullScreen}

@@ -5,6 +5,7 @@ import FullScreenButton from "./FullScreenButton"
 import PlayPauseButton from "./PlayPauseButton"
 import PlaySpeedControl from "./PlaySpeedControl"
 import PrevNextButton from "./PrevNextButton"
+import SubtitleSyncControl from "./SubtitleSyncControl"
 import VolumeControl from "./VolumeControl"
 
 interface VideoControlsBottomProps {
@@ -24,6 +25,10 @@ interface VideoControlsBottomProps {
   subtitleTracks: string[]
   selectedSubtitleTrack: string | null
   handleSubtitleTrackChange: (track: string) => void
+  subtitleOffsetMs: number
+  increaseSubtitleOffset: () => void
+  decreaseSubtitleOffset: () => void
+  resetSubtitleOffset: () => void
   playSpeed: number
   handlePlaybackSpeed: (speed: number) => void
   isFullScreen: boolean
@@ -47,6 +52,10 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   subtitleTracks,
   selectedSubtitleTrack,
   handleSubtitleTrackChange,
+  subtitleOffsetMs,
+  increaseSubtitleOffset,
+  decreaseSubtitleOffset,
+  resetSubtitleOffset,
   playSpeed,
   handlePlaybackSpeed,
   isFullScreen,
@@ -90,6 +99,16 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
               subtitleTracks={subtitleTracks}
               selectedSubtitleTrack={selectedSubtitleTrack}
               onSelectSubtitleTrack={handleSubtitleTrackChange}
+            />
+          </div>
+        )}
+        {hasSubtitles && (
+          <div className="relative mr-0.5">
+            <SubtitleSyncControl
+              subtitleOffsetMs={subtitleOffsetMs}
+              increaseSubtitleOffset={increaseSubtitleOffset}
+              decreaseSubtitleOffset={decreaseSubtitleOffset}
+              resetSubtitleOffset={resetSubtitleOffset}
             />
           </div>
         )}

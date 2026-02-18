@@ -33,6 +33,7 @@ function App() {
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])
   const [showSubtitle, setShowSubtitle] = useState(true)
+  const [subtitleOffsetMs, setSubtitleOffsetMs] = useState(0)
   const [subtitles, setSubtitles] = useState<ParseResult>([])
   const subtitleTracks = useMemo(() => {
     const trackSet = new Set<string>()
@@ -129,10 +130,11 @@ function App() {
           }
         }
         if (subtitles.length > 0) {
+          const subtitleTimeMs = video.currentTime * 1000 - subtitleOffsetMs
           const currentSubtitle = subtitles.find(
             (subtitle) =>
-              video.currentTime * 1000 >= subtitle.startTime &&
-              video.currentTime * 1000 <= subtitle.endTime &&
+              subtitleTimeMs >= subtitle.startTime &&
+              subtitleTimeMs <= subtitle.endTime &&
               (selectedSubtitleTrack ? subtitle.languages[selectedSubtitleTrack] : true),
           )
           if (currentSubtitle) {
@@ -210,7 +212,7 @@ function App() {
         video.onended = null
       }
     }
-  }, [mediaFiles.length, currentIndex, selectedSubtitleTrack, videoFileHash, subtitles])
+  }, [mediaFiles.length, currentIndex, selectedSubtitleTrack, subtitleOffsetMs, videoFileHash, subtitles])
 
   if (mediaFiles.length > 0) {
     return (
@@ -245,6 +247,8 @@ function App() {
           subtitleTracks={subtitleTracks}
           selectedSubtitleTrack={selectedSubtitleTrack}
           setSelectedSubtitleTrack={setPreferredSubtitleTrack}
+          subtitleOffsetMs={subtitleOffsetMs}
+          setSubtitleOffsetMs={setSubtitleOffsetMs}
           mouseMoveTimeout={mouseMoveTimeout}
         />
       </div>
