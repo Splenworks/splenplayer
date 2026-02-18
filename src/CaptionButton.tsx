@@ -14,7 +14,7 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
 }) => {
   return (
     <div
-      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 focus:outline-hidden"
+      className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 focus:outline-hidden"
       onClick={onToggle}
     >
       <button
