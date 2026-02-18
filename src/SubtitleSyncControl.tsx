@@ -29,7 +29,7 @@ const SubtitleSyncActionButton: React.FC<SubtitleSyncActionButtonProps> = ({
       )}
       onClick={onClick}
     >
-      <span className="font-mono text-xs leading-none text-white">{label}</span>
+      <span className="text-xs text-white">{label}</span>
     </button>
   )
 }
@@ -54,14 +54,14 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
         <SubtitleSyncActionButton label="-0.1s" onClick={decreaseSubtitleOffset} />
         <SubtitleSyncActionButton label="RESET" onClick={resetSubtitleOffset} />
         <div className="z-10 flex h-8 min-h-8 w-full shrink-0 items-center justify-center rounded-t-full bg-zinc-800/70 pt-1">
-          <span className="font-mono text-xs leading-none text-zinc-100">
+          <span className="text-xs text-zinc-100">
             {formatSubtitleOffset(subtitleOffsetMs)}
           </span>
         </div>
       </div>
       <div
         className={twJoin(
-          "absolute -bottom-[9px] left-1 right-0 flex items-center justify-center font-mono text-xs text-white transition-opacity duration-300 ease-in-out peer-hover:opacity-0",
+          "absolute -bottom-[9px] left-0 right-0 flex items-center justify-center text-xs text-white transition-opacity duration-300 ease-in-out peer-hover:opacity-0",
           subtitleOffsetMs === 0 ? "opacity-0" : "opacity-100",
         )}
       >
