@@ -43,7 +43,7 @@ const CaptionControl: React.FC<CaptionControlProps> = ({
   const selectedTrackLabel = getTrackPreview(activeTrack)
 
   return (
-    <div className="group flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 focus:outline-hidden">
+    <div className="group flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-100 focus:outline-hidden">
       <CaptionButton
         name={selectedTrackLabel}
         filled={filled}
