@@ -1,6 +1,6 @@
 import React from "react"
 import { twMerge } from "tailwind-merge"
-import CaptionButton from "./CaptionButton"
+import CaptionControl from "./CaptionControl"
 import FullScreenButton from "./FullScreenButton"
 import PlayPauseButton from "./PlayPauseButton"
 import PlaySpeedControl from "./PlaySpeedControl"
@@ -84,7 +84,7 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
         <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} />
         {hasSubtitles && (
           <div className="relative mr-0.5">
-            <CaptionButton
+            <CaptionControl
               filled={showSubtitle}
               onToggle={toggleShowSubtitle}
               subtitleTracks={subtitleTracks}

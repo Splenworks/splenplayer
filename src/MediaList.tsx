@@ -32,14 +32,14 @@ const MediaList: React.FC<MediaListProps> = ({
           : "max-h-0 pt-0 opacity-0 pointer-events-none",
       )}
     >
-      <div className="max-h-56 overflow-y-auto rounded-xl border border-white/20 bg-black/55 p-2 backdrop-blur-md">
+      <div className="max-h-56 overflow-y-auto rounded-xl border border-zinc-300/20 bg-zinc-900/50 p-2 backdrop-blur-md">
         {mediaFiles.map((mediaFile, index) => (
           <button
             key={`${mediaFile.file.name}-${mediaFile.file.lastModified}-${index}`}
             tabIndex={-1}
             className={twMerge(
-              "mb-1 flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-left text-white/85 transition-colors duration-200 ease-in-out last:mb-0 hover:bg-white/10 focus:outline-hidden",
-              index === currentIndex && "bg-white/20 text-white",
+              "mb-1 flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-left text-white/85 transition-colors duration-200 ease-in-out last:mb-0 hover:bg-zinc-500/30 focus:outline-hidden",
+              index === currentIndex && "bg-zinc-500/50 text-white",
             )}
             onClick={() => {
               if (showControls) {
