@@ -50,8 +50,8 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
         >
           <span className="font-mono text-xs leading-none font-semibold text-white">+/-</span>
         </button>
-        <SubtitleSyncActionButton label="+0.10s" onClick={increaseSubtitleOffset} />
-        <SubtitleSyncActionButton label="-0.10s" onClick={decreaseSubtitleOffset} />
+        <SubtitleSyncActionButton label="+0.1s" onClick={increaseSubtitleOffset} />
+        <SubtitleSyncActionButton label="-0.1s" onClick={decreaseSubtitleOffset} />
         <SubtitleSyncActionButton label="RESET" onClick={resetSubtitleOffset} />
         <div className="z-10 flex h-8 min-h-8 w-full shrink-0 items-center justify-center rounded-t-full bg-zinc-800/70 pt-1">
           <span className="font-mono text-xs leading-none text-zinc-100">
