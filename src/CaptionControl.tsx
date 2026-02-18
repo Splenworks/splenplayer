@@ -43,22 +43,23 @@ const CaptionControl: React.FC<CaptionControlProps> = ({
   const selectedTrackLabel = getTrackPreview(activeTrack)
 
   return (
-    <div className="flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500/50 focus:outline-hidden">
+    <div className="group flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 focus:outline-hidden">
       <CaptionButton
         name={selectedTrackLabel}
         filled={filled}
         onToggle={onToggle}
+        roundedTop={false}
       />
       {subtitleTracks.length > 0 && (
         subtitleTracks.map((track, index) => (
           <div
             key={track}
             className={twMerge(
-              "z-10 flex h-7 min-h-7 w-full shrink-0 cursor-pointer items-center justify-center",
+              "z-10 flex h-7 min-h-7 w-full shrink-0 cursor-pointer items-center justify-center bg-zinc-500/50",
               track === activeTrack
-                ? "bg-zinc-400/50 hover:bg-zinc-400/50"
-                : "hover:bg-zinc-500/50",
-              index === subtitleTracks.length - 1 && "h-8 pt-1",
+                ? "bg-zinc-300/50 hover:bg-zinc-300/50"
+                : "hover:bg-zinc-400/50",
+              index === subtitleTracks.length - 1 && "h-8 min-h-8 rounded-t-full pt-1",
             )}
             onClick={() => onSelectSubtitleTrack(track)}
           >

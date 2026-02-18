@@ -5,16 +5,21 @@ interface CaptionButtonProps {
   name: string // two letter language code
   filled: boolean
   onToggle: () => void
+  roundedTop?: boolean
 }
 
 const CaptionButton: React.FC<CaptionButtonProps> = ({
   name,
   filled,
   onToggle,
+  roundedTop = true,
 }) => {
   return (
     <div
-      className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 focus:outline-hidden"
+      className={twMerge(
+        "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-b-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 group-hover:bg-zinc-500/50 focus:outline-hidden",
+        roundedTop && "rounded-t-full",
+      )}
       onClick={onToggle}
     >
       <button
