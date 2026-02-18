@@ -1,7 +1,8 @@
 import React from "react"
 import { twMerge } from "tailwind-merge"
+import CaptionButton from "./CaptionButton"
 
-interface CaptionButtonProps {
+interface CaptionControlProps {
   filled: boolean
   onToggle: () => void
   subtitleTracks: string[]
@@ -21,7 +22,7 @@ const getTrackPreview = (track: string) => {
   return normalizedTrack.slice(0, 2).toUpperCase() || "CC"
 }
 
-const CaptionButton: React.FC<CaptionButtonProps> = ({
+const CaptionControl: React.FC<CaptionControlProps> = ({
   filled,
   onToggle,
   subtitleTracks,
@@ -30,20 +31,11 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
 }) => {
   if (subtitleTracks.length <= 1) {
     return (
-      <div
-        className="hover:bg-opacity-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 focus:outline-hidden"
-        onClick={onToggle}
-      >
-        <button
-          tabIndex={-1}
-          className={twMerge(
-            "flex h-5 w-6 cursor-pointer items-center justify-center rounded-md border-2 border-white font-mono text-xs leading-none font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
-            filled ? "bg-white text-black" : "bg-transparent",
-          )}
-        >
-          CC
-        </button>
-      </div>
+      <CaptionButton
+        name="CC"
+        filled={filled}
+        onToggle={onToggle}
+      />
     )
   }
 
@@ -52,20 +44,11 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
 
   return (
     <div className="flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-60 hover:bg-zinc-500/50 focus:outline-hidden">
-      <div
-        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50"
-        onClick={onToggle}
-      >
-        <button
-          tabIndex={-1}
-          className={twMerge(
-            "flex h-5 w-6 cursor-pointer items-center justify-center rounded-md border-2 border-white font-mono text-xs leading-none font-semibold text-white outline-hidden transition-colors duration-300 ease-in-out focus:outline-hidden",
-            filled ? "bg-white text-black" : "bg-transparent",
-          )}
-        >
-          {selectedTrackLabel}
-        </button>
-      </div>
+      <CaptionButton
+        name={selectedTrackLabel}
+        filled={filled}
+        onToggle={onToggle}
+      />
       {subtitleTracks.length > 0 && (
         subtitleTracks.map((track, index) => (
           <div
@@ -87,4 +70,4 @@ const CaptionButton: React.FC<CaptionButtonProps> = ({
   )
 }
 
-export default CaptionButton
+export default CaptionControl
