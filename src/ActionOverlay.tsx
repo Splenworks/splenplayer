@@ -28,7 +28,7 @@ const ActionOverlay: FC<ActionOverlayProps> = ({ isPaused, isAudio }) => {
     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
       <div
         className={[
-          "flex items-center justify-center rounded-full bg-zinc-900/50 p-5 sm:p-6 md:p-7",
+          "flex items-center justify-center rounded-full border-white/10 bg-zinc-900/50 p-5 sm:p-6 md:p-7 backdrop-blur-md",
           showPausedAudioOverlay ? "opacity-100" : "opacity-0",
           !showPausedAudioOverlay && isActive && "animate-actionPulse",
         ].join(" ")}

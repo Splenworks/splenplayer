@@ -32,7 +32,7 @@ const MediaList: React.FC<MediaListProps> = ({
           : "max-h-0 pt-0 opacity-0 pointer-events-none",
       )}
     >
-      <div className="max-h-56 overflow-y-auto rounded-xl border border-zinc-300/20 bg-zinc-900/50 p-2 backdrop-blur-md">
+      <div className="max-h-56 overflow-y-auto rounded-xl border border-white/10 bg-zinc-900/50 p-2 backdrop-blur-md">
         {mediaFiles.map((mediaFile, index) => (
           <button
             key={`${mediaFile.file.name}-${mediaFile.file.lastModified}-${index}`}

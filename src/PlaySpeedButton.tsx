@@ -24,7 +24,7 @@ const PlaySpeedButton: React.FC<PlaySpeedButtonProps> = ({
       data-play-speed={playSpeed}
       onClick={onClick}
     >
-      <span className="text-xs text-white">{playSpeed.toFixed(1)}</span>
+      <span className="text-xs text-white">{playSpeed.toFixed(1)}x</span>
     </div>
   )
 }

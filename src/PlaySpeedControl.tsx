@@ -2,7 +2,6 @@ import React from "react"
 import { twJoin } from "tailwind-merge"
 import PlaySpeedButton from "./PlaySpeedButton"
 import PlaybackSpeedIcon from "./assets/icons/playback-speed.svg?react"
-import CloseIcon from "./assets/icons/xmark.svg?react"
 
 interface PlaySpeedControlProps {
   playSpeed: number
@@ -46,12 +45,11 @@ const PlaySpeedControl: React.FC<PlaySpeedControlProps> = ({
       </div>
       <div
         className={twJoin(
-          "absolute -bottom-[9px] left-1 right-0 flex items-center justify-center text-xs text-white transition-opacity duration-300 ease-in-out peer-hover:opacity-0",
+          "absolute -bottom-[9px] left-0 right-0 flex items-center justify-center text-xs text-white transition-opacity duration-300 ease-in-out peer-hover:opacity-0",
           playSpeed === 1 ? "opacity-0" : "opacity-100",
         )}
       >
-        <span>{playSpeed.toFixed(1)}</span>
-        <CloseIcon className="h-3 w-[10px]" />
+        <span>{playSpeed.toFixed(1)}x</span>
       </div>
     </>
   )
