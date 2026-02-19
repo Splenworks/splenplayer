@@ -53,11 +53,16 @@ const isEditableTarget = (target: EventTarget | null) => {
 }
 
 const isSubtitleOffsetIncreaseKey = (event: KeyboardEvent) => {
-  return event.key === "+" || event.code === "NumpadAdd" || (event.code === "Equal" && event.shiftKey)
+  return (
+    event.key === "+" ||
+    event.key === "=" ||
+    event.code === "NumpadAdd" ||
+    (event.code === "Equal" && event.shiftKey)
+  )
 }
 
 const isSubtitleOffsetDecreaseKey = (event: KeyboardEvent) => {
-  return event.key === "-" || event.code === "NumpadSubtract"
+  return event.key === "-" || event.key === "_" || event.code === "NumpadSubtract"
 }
 
 const VideoControls: React.FC<VideoControlsProps> = ({
