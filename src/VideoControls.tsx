@@ -15,6 +15,7 @@ import { useFullScreen } from "./hooks/useFullScreen"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import SubtitleDelayToast from "./SubtitleDelayToast"
+import { isEditableTarget } from "./utils/dom"
 import VideoControlsBottom from "./VideoControlsBottom"
 import VideoControlsTop from "./VideoControlsTop"
 
@@ -43,14 +44,6 @@ interface VideoControlsProps {
   subtitleOffsetMs: number
   setSubtitleOffsetMs: React.Dispatch<React.SetStateAction<number>>
   mouseMoveTimeout: React.RefObject<number | null>
-}
-
-const isEditableTarget = (target: EventTarget | null) => {
-  if (!(target instanceof HTMLElement)) {
-    return false
-  }
-  const editableTagNames = ["input", "textarea", "select"]
-  return target.isContentEditable || editableTagNames.includes(target.tagName.toLowerCase())
 }
 
 const isSubtitleOffsetIncreaseKey = (event: KeyboardEvent) => {
