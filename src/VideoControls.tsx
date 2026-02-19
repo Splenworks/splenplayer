@@ -14,6 +14,7 @@ import ActionOverlay from "./ActionOverlay"
 import { useFullScreen } from "./hooks/useFullScreen"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
+import SubtitleDelayToast from "./SubtitleDelayToast"
 import VideoControlsBottom from "./VideoControlsBottom"
 import VideoControlsTop from "./VideoControlsTop"
 
@@ -350,11 +351,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         onClick={togglePlayPause}
       />
       <ActionOverlay isPaused={isPaused} isAudio={isAudio} />
-      {subtitleDelayToast && (
-        <div className="pointer-events-none absolute top-20 left-1/2 z-30 -translate-x-1/2 rounded-md bg-zinc-900/80 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
-          {subtitleDelayToast}
-        </div>
-      )}
+      <SubtitleDelayToast message={subtitleDelayToast} />
       <VideoControlsTop
         showControls={showControls}
         isFullScreen={isFullScreen}
