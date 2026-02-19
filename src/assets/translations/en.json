@@ -25,6 +25,7 @@
     "showPlaylist": "Show playlist",
     "hidePlaylist": "Hide playlist",
     "subtitleDelay": "Subtitle delay: {{offsetTime}}",
+    "subtitleOffsetWithUnit": "{{offsetValue}}s",
     "audio": "Audio",
     "video": "Video"
   }

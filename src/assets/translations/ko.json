@@ -25,6 +25,7 @@
     "showPlaylist": "재생목록 보기",
     "hidePlaylist": "재생목록 숨기기",
     "subtitleDelay": "자막 지연: {{offsetTime}}",
+    "subtitleOffsetWithUnit": "{{offsetValue}}초",
     "audio": "오디오",
     "video": "비디오"
   }

@@ -25,6 +25,7 @@
     "showPlaylist": "再生リストを表示",
     "hidePlaylist": "再生リストを非表示",
     "subtitleDelay": "字幕の遅延: {{offsetTime}}",
+    "subtitleOffsetWithUnit": "{{offsetValue}}秒",
     "audio": "オーディオ",
     "video": "ビデオ"
   }

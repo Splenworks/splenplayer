@@ -17,6 +17,8 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
   decreaseSubtitleOffset,
   resetSubtitleOffset,
 }) => {
+  const formatOffsetForControl = (offsetMs: number) => `${formatSubtitleOffset(offsetMs)}s`
+
   return (
     <>
       <div className="peer group flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-100 focus:outline-hidden">
@@ -31,9 +33,7 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
         <SubtitleSyncActionButton label="-0.1s" onClick={decreaseSubtitleOffset} />
         <SubtitleSyncActionButton label="RESET" onClick={resetSubtitleOffset} />
         <div className="z-10 flex h-8 min-h-8 w-full shrink-0 items-center justify-center rounded-t-full bg-zinc-800/70 pt-1">
-          <span className="text-xs text-zinc-100">
-            {formatSubtitleOffset(subtitleOffsetMs)}
-          </span>
+          <span className="text-xs text-zinc-100">{formatOffsetForControl(subtitleOffsetMs)}</span>
         </div>
       </div>
       <div
@@ -42,7 +42,7 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
           subtitleOffsetMs === 0 ? "opacity-0" : "opacity-100",
         )}
       >
-        {formatSubtitleOffset(subtitleOffsetMs)}
+        {formatOffsetForControl(subtitleOffsetMs)}
       </div>
     </>
   )

@@ -25,6 +25,7 @@
     "showPlaylist": "显示播放列表",
     "hidePlaylist": "隐藏播放列表",
     "subtitleDelay": "字幕延迟：{{offsetTime}}",
+    "subtitleOffsetWithUnit": "{{offsetValue}}秒",
     "audio": "音频",
     "video": "视频"
   }

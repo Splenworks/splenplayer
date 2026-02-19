@@ -10,5 +10,5 @@ export const formatSubtitleOffset = (offsetMs: number) => {
   const sign = offsetMs >= 0 ? "+" : "-"
   const seconds = Math.abs(offsetMs) / 1000
   const normalizedSeconds = seconds.toFixed(2).replace(/\.?0+$/, "")
-  return `${sign}${normalizedSeconds}s`
+  return `${sign}${normalizedSeconds}`
 }
