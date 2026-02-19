@@ -10,7 +10,7 @@ const SubtitleDelayToast: FC<SubtitleDelayToastProps> = ({ message }) => {
   }
 
   return (
-    <div className="pointer-events-none absolute top-20 left-1/2 z-30 -translate-x-1/2 rounded-md bg-zinc-900/80 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
+    <div className="pointer-events-none fixed top-20 left-1/2 z-30 -translate-x-1/2 rounded-md bg-zinc-900/80 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
       {message}
     </div>
   )

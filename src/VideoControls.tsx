@@ -330,67 +330,69 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   }
 
   return (
-    <MouseMoveOverlay
-      showControls={showControls}
-      setShowControls={setShowControls}
-      mouseMoveTimeoutRef={mouseMoveTimeout}
-      videoPaused={isPaused}
-      preventAutoHide={isMediaListHovered}
-    >
-      <div
-        className="absolute top-30 right-0 bottom-21 left-0"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-        onClick={togglePlayPause}
-      />
-      <ActionOverlay isPaused={isPaused} isAudio={isAudio} />
+    <>
+      <MouseMoveOverlay
+        showControls={showControls}
+        setShowControls={setShowControls}
+        mouseMoveTimeoutRef={mouseMoveTimeout}
+        videoPaused={isPaused}
+        preventAutoHide={isMediaListHovered}
+      >
+        <div
+          className="absolute top-30 right-0 bottom-21 left-0"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+          onClick={togglePlayPause}
+        />
+        <ActionOverlay isPaused={isPaused} isAudio={isAudio} />
+        <VideoControlsTop
+          showControls={showControls}
+          isFullScreen={isFullScreen}
+          mediaFiles={mediaFiles}
+          currentIndex={currentIndex}
+          setCurrentIndex={setCurrentIndex}
+          isMediaListHovered={isMediaListHovered}
+          setIsMediaListHovered={setIsMediaListHovered}
+          exit={exit}
+        />
+        <VideoControlsBottom
+          showControls={showControls}
+          isPaused={isPaused}
+          mediaFilesCount={mediaFiles.length}
+          currentMediaIndex={currentIndex}
+          setCurrentMediaIndex={setCurrentIndex}
+          currentTime={currentTime}
+          totalTime={totalTime}
+          togglePlayPause={togglePlayPause}
+          volume={volume}
+          handleVolumeChange={handleVolumeChange}
+          hasSubtitles={hasSubtitles}
+          showSubtitle={showSubtitle}
+          toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
+          subtitleTracks={subtitleTracks}
+          selectedSubtitleTrack={selectedSubtitleTrack}
+          handleSubtitleTrackChange={(track) => {
+            setSelectedSubtitleTrack(track)
+            setShowSubtitle(true)
+          }}
+          subtitleOffsetMs={subtitleOffsetMs}
+          increaseSubtitleOffset={increaseSubtitleOffset}
+          decreaseSubtitleOffset={decreaseSubtitleOffset}
+          resetSubtitleOffset={resetSubtitleOffset}
+          playSpeed={playSpeed}
+          handlePlaybackSpeed={handlePlaybackSpeed}
+          isFullScreen={isFullScreen}
+          toggleFullScreen={toggleFullScreen}
+        />
+        <ProgressBar
+          handleSeek={handleSeek}
+          seekValue={seekValue}
+          // eslint-disable-next-line react-hooks/refs
+          duration={videoRef.current?.duration ?? 0}
+        />
+      </MouseMoveOverlay>
       <SubtitleDelayToast message={subtitleDelayToast} />
-      <VideoControlsTop
-        showControls={showControls}
-        isFullScreen={isFullScreen}
-        mediaFiles={mediaFiles}
-        currentIndex={currentIndex}
-        setCurrentIndex={setCurrentIndex}
-        isMediaListHovered={isMediaListHovered}
-        setIsMediaListHovered={setIsMediaListHovered}
-        exit={exit}
-      />
-      <VideoControlsBottom
-        showControls={showControls}
-        isPaused={isPaused}
-        mediaFilesCount={mediaFiles.length}
-        currentMediaIndex={currentIndex}
-        setCurrentMediaIndex={setCurrentIndex}
-        currentTime={currentTime}
-        totalTime={totalTime}
-        togglePlayPause={togglePlayPause}
-        volume={volume}
-        handleVolumeChange={handleVolumeChange}
-        hasSubtitles={hasSubtitles}
-        showSubtitle={showSubtitle}
-        toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
-        subtitleTracks={subtitleTracks}
-        selectedSubtitleTrack={selectedSubtitleTrack}
-        handleSubtitleTrackChange={(track) => {
-          setSelectedSubtitleTrack(track)
-          setShowSubtitle(true)
-        }}
-        subtitleOffsetMs={subtitleOffsetMs}
-        increaseSubtitleOffset={increaseSubtitleOffset}
-        decreaseSubtitleOffset={decreaseSubtitleOffset}
-        resetSubtitleOffset={resetSubtitleOffset}
-        playSpeed={playSpeed}
-        handlePlaybackSpeed={handlePlaybackSpeed}
-        isFullScreen={isFullScreen}
-        toggleFullScreen={toggleFullScreen}
-      />
-      <ProgressBar
-        handleSeek={handleSeek}
-        seekValue={seekValue}
-        // eslint-disable-next-line react-hooks/refs
-        duration={videoRef.current?.duration ?? 0}
-      />
-    </MouseMoveOverlay>
+    </>
   )
 }
 
