@@ -61,9 +61,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ handleSeek, seekValue, durati
           autoFocus
           ref={inputRef}
           className={twJoin(
+            "w-full cursor-pointer accent-white outline-hidden",
             isSafari
-              ? "h-2 w-full cursor-pointer appearance-none rounded-full border border-zinc-500 bg-transparent accent-white outline-hidden [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-              : "w-full cursor-pointer accent-white outline-hidden",
+            && "h-2 appearance-none rounded-full border border-zinc-500 bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
           )}
           type="range"
           min="0"
