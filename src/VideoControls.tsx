@@ -7,7 +7,6 @@ import { extractMkvSubtitleParseResult } from "./utils/mkvSubtitles"
 import {
   SUBTITLE_OFFSET_STEP_MS,
   clampSubtitleOffset,
-  formatSubtitleOffset,
 } from "./utils/subtitleOffset"
 
 import ActionOverlay from "./ActionOverlay"
@@ -88,7 +87,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
-  const [subtitleDelayToast, setSubtitleDelayToast] = useState<string | null>(null)
+  const [subtitleDelayOffsetTime, setSubtitleDelayOffsetTime] = useState<number | null>(null)
   const subtitleDelayToastTimeoutRef = useRef<number | null>(null)
   const subtitleOffsetRef = useRef(subtitleOffsetMs)
   const { isFullScreen, toggleFullScreen } = useFullScreen()
@@ -230,9 +229,9 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     if (subtitleDelayToastTimeoutRef.current !== null) {
       window.clearTimeout(subtitleDelayToastTimeoutRef.current)
     }
-    setSubtitleDelayToast(`Subtitle delay: ${formatSubtitleOffset(offsetMs)}`)
+    setSubtitleDelayOffsetTime(offsetMs)
     subtitleDelayToastTimeoutRef.current = window.setTimeout(() => {
-      setSubtitleDelayToast(null)
+      setSubtitleDelayOffsetTime(null)
       subtitleDelayToastTimeoutRef.current = null
     }, 1200)
   }, [])
@@ -391,7 +390,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           duration={videoRef.current?.duration ?? 0}
         />
       </MouseMoveOverlay>
-      <SubtitleDelayToast message={subtitleDelayToast} />
+      <SubtitleDelayToast offsetTime={subtitleDelayOffsetTime} />
     </>
   )
 }

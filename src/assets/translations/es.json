@@ -24,6 +24,7 @@
     "nowPlayingStatus": "Reproduciendo ahora: {{current}} de {{total}}",
     "showPlaylist": "Mostrar lista",
     "hidePlaylist": "Ocultar lista",
+    "subtitleDelay": "Retraso de subtítulos: {{offsetTime}}",
     "audio": "Audio",
     "video": "Video"
   }

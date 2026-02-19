@@ -24,6 +24,7 @@
     "nowPlayingStatus": "正在播放：{{current}} / {{total}}",
     "showPlaylist": "显示播放列表",
     "hidePlaylist": "隐藏播放列表",
+    "subtitleDelay": "字幕延迟：{{offsetTime}}",
     "audio": "音频",
     "video": "视频"
   }

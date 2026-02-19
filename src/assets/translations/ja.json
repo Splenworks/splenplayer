@@ -24,6 +24,7 @@
     "nowPlayingStatus": "再生中: {{current}} / {{total}}",
     "showPlaylist": "再生リストを表示",
     "hidePlaylist": "再生リストを非表示",
+    "subtitleDelay": "字幕の遅延: {{offsetTime}}",
     "audio": "オーディオ",
     "video": "ビデオ"
   }

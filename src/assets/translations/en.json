@@ -24,6 +24,7 @@
     "nowPlayingStatus": "Now Playing: {{current}} of {{total}}",
     "showPlaylist": "Show playlist",
     "hidePlaylist": "Hide playlist",
+    "subtitleDelay": "Subtitle delay: {{offsetTime}}",
     "audio": "Audio",
     "video": "Video"
   }
