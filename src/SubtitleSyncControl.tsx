@@ -37,7 +37,7 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
           label="-0.1s"
           onClick={() => changeSubtitleOffsetBy(-SUBTITLE_OFFSET_STEP_MS)}
         />
-        <SubtitleSyncActionButton label="-0.5s" onClick={() => changeSubtitleOffsetBy(-halfSecondStepMs)} />
+        <SubtitleSyncActionButton label="-0.5s" onClick={() => changeSubtitleOffsetBy(-halfSecondStepMs)} className="h-8 min-h-8 pt-1" />
       </div>
       <div
         className={twJoin(
