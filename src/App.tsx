@@ -32,8 +32,43 @@ function App() {
       .join("")
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])
+  const subtitleSyncDelayStorageKey = `${videoFileHash}-subtitle-sync-delay`
   const [showSubtitle, setShowSubtitle] = useState(true)
-  const [subtitleOffsetMs, setSubtitleOffsetMs] = useState(0)
+  const [subtitleOffsetState, setSubtitleOffsetState] = useState<{
+    storageKey: string
+    offsetMs: number
+  } | null>(null)
+  const subtitleOffsetMs = useMemo(() => {
+    if (mediaFiles.length === 0) {
+      return 0
+    }
+    if (subtitleOffsetState && subtitleOffsetState.storageKey === subtitleSyncDelayStorageKey) {
+      return subtitleOffsetState.offsetMs
+    }
+    const savedSubtitleSyncDelay = localStorage.getItem(subtitleSyncDelayStorageKey)
+    const parsedSubtitleSyncDelay = Number(savedSubtitleSyncDelay)
+    return savedSubtitleSyncDelay !== null && Number.isFinite(parsedSubtitleSyncDelay)
+      ? parsedSubtitleSyncDelay
+      : 0
+  }, [mediaFiles.length, subtitleOffsetState, subtitleSyncDelayStorageKey])
+  const setSubtitleOffsetMs = useCallback(
+    (value: number | ((prevValue: number) => number)) => {
+      if (mediaFiles.length === 0) {
+        return
+      }
+      const nextSubtitleOffsetMs = typeof value === "function" ? value(subtitleOffsetMs) : value
+      setSubtitleOffsetState({
+        storageKey: subtitleSyncDelayStorageKey,
+        offsetMs: nextSubtitleOffsetMs,
+      })
+      if (nextSubtitleOffsetMs === 0) {
+        localStorage.removeItem(subtitleSyncDelayStorageKey)
+        return
+      }
+      localStorage.setItem(subtitleSyncDelayStorageKey, nextSubtitleOffsetMs + "")
+    },
+    [mediaFiles.length, subtitleOffsetMs, subtitleSyncDelayStorageKey],
+  )
   const [subtitles, setSubtitles] = useState<ParseResult>([])
   const subtitleTracks = useMemo(() => {
     const trackSet = new Set<string>()
