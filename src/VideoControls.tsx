@@ -88,7 +88,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   const [playSpeed, setPlaySpeed] = useState(1)
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
   const [subtitleDelayOffsetTime, setSubtitleDelayOffsetTime] = useState<number | null>(null)
-  const subtitleDelayToastTimeoutRef = useRef<number | null>(null)
+  const [subtitleDelayToastKey, setSubtitleDelayToastKey] = useState(0)
   const subtitleOffsetRef = useRef(subtitleOffsetMs)
   const { isFullScreen, toggleFullScreen } = useFullScreen()
 
@@ -190,14 +190,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     }
   }, [showControls, mediaFiles.length])
 
-  useEffect(() => {
-    return () => {
-      if (subtitleDelayToastTimeoutRef.current !== null) {
-        window.clearTimeout(subtitleDelayToastTimeoutRef.current)
-      }
-    }
-  }, [])
-
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const files = Array.from(e.dataTransfer.files)
@@ -226,14 +218,8 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   }, [videoRef, setIsPaused])
 
   const showSubtitleDelayToast = useCallback((offsetMs: number) => {
-    if (subtitleDelayToastTimeoutRef.current !== null) {
-      window.clearTimeout(subtitleDelayToastTimeoutRef.current)
-    }
     setSubtitleDelayOffsetTime(offsetMs)
-    subtitleDelayToastTimeoutRef.current = window.setTimeout(() => {
-      setSubtitleDelayOffsetTime(null)
-      subtitleDelayToastTimeoutRef.current = null
-    }, 1200)
+    setSubtitleDelayToastKey((prev) => prev + 1)
   }, [])
 
   const applySubtitleOffset = useCallback(
@@ -390,7 +376,13 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           duration={videoRef.current?.duration ?? 0}
         />
       </MouseMoveOverlay>
-      <SubtitleDelayToast offsetTime={subtitleDelayOffsetTime} />
+      {subtitleDelayOffsetTime !== null && (
+        <SubtitleDelayToast
+          key={subtitleDelayToastKey}
+          offsetTime={subtitleDelayOffsetTime}
+          onHidden={() => setSubtitleDelayOffsetTime(null)}
+        />
+      )}
     </>
   )
 }
