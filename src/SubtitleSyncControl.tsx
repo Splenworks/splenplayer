@@ -14,18 +14,15 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
   changeSubtitleOffsetBy,
 }) => {
   const halfSecondStepMs = SUBTITLE_OFFSET_STEP_MS * 5
-  const formatOffsetForControl = (offsetMs: number) => `${formatSubtitleOffset(offsetMs)}s`
 
   return (
     <>
       <div className="peer group flex h-10 max-h-10 cursor-pointer flex-col-reverse items-center overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:h-auto hover:max-h-100 focus:outline-hidden">
-        <button
-          tabIndex={-1}
+        <div
           className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-b-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 group-hover:bg-zinc-500/50 focus:outline-hidden"
-          onClick={() => changeSubtitleOffsetBy(SUBTITLE_OFFSET_STEP_MS)}
         >
           <PlusMinusIcon className="m-2 h-6 w-6 text-white" />
-        </button>
+        </div>
         <SubtitleSyncActionButton label="+0.5s" onClick={() => changeSubtitleOffsetBy(halfSecondStepMs)} />
         <SubtitleSyncActionButton
           label="+0.1s"
@@ -48,7 +45,7 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
           subtitleOffsetMs === 0 ? "opacity-0" : "opacity-100",
         )}
       >
-        {formatOffsetForControl(subtitleOffsetMs)}
+        {formatSubtitleOffset(subtitleOffsetMs)}s
       </div>
     </>
   )
