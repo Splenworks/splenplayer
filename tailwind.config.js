@@ -8,6 +8,9 @@ export default {
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
       },
+      fontSize: {
+        xxs: "10px",
+      },
       animation: {
         shimmer: "shimmer 5s infinite",
         actionPulse: "actionPulse 1s ease-out",

@@ -5,12 +5,14 @@ interface SubtitleSyncActionButtonProps {
   label: string
   onClick: () => void
   className?: string
+  labelClassName?: string
 }
 
 const SubtitleSyncActionButton: React.FC<SubtitleSyncActionButtonProps> = ({
   label,
   onClick,
   className,
+  labelClassName,
 }) => {
   return (
     <button
@@ -21,7 +23,7 @@ const SubtitleSyncActionButton: React.FC<SubtitleSyncActionButtonProps> = ({
       )}
       onClick={onClick}
     >
-      <span className="text-xs text-white">{label}</span>
+      <span className={twMerge("text-xs text-white", labelClassName)}>{label}</span>
     </button>
   )
 }
