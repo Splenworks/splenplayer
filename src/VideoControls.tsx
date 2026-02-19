@@ -232,16 +232,8 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     [setSubtitleOffsetMs, showSubtitleDelayToast],
   )
 
-  const increaseSubtitleOffset = useCallback(() => {
-    applySubtitleOffset(subtitleOffsetRef.current + SUBTITLE_OFFSET_STEP_MS)
-  }, [applySubtitleOffset])
-
-  const decreaseSubtitleOffset = useCallback(() => {
-    applySubtitleOffset(subtitleOffsetRef.current - SUBTITLE_OFFSET_STEP_MS)
-  }, [applySubtitleOffset])
-
-  const resetSubtitleOffset = useCallback(() => {
-    applySubtitleOffset(0)
+  const changeSubtitleOffsetBy = useCallback((deltaMs: number) => {
+    applySubtitleOffset(subtitleOffsetRef.current + deltaMs)
   }, [applySubtitleOffset])
 
   useEffect(() => {
@@ -268,7 +260,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         isSubtitleOffsetIncreaseKey(event)
       ) {
         event.preventDefault()
-        increaseSubtitleOffset()
+        changeSubtitleOffsetBy(SUBTITLE_OFFSET_STEP_MS)
       } else if (
         hasSubtitles &&
         !event.metaKey &&
@@ -277,22 +269,20 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         isSubtitleOffsetDecreaseKey(event)
       ) {
         event.preventDefault()
-        decreaseSubtitleOffset()
+        changeSubtitleOffsetBy(-SUBTITLE_OFFSET_STEP_MS)
       } else if (hasSubtitles && !event.metaKey && !event.ctrlKey && !event.altKey && event.key === "0") {
         event.preventDefault()
-        resetSubtitleOffset()
+        changeSubtitleOffsetBy(-subtitleOffsetRef.current)
       }
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [
-    decreaseSubtitleOffset,
+    changeSubtitleOffsetBy,
     exit,
     getVideo,
     hasSubtitles,
-    increaseSubtitleOffset,
     isFullScreen,
-    resetSubtitleOffset,
     toggleFullScreen,
     togglePlayPause,
   ])
@@ -361,9 +351,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
             setShowSubtitle(true)
           }}
           subtitleOffsetMs={subtitleOffsetMs}
-          increaseSubtitleOffset={increaseSubtitleOffset}
-          decreaseSubtitleOffset={decreaseSubtitleOffset}
-          resetSubtitleOffset={resetSubtitleOffset}
+          changeSubtitleOffsetBy={changeSubtitleOffsetBy}
           playSpeed={playSpeed}
           handlePlaybackSpeed={handlePlaybackSpeed}
           isFullScreen={isFullScreen}

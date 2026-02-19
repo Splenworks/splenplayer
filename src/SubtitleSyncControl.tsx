@@ -2,21 +2,18 @@ import React from "react"
 import { twJoin } from "tailwind-merge"
 import PlusMinusIcon from "./assets/icons/plus-minus.svg?react"
 import SubtitleSyncActionButton from "./SubtitleSyncActionButton"
-import { formatSubtitleOffset } from "./utils/subtitleOffset"
+import { SUBTITLE_OFFSET_STEP_MS, formatSubtitleOffset } from "./utils/subtitleOffset"
 
 interface SubtitleSyncControlProps {
   subtitleOffsetMs: number
-  increaseSubtitleOffset: () => void
-  decreaseSubtitleOffset: () => void
-  resetSubtitleOffset: () => void
+  changeSubtitleOffsetBy: (deltaMs: number) => void
 }
 
 const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
   subtitleOffsetMs,
-  increaseSubtitleOffset,
-  decreaseSubtitleOffset,
-  resetSubtitleOffset,
+  changeSubtitleOffsetBy,
 }) => {
+  const halfSecondStepMs = SUBTITLE_OFFSET_STEP_MS * 5
   const formatOffsetForControl = (offsetMs: number) => `${formatSubtitleOffset(offsetMs)}s`
 
   return (
@@ -25,15 +22,23 @@ const SubtitleSyncControl: React.FC<SubtitleSyncControlProps> = ({
         <button
           tabIndex={-1}
           className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-b-full transition-colors duration-300 ease-in-out hover:bg-zinc-500/50 group-hover:bg-zinc-500/50 focus:outline-hidden"
-          onClick={increaseSubtitleOffset}
+          onClick={() => changeSubtitleOffsetBy(SUBTITLE_OFFSET_STEP_MS)}
         >
           <PlusMinusIcon className="m-2 h-6 w-6 text-white" />
         </button>
-        <SubtitleSyncActionButton label="+0.1s" onClick={increaseSubtitleOffset} />
-        <SubtitleSyncActionButton label="-0.1s" onClick={decreaseSubtitleOffset} />
+        <SubtitleSyncActionButton label="+0.5s" onClick={() => changeSubtitleOffsetBy(halfSecondStepMs)} />
+        <SubtitleSyncActionButton
+          label="+0.1s"
+          onClick={() => changeSubtitleOffsetBy(SUBTITLE_OFFSET_STEP_MS)}
+        />
+        <SubtitleSyncActionButton
+          label="-0.1s"
+          onClick={() => changeSubtitleOffsetBy(-SUBTITLE_OFFSET_STEP_MS)}
+        />
+        <SubtitleSyncActionButton label="-0.5s" onClick={() => changeSubtitleOffsetBy(-halfSecondStepMs)} />
         <SubtitleSyncActionButton
           label="RESET"
-          onClick={resetSubtitleOffset}
+          onClick={() => changeSubtitleOffsetBy(-subtitleOffsetMs)}
           labelClassName="text-xxs"
         />
         <div className="z-10 flex h-8 min-h-8 w-full shrink-0 items-center justify-center rounded-t-full bg-zinc-800/70 pt-1">

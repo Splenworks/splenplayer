@@ -26,9 +26,7 @@ interface VideoControlsBottomProps {
   selectedSubtitleTrack: string | null
   handleSubtitleTrackChange: (track: string) => void
   subtitleOffsetMs: number
-  increaseSubtitleOffset: () => void
-  decreaseSubtitleOffset: () => void
-  resetSubtitleOffset: () => void
+  changeSubtitleOffsetBy: (deltaMs: number) => void
   playSpeed: number
   handlePlaybackSpeed: (speed: number) => void
   isFullScreen: boolean
@@ -53,9 +51,7 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   selectedSubtitleTrack,
   handleSubtitleTrackChange,
   subtitleOffsetMs,
-  increaseSubtitleOffset,
-  decreaseSubtitleOffset,
-  resetSubtitleOffset,
+  changeSubtitleOffsetBy,
   playSpeed,
   handlePlaybackSpeed,
   isFullScreen,
@@ -106,9 +102,7 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
           <div className="relative mr-0.5">
             <SubtitleSyncControl
               subtitleOffsetMs={subtitleOffsetMs}
-              increaseSubtitleOffset={increaseSubtitleOffset}
-              decreaseSubtitleOffset={decreaseSubtitleOffset}
-              resetSubtitleOffset={resetSubtitleOffset}
+              changeSubtitleOffsetBy={changeSubtitleOffsetBy}
             />
           </div>
         )}
