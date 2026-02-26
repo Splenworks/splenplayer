@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   AudioDisplayMetadata,
   buildAudioDisplayMetadata,
@@ -15,7 +15,6 @@ interface AudioArtworkOverlayProps {
 
 const AudioArtworkOverlay: React.FC<AudioArtworkOverlayProps> = ({ isAudio, mediaFile }) => {
   const [metadataByFileKey, setMetadataByFileKey] = useState<Record<string, AudioDisplayMetadata>>({})
-  const metadataByFileKeyRef = useRef<Record<string, AudioDisplayMetadata>>({})
   const currentAudioCacheKey = useMemo(() => {
     if (!mediaFile || mediaFile.type !== "audio") {
       return null
@@ -30,14 +29,10 @@ const AudioArtworkOverlay: React.FC<AudioArtworkOverlayProps> = ({ isAudio, medi
   }, [currentAudioCacheKey, metadataByFileKey])
 
   useEffect(() => {
-    metadataByFileKeyRef.current = metadataByFileKey
-  }, [metadataByFileKey])
-
-  useEffect(() => {
     if (!mediaFile || mediaFile.type !== "audio" || !currentAudioCacheKey) {
       return
     }
-    if (metadataByFileKeyRef.current[currentAudioCacheKey]) {
+    if (metadataByFileKey[currentAudioCacheKey]) {
       return
     }
 
@@ -51,14 +46,10 @@ const AudioArtworkOverlay: React.FC<AudioArtworkOverlayProps> = ({ isAudio, medi
       }
 
       const metadataFromTags = buildAudioDisplayMetadata(mediaFile.file.name, tags, null)
-      setMetadataByFileKey((prevMetadataByFileKey) => {
-        const nextMetadataByFileKey = {
-          ...prevMetadataByFileKey,
-          [currentAudioCacheKey]: metadataFromTags,
-        }
-        metadataByFileKeyRef.current = nextMetadataByFileKey
-        return nextMetadataByFileKey
-      })
+      setMetadataByFileKey((prevMetadataByFileKey) => ({
+        ...prevMetadataByFileKey,
+        [currentAudioCacheKey]: metadataFromTags,
+      }))
 
       const onlineMetadata = await fetchAudioMetadataFromInternet(
         mediaFile.file.name,
@@ -92,7 +83,7 @@ const AudioArtworkOverlay: React.FC<AudioArtworkOverlayProps> = ({ isAudio, medi
       shouldIgnoreResult = true
       abortController.abort()
     }
-  }, [currentAudioCacheKey, mediaFile])
+  }, [currentAudioCacheKey, mediaFile, metadataByFileKey])
 
   if (!isAudio || !metadata) {
     return null
