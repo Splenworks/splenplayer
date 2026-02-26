@@ -1,7 +1,7 @@
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ParseResult } from "sami-parser"
-import { twJoin } from "tailwind-merge"
+import AudioOverlay from "./AudioOverlay"
 import Caption from "./Caption"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
@@ -190,6 +190,8 @@ function App() {
           if (analyzerContainer.current && analyzer.current === null) {
             analyzer.current = new AudioMotionAnalyzer(analyzerContainer.current, {
               source: video,
+              overlay: true,
+              showBgColor: false,
               smoothing: 0.8,
               showScaleX: false,
             })
@@ -253,9 +255,10 @@ function App() {
     return (
       <div className="fixed top-0 right-0 bottom-0 left-0">
         <VideoPlayer mediaFiles={mediaFiles} currentIndex={currentIndex} ref={videoRef} />
-        <div
-          ref={analyzerContainer}
-          className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
+        <AudioOverlay
+          analyzerContainerRef={analyzerContainer}
+          isAudio={isAudio}
+          mediaFile={mediaFiles[currentIndex] || null}
         />
         {showSubtitle && subtitles.length > 0 && (
           <Caption caption={currentSubtitle} videoRatio={videoRatio} />

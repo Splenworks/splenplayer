@@ -11,9 +11,9 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined)
 
     useEffect(() => {
-      const blob = new Blob([mediaFiles[currentIndex].file], {
-        type:
-          mediaFiles[currentIndex].type === "audio" ? "audio/mpeg" : "video/mp4",
+      const media = mediaFiles[currentIndex]
+      const blob = new Blob([media.file], {
+        type: media.file.type || (media.type === "audio" ? "audio/mpeg" : "video/mp4"),
       })
       const newUrl = URL.createObjectURL(blob)
       // eslint-disable-next-line react-hooks/set-state-in-effect
