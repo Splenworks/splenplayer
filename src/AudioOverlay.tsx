@@ -48,29 +48,23 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
       }
 
       const metadataFromTags = buildAudioDisplayMetadata(mediaFile.file.name, tags, null)
-      setMetadataByFileKey((prevMetadataByFileKey) => ({
-        ...prevMetadataByFileKey,
-        [currentAudioCacheKey]: metadataFromTags,
-      }))
-
       const onlineMetadata = await fetchAudioMetadataFromInternet(
         mediaFile.file.name,
         tags,
         abortController.signal,
       )
 
-      if (shouldIgnoreResult || abortController.signal.aborted || !onlineMetadata) {
+      if (shouldIgnoreResult || abortController.signal.aborted) {
         return
       }
 
-      const metadataFromInternet = buildAudioDisplayMetadata(
-        mediaFile.file.name,
-        tags,
-        onlineMetadata,
-      )
+      const metadataFromInternet = onlineMetadata
+        ? buildAudioDisplayMetadata(mediaFile.file.name, tags, onlineMetadata)
+        : null
+
       setMetadataByFileKey((prevMetadataByFileKey) => ({
         ...prevMetadataByFileKey,
-        [currentAudioCacheKey]: metadataFromInternet,
+        [currentAudioCacheKey]: metadataFromInternet || metadataFromTags,
       }))
     }
 
