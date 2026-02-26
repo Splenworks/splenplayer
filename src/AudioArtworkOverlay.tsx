@@ -105,10 +105,10 @@ const AudioArtworkOverlay: React.FC<AudioArtworkOverlayProps> = ({ isAudio, medi
           <img
             src={metadata.artworkUrl}
             alt={metadata.album ? `${metadata.album} album cover` : `${metadata.title} album cover`}
-            className="h-56 w-56 rounded-2xl object-cover opacity-50 shadow-[0_16px_60px_rgba(0,0,0,0.7)] md:h-72 md:w-72"
+            className="h-56 w-56 object-cover opacity-50 shadow-[0_16px_60px_rgba(0,0,0,0.7)] md:h-72 md:w-72"
           />
         ) : (
-          <div className="flex h-56 w-56 items-center justify-center rounded-2xl border border-white/30 bg-white/10 text-sm text-white/70 opacity-50 md:h-72 md:w-72">
+          <div className="flex h-56 w-56 items-center justify-center border border-white/30 bg-white/10 text-sm text-white/70 opacity-50 md:h-72 md:w-72">
             No artwork
           </div>
         )}
