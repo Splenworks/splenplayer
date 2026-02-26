@@ -85,16 +85,18 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
     <>
       <div
         ref={analyzerContainerRef}
-        className={isAudio ? "absolute inset-0 flex" : "absolute inset-0 hidden"}
+        className={
+          isAudio ? "absolute inset-x-0 bottom-0 h-1/2" : "absolute inset-x-0 bottom-0 hidden h-1/2"
+        }
       />
       {isAudio && metadata && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6">
-          <div className="flex flex-col items-center">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
+          <div className="flex -translate-y-10 flex-col items-center md:-translate-y-20">
             {metadata.artworkUrl && (
               <img
                 src={metadata.artworkUrl}
                 alt={metadata.album ? `${metadata.album} album cover` : `${metadata.title} album cover`}
-                className="h-56 w-56 object-cover opacity-50 shadow-[0_16px_60px_rgba(0,0,0,0.7)] md:h-72 md:w-72"
+                className="size-56 object-cover opacity-90 md:size-72"
               />
             )}
             <div className="mt-5 max-w-[24rem] text-center text-white">

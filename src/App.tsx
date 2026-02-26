@@ -190,6 +190,8 @@ function App() {
           if (analyzerContainer.current && analyzer.current === null) {
             analyzer.current = new AudioMotionAnalyzer(analyzerContainer.current, {
               source: video,
+              overlay: true,
+              showBgColor: false,
               smoothing: 0.8,
               showScaleX: false,
             })
