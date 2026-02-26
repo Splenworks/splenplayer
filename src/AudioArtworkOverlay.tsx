@@ -1,12 +1,99 @@
-import React from "react"
-import { AudioDisplayMetadata } from "./utils/audioMetadata"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+import {
+  AudioDisplayMetadata,
+  buildAudioDisplayMetadata,
+  fetchAudioMetadataFromInternet,
+  getAudioFileCacheKey,
+  readAudioTagMetadata,
+} from "./utils/audioMetadata"
+import { MediaFile } from "./utils/getMediaFiles"
 
 interface AudioArtworkOverlayProps {
   isAudio: boolean
-  metadata: AudioDisplayMetadata | null
+  mediaFile: MediaFile | null
 }
 
-const AudioArtworkOverlay: React.FC<AudioArtworkOverlayProps> = ({ isAudio, metadata }) => {
+const AudioArtworkOverlay: React.FC<AudioArtworkOverlayProps> = ({ isAudio, mediaFile }) => {
+  const [metadataByFileKey, setMetadataByFileKey] = useState<Record<string, AudioDisplayMetadata>>({})
+  const metadataByFileKeyRef = useRef<Record<string, AudioDisplayMetadata>>({})
+  const currentAudioCacheKey = useMemo(() => {
+    if (!mediaFile || mediaFile.type !== "audio") {
+      return null
+    }
+    return getAudioFileCacheKey(mediaFile.file)
+  }, [mediaFile])
+  const metadata = useMemo(() => {
+    if (!currentAudioCacheKey) {
+      return null
+    }
+    return metadataByFileKey[currentAudioCacheKey] || null
+  }, [currentAudioCacheKey, metadataByFileKey])
+
+  useEffect(() => {
+    metadataByFileKeyRef.current = metadataByFileKey
+  }, [metadataByFileKey])
+
+  useEffect(() => {
+    if (!mediaFile || mediaFile.type !== "audio" || !currentAudioCacheKey) {
+      return
+    }
+    if (metadataByFileKeyRef.current[currentAudioCacheKey]) {
+      return
+    }
+
+    const abortController = new AbortController()
+    let shouldIgnoreResult = false
+
+    const loadAudioMetadata = async () => {
+      const tags = await readAudioTagMetadata(mediaFile.file)
+      if (shouldIgnoreResult || abortController.signal.aborted) {
+        return
+      }
+
+      const metadataFromTags = buildAudioDisplayMetadata(mediaFile.file.name, tags, null)
+      setMetadataByFileKey((prevMetadataByFileKey) => {
+        const nextMetadataByFileKey = {
+          ...prevMetadataByFileKey,
+          [currentAudioCacheKey]: metadataFromTags,
+        }
+        metadataByFileKeyRef.current = nextMetadataByFileKey
+        return nextMetadataByFileKey
+      })
+
+      const onlineMetadata = await fetchAudioMetadataFromInternet(
+        mediaFile.file.name,
+        tags,
+        abortController.signal,
+      )
+
+      if (shouldIgnoreResult || abortController.signal.aborted || !onlineMetadata) {
+        return
+      }
+
+      const metadataFromInternet = buildAudioDisplayMetadata(
+        mediaFile.file.name,
+        tags,
+        onlineMetadata,
+      )
+      setMetadataByFileKey((prevMetadataByFileKey) => ({
+        ...prevMetadataByFileKey,
+        [currentAudioCacheKey]: metadataFromInternet,
+      }))
+    }
+
+    void loadAudioMetadata().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return
+      }
+      console.error("Failed to load audio metadata:", error)
+    })
+
+    return () => {
+      shouldIgnoreResult = true
+      abortController.abort()
+    }
+  }, [currentAudioCacheKey, mediaFile])
+
   if (!isAudio || !metadata) {
     return null
   }
