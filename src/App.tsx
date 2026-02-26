@@ -2,10 +2,18 @@ import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ParseResult } from "sami-parser"
 import { twJoin } from "tailwind-merge"
+import AudioArtworkOverlay from "./AudioArtworkOverlay"
 import Caption from "./Caption"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
+import {
+  AudioDisplayMetadata,
+  buildAudioDisplayMetadata,
+  fetchAudioMetadataFromInternet,
+  getAudioFileCacheKey,
+  readAudioTagMetadata,
+} from "./utils/audioMetadata"
 import { MediaFile } from "./utils/getMediaFiles"
 import { hashCode } from "./utils/hashCode"
 import { replaceBasicHtmlEntities } from "./utils/html"
@@ -99,7 +107,28 @@ function App() {
   const [videoRatio, setVideoRatio] = useState(0)
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
+  const [audioMetadataByFileKey, setAudioMetadataByFileKey] = useState<
+    Record<string, AudioDisplayMetadata>
+  >({})
+  const audioMetadataByFileKeyRef = useRef<Record<string, AudioDisplayMetadata>>({})
   const mouseMoveTimeout = useRef<number | null>(null)
+  const currentMedia = mediaFiles[currentIndex] || null
+  const currentAudioCacheKey = useMemo(() => {
+    if (!currentMedia || currentMedia.type !== "audio") {
+      return null
+    }
+    return getAudioFileCacheKey(currentMedia.file)
+  }, [currentMedia])
+  const currentAudioMetadata = useMemo(() => {
+    if (!currentAudioCacheKey) {
+      return null
+    }
+    return audioMetadataByFileKey[currentAudioCacheKey] || null
+  }, [audioMetadataByFileKey, currentAudioCacheKey])
+
+  useEffect(() => {
+    audioMetadataByFileKeyRef.current = audioMetadataByFileKey
+  }, [audioMetadataByFileKey])
 
   const resetAnalyzer = useCallback(() => {
     analyzer.current?.destroy()
@@ -137,6 +166,63 @@ function App() {
       resetAnalyzer()
     }
   }, [mediaFiles.length, resetAnalyzer])
+
+  useEffect(() => {
+    if (!currentMedia || currentMedia.type !== "audio" || !currentAudioCacheKey) {
+      return
+    }
+    if (audioMetadataByFileKeyRef.current[currentAudioCacheKey]) {
+      return
+    }
+
+    const abortController = new AbortController()
+    let shouldIgnoreResult = false
+
+    const loadAudioMetadata = async () => {
+      const tags = await readAudioTagMetadata(currentMedia.file)
+      if (shouldIgnoreResult || abortController.signal.aborted) {
+        return
+      }
+
+      const metadataFromTags = buildAudioDisplayMetadata(currentMedia.file.name, tags, null)
+      setAudioMetadataByFileKey((prevMetadataByFileKey) => {
+        const nextMetadataByFileKey = {
+          ...prevMetadataByFileKey,
+          [currentAudioCacheKey]: metadataFromTags,
+        }
+        audioMetadataByFileKeyRef.current = nextMetadataByFileKey
+        return nextMetadataByFileKey
+      })
+
+      const onlineMetadata = await fetchAudioMetadataFromInternet(
+        currentMedia.file.name,
+        tags,
+        abortController.signal,
+      )
+
+      if (shouldIgnoreResult || abortController.signal.aborted || !onlineMetadata) {
+        return
+      }
+
+      const metadata = buildAudioDisplayMetadata(currentMedia.file.name, tags, onlineMetadata)
+      setAudioMetadataByFileKey((prevMetadataByFileKey) => ({
+        ...prevMetadataByFileKey,
+        [currentAudioCacheKey]: metadata,
+      }))
+    }
+
+    void loadAudioMetadata().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return
+      }
+      console.error("Failed to load audio metadata:", error)
+    })
+
+    return () => {
+      shouldIgnoreResult = true
+      abortController.abort()
+    }
+  }, [currentAudioCacheKey, currentMedia])
 
   useEffect(() => {
     const video = videoRef.current
@@ -257,6 +343,7 @@ function App() {
           ref={analyzerContainer}
           className={twJoin("absolute inset-0", isAudio ? "flex" : "hidden")}
         />
+        <AudioArtworkOverlay isAudio={isAudio} metadata={currentAudioMetadata} />
         {showSubtitle && subtitles.length > 0 && (
           <Caption caption={currentSubtitle} videoRatio={videoRatio} />
         )}
