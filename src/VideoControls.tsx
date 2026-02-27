@@ -14,7 +14,6 @@ import { useFullScreen } from "./hooks/useFullScreen"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import SubtitleDelayToast from "./SubtitleDelayToast"
-import { isEditableTarget } from "./utils/dom"
 import VideoControlsBottom from "./VideoControlsBottom"
 import VideoControlsTop from "./VideoControlsTop"
 
@@ -240,7 +239,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     const handleKeyDown = (event: KeyboardEvent) => {
       const video = getVideo()
       if (!video) return
-      if (isEditableTarget(event.target)) return
       if (event.key === "Escape" && !isFullScreen) {
         exit()
       } else if (event.key === "ArrowLeft") {
