@@ -1,3 +1,20 @@
+export type DroppedFile = {
+  file: File
+  displayName: string
+}
+
+const normalizeDisplayPath = (path: string) => {
+  return path
+    .replace(/^\/+/, "")
+    .split("/")
+    .filter((segment) => segment.length > 0)
+    .join(" / ")
+}
+
+export const getDisplayName = (file: File) => {
+  return normalizeDisplayPath(file.webkitRelativePath) || file.name
+}
+
 const readEntriesPromise = async (directoryReader: FileSystemDirectoryReader) => {
   try {
     return await new Promise<FileSystemEntry[]>((resolve, reject) => {
@@ -23,8 +40,16 @@ const readAllDirectoryEntries = async (directoryReader: FileSystemDirectoryReade
 
 const getFileFromEntry = async (entry: FileSystemFileEntry) => {
   try {
-    return await new Promise<File | null>((resolve, reject) => {
-      entry.file(resolve, reject)
+    return await new Promise<DroppedFile | null>((resolve, reject) => {
+      entry.file(
+        (file) => {
+          resolve({
+            file,
+            displayName: normalizeDisplayPath(entry.fullPath) || file.name,
+          })
+        },
+        reject,
+      )
     })
   } catch (error) {
     console.error("Failed to read dropped file entry:", error)
@@ -68,9 +93,12 @@ export const getDroppedFiles = async (dataTransfer: DataTransfer) => {
   const fileEntries = await getAllFileEntries(dataTransfer.items)
 
   if (fileEntries.length === 0) {
-    return Array.from(dataTransfer.files)
+    return Array.from(dataTransfer.files).map((file) => ({
+      file,
+      displayName: getDisplayName(file),
+    }))
   }
 
   const files = await Promise.all(fileEntries.map((entry) => getFileFromEntry(entry)))
-  return files.filter((file): file is File => file !== null)
+  return files.filter((file): file is DroppedFile => file !== null)
 }

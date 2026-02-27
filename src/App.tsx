@@ -28,7 +28,7 @@ function App() {
   const [seekValue, setSeekValue] = useState("0")
   const videoFileHash = useMemo(() => {
     const allMediaFilesAndSizes = mediaFiles
-      .map((mediaFile) => mediaFile.file.name + mediaFile.file.size)
+      .map((mediaFile) => mediaFile.displayName + mediaFile.file.size)
       .join("")
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])

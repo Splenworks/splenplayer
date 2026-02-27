@@ -198,7 +198,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     if (mediaFiles.length === 0) {
       const subtitleFiles = getSubtitleFiles(files)
       if (subtitleFiles.length > 0) {
-        void parseSubtitle(subtitleFiles[0])
+        void parseSubtitle(subtitleFiles[0].file)
       }
     } else {
       setMedia(mediaFiles)

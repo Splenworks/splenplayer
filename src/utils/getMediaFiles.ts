@@ -1,3 +1,5 @@
+import { DroppedFile, getDisplayName } from "./getDroppedFiles"
+
 const endsWith = (fileName: string, fileExtensions: string[]) => {
   return fileExtensions.some((extension) => fileName.endsWith(extension))
 }
@@ -31,26 +33,45 @@ type MediaFileType = "video" | "audio"
 export type MediaFile = {
   type: MediaFileType
   file: File
+  displayName: string
   subtitleFile: File | null
 }
 
-export const getMediaFiles = (files: File[]): MediaFile[] => {
-  const subtitleFiles = files.filter((file) => looksLikeSubtitle(file.name))
-  return files
-    .map((file) => ({
-      type: looksLikeVideo(file.name) ? "video" : looksLikeAudio(file.name) ? "audio" : null,
-      file,
-      subtitleFile:
-        subtitleFiles.find((subtitleFile) =>
-          nameMatchesWithoutExtension(file.name, subtitleFile.name),
-        ) || null,
-    }))
-    .filter(({ type }) => type !== null)
-    .sort((a, b) => a.file.name.localeCompare(b.file.name)) as MediaFile[]
+const toDroppedFile = (file: File | DroppedFile): DroppedFile => {
+  if ("displayName" in file) {
+    return file
+  }
+
+  return {
+    file,
+    displayName: getDisplayName(file),
+  }
 }
 
-export const getSubtitleFiles = (files: File[]) => {
+export const getMediaFiles = (files: Array<File | DroppedFile>): MediaFile[] => {
+  const droppedFiles = files.map(toDroppedFile)
+  const subtitleFiles = droppedFiles.filter(({ file }) => looksLikeSubtitle(file.name))
+  return droppedFiles
+    .map((file) => ({
+      type: looksLikeVideo(file.file.name)
+        ? "video"
+        : looksLikeAudio(file.file.name)
+          ? "audio"
+          : null,
+      file: file.file,
+      displayName: file.displayName,
+      subtitleFile:
+        subtitleFiles.find((subtitleFile) =>
+          nameMatchesWithoutExtension(file.displayName, subtitleFile.displayName),
+        )?.file || null,
+    }))
+    .filter(({ type }) => type !== null)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName)) as MediaFile[]
+}
+
+export const getSubtitleFiles = (files: Array<File | DroppedFile>) => {
   return files
-    .filter((file) => looksLikeSubtitle(file.name))
-    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(toDroppedFile)
+    .filter(({ file }) => looksLikeSubtitle(file.name))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName))
 }

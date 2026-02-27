@@ -3,7 +3,7 @@ import { Trans, useTranslation } from "react-i18next"
 import { twJoin } from "tailwind-merge"
 import { useMediaQuery } from "usehooks-ts"
 import GradientPlayCircleIcon from "./GradientPlayCircleIcon"
-import { getDroppedFiles } from "./utils/getDroppedFiles"
+import { getDisplayName, getDroppedFiles } from "./utils/getDroppedFiles"
 import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
 
 interface DragDropAreaProps {
@@ -48,7 +48,10 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   }
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+    const files = Array.from(e.target.files || []).map((file) => ({
+      file,
+      displayName: getDisplayName(file),
+    }))
     const mediaFiles = getMediaFiles(files)
     if (mediaFiles.length === 0) {
       alert(t("dragDropArea.noMediaFilesFound"))

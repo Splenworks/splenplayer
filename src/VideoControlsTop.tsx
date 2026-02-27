@@ -29,7 +29,7 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
   exit,
 }) => {
   const { t } = useTranslation()
-  const file = mediaFiles[currentIndex].file
+  const currentMedia = mediaFiles[currentIndex]
 
   const handleMediaListMouseEnter = () => {
     if (showControls) {
@@ -44,9 +44,7 @@ const VideoControlsTop: React.FC<VideoControlsTopProps> = ({
   return (
     <div className="absolute top-4 right-4 left-6 flex items-start justify-between gap-4">
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-xl font-semibold">
-          {file.name}
-        </span>
+        <span className="text-xl font-semibold">{currentMedia.displayName}</span>
         {mediaFiles.length > 1 && (
           <div className="mt-2 inline-flex max-w-2xl flex-col items-start">
             <MediaListButton
