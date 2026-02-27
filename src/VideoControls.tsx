@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { ParseResult, parse as samiParse } from "sami-parser"
 
 import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
+import { getDroppedFiles } from "./utils/getDroppedFiles"
 import { extractMkvSubtitleParseResult } from "./utils/mkvSubtitles"
 import {
   SUBTITLE_OFFSET_STEP_MS,
@@ -189,9 +190,10 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     }
   }, [showControls, mediaFiles.length])
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
-    const files = Array.from(e.dataTransfer.files)
+    const { dataTransfer } = e
+    const files = await getDroppedFiles(dataTransfer)
     const mediaFiles = getMediaFiles(files)
     if (mediaFiles.length === 0) {
       const subtitleFiles = getSubtitleFiles(files)
@@ -314,7 +316,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         <div
           className="absolute top-30 right-0 bottom-21 left-0"
           onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
+          onDrop={(event) => void handleDrop(event)}
           onClick={togglePlayPause}
         />
         <ActionOverlay isPaused={isPaused} isAudio={isAudio} />
