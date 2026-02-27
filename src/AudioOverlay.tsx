@@ -96,7 +96,7 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
               <img
                 src={metadata.artworkUrl}
                 alt={metadata.album ? `${metadata.album} album cover` : `${metadata.title} album cover`}
-                className="size-56 object-cover opacity-90 md:size-72"
+                className="size-56 object-cover opacity-70 md:size-72"
               />
             )}
             <div className="mt-5 max-w-[24rem] text-center text-white">
