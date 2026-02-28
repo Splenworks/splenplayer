@@ -295,8 +295,22 @@ const pickBestTrack = (results: ItunesTrack[], tags: AudioTagMetadata, titleFall
     .sort((left, right) => right.score - left.score)[0]?.result
 }
 
-const buildSearchTerms = (fileName: string, tags: AudioTagMetadata) => {
+const getContainingFolderName = (displayName: string) => {
+  const pathSegments = displayName
+    .split(" / ")
+    .map((segment) => segment.trim())
+    .filter((segment) => segment.length > 0)
+
+  if (pathSegments.length < 2) {
+    return ""
+  }
+
+  return pathSegments[pathSegments.length - 2] || ""
+}
+
+const buildSearchTerms = (fileName: string, displayName: string, tags: AudioTagMetadata) => {
   const titleFallback = getFileNameTitleFallback(fileName)
+  const folderName = sanitizeTagValue(getContainingFolderName(displayName))
   const searchTerms = new Set<string>()
 
   if (tags.title && tags.artist) {
@@ -305,11 +319,23 @@ const buildSearchTerms = (fileName: string, tags: AudioTagMetadata) => {
   if (tags.title && tags.album) {
     searchTerms.add(`${tags.title} ${tags.album}`)
   }
+  if (tags.title && folderName) {
+    searchTerms.add(`${tags.title} ${folderName}`)
+  }
   if (tags.title) {
     searchTerms.add(tags.title)
   }
   if (tags.artist && tags.album) {
     searchTerms.add(`${tags.artist} ${tags.album}`)
+  }
+  if (tags.artist && folderName) {
+    searchTerms.add(`${tags.artist} ${folderName}`)
+  }
+  if (titleFallback && folderName) {
+    searchTerms.add(`${titleFallback} ${folderName}`)
+  }
+  if (folderName) {
+    searchTerms.add(folderName)
   }
   searchTerms.add(titleFallback)
 
@@ -346,11 +372,12 @@ export const readAudioTagMetadata = async (file: File): Promise<AudioTagMetadata
 
 export const fetchAudioMetadataFromInternet = async (
   fileName: string,
+  displayName: string,
   tags: AudioTagMetadata,
   signal?: AbortSignal,
 ): Promise<AudioOnlineMetadata | null> => {
   const titleFallback = getFileNameTitleFallback(fileName)
-  const searchTerms = buildSearchTerms(fileName, tags)
+  const searchTerms = buildSearchTerms(fileName, displayName, tags)
 
   for (const searchTerm of searchTerms) {
     const requestUrl = new URL("https://itunes.apple.com/search")

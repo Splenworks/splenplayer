@@ -50,6 +50,7 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
       const metadataFromTags = buildAudioDisplayMetadata(mediaFile.file.name, tags, null)
       const onlineMetadata = await fetchAudioMetadataFromInternet(
         mediaFile.file.name,
+        mediaFile.displayName,
         tags,
         abortController.signal,
       )
