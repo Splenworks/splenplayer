@@ -1,6 +1,7 @@
 import React from "react"
 import { twMerge } from "tailwind-merge"
-import { MediaFile, getMediaSourceKey } from "./utils/getMediaFiles"
+import type { MediaFile } from "./types/MediaFiles"
+import { getMediaSourceKey } from "./utils/getMediaFiles"
 
 interface MediaListProps {
   mediaFiles: MediaFile[]

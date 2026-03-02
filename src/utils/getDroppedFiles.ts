@@ -1,7 +1,4 @@
-export type DroppedFile = {
-  file: File
-  displayName: string
-}
+import type { DroppedFile } from "../types/Files"
 
 const normalizeDisplayPath = (path: string) => {
   return path

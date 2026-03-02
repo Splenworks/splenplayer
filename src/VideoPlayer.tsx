@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useMemo } from "react"
-import { MediaFile } from "./utils/getMediaFiles"
+import type { MediaFile } from "./types/MediaFiles"
 
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]

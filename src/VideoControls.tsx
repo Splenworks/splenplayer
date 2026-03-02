@@ -2,8 +2,9 @@ import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { ParseResult, parse as samiParse } from "sami-parser"
 
-import { MediaFile, getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
+import type { MediaFile } from "./types/MediaFiles"
 import { getDroppedFiles } from "./utils/getDroppedFiles"
+import { getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 import { extractMkvSubtitleParseResult } from "./utils/mkvSubtitles"
 import {
   SUBTITLE_OFFSET_STEP_MS,

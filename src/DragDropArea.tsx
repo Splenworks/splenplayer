@@ -4,8 +4,9 @@ import { twJoin } from "tailwind-merge"
 import { useMediaQuery } from "usehooks-ts"
 import DirectMediaUrlForm from "./DirectMediaUrlForm"
 import GradientPlayCircleIcon from "./GradientPlayCircleIcon"
+import type { MediaFile } from "./types/MediaFiles"
 import { getDisplayName, getDroppedFiles } from "./utils/getDroppedFiles"
-import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
+import { getMediaFiles } from "./utils/getMediaFiles"
 
 interface DragDropAreaProps {
   setMedia: (files: MediaFile[]) => void

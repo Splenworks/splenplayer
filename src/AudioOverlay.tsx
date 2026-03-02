@@ -6,7 +6,7 @@ import {
   getAudioFileCacheKey,
   readAudioTagMetadata,
 } from "./utils/audioMetadata"
-import { MediaFile } from "./utils/getMediaFiles"
+import type { MediaFile } from "./types/MediaFiles"
 
 interface AudioOverlayProps {
   analyzerContainerRef: React.RefObject<HTMLDivElement | null>

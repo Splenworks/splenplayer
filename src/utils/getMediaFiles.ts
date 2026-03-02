@@ -1,4 +1,6 @@
-import { DroppedFile, getDisplayName } from "./getDroppedFiles"
+import type { DroppedFile } from "../types/Files"
+import type { MediaFile, UrlMediaFile } from "../types/MediaFiles"
+import { getDisplayName } from "./getDroppedFiles"
 
 const endsWith = (fileName: string, fileExtensions: string[]) => {
   return fileExtensions.some((extension) => fileName.endsWith(extension))
@@ -37,26 +39,6 @@ const nameMatchesWithoutExtension = (name1: string, name2: string) => {
     name2WithoutExtension.startsWith(name1WithoutExtension)
   )
 }
-
-type MediaFileType = "video" | "audio"
-
-type BaseMediaFile = {
-  type: MediaFileType
-  displayName: string
-  subtitleFile: File | null
-}
-
-export type LocalMediaFile = BaseMediaFile & {
-  source: "file"
-  file: File
-}
-
-export type UrlMediaFile = BaseMediaFile & {
-  source: "url"
-  url: string
-}
-
-export type MediaFile = LocalMediaFile | UrlMediaFile
 
 const toDroppedFile = (file: File | DroppedFile): DroppedFile => {
   if ("displayName" in file) {

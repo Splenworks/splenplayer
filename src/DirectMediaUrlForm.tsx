@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { MediaFile, createUrlMediaFile } from "./utils/getMediaFiles"
+import type { MediaFile } from "./types/MediaFiles"
+import { createUrlMediaFile } from "./utils/getMediaFiles"
 
 interface DirectMediaUrlFormProps {
   setMedia: (files: MediaFile[]) => void
