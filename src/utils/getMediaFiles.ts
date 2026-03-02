@@ -19,6 +19,16 @@ const looksLikeSubtitle = (name: string) => {
   return endsWith(lowerCasedName, [".smi", ".sami", ".vtt", ".srt"])
 }
 
+const getMediaTypeFromName = (name: string) => {
+  if (looksLikeVideo(name)) {
+    return "video" as const
+  }
+  if (looksLikeAudio(name)) {
+    return "audio" as const
+  }
+  return null
+}
+
 const nameMatchesWithoutExtension = (name1: string, name2: string) => {
   const name1WithoutExtension = name1.toLowerCase().replace(/\.[^/.]+$/, "")
   const name2WithoutExtension = name2.toLowerCase().replace(/\.[^/.]+$/, "")
@@ -30,12 +40,23 @@ const nameMatchesWithoutExtension = (name1: string, name2: string) => {
 
 type MediaFileType = "video" | "audio"
 
-export type MediaFile = {
+type BaseMediaFile = {
   type: MediaFileType
-  file: File
   displayName: string
   subtitleFile: File | null
 }
+
+export type LocalMediaFile = BaseMediaFile & {
+  source: "file"
+  file: File
+}
+
+export type UrlMediaFile = BaseMediaFile & {
+  source: "url"
+  url: string
+}
+
+export type MediaFile = LocalMediaFile | UrlMediaFile
 
 const toDroppedFile = (file: File | DroppedFile): DroppedFile => {
   if ("displayName" in file) {
@@ -53,11 +74,8 @@ export const getMediaFiles = (files: Array<File | DroppedFile>): MediaFile[] => 
   const subtitleFiles = droppedFiles.filter(({ file }) => looksLikeSubtitle(file.name))
   return droppedFiles
     .map((file) => ({
-      type: looksLikeVideo(file.file.name)
-        ? "video"
-        : looksLikeAudio(file.file.name)
-          ? "audio"
-          : null,
+      source: "file" as const,
+      type: getMediaTypeFromName(file.file.name),
       file: file.file,
       displayName: file.displayName,
       subtitleFile:
@@ -67,6 +85,47 @@ export const getMediaFiles = (files: Array<File | DroppedFile>): MediaFile[] => 
     }))
     .filter(({ type }) => type !== null)
     .sort((a, b) => a.displayName.localeCompare(b.displayName)) as MediaFile[]
+}
+
+const decodeUrlSegment = (value: string) => {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
+const getDisplayNameFromUrl = (url: URL) => {
+  const pathSegments = url.pathname.split("/").filter((segment) => segment.length > 0)
+  const lastSegment = pathSegments[pathSegments.length - 1]
+  return decodeUrlSegment(lastSegment || url.hostname)
+}
+
+export const createUrlMediaFile = (inputUrl: string): UrlMediaFile | null => {
+  try {
+    const url = new URL(inputUrl)
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return null
+    }
+
+    return {
+      source: "url",
+      type: getMediaTypeFromName(url.pathname) || "video",
+      url: url.toString(),
+      displayName: getDisplayNameFromUrl(url),
+      subtitleFile: null,
+    }
+  } catch {
+    return null
+  }
+}
+
+export const getMediaSourceKey = (mediaFile: MediaFile) => {
+  if (mediaFile.source === "file") {
+    return `file:${mediaFile.file.name}:${mediaFile.file.size}:${mediaFile.file.lastModified}`
+  }
+
+  return `url:${mediaFile.url}`
 }
 
 export const getSubtitleFiles = (files: Array<File | DroppedFile>) => {

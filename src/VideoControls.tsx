@@ -148,7 +148,10 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           return
         }
 
-        if (currentMedia.file.name.toLowerCase().endsWith(".mkv")) {
+        if (
+          currentMedia.source === "file" &&
+          currentMedia.file.name.toLowerCase().endsWith(".mkv")
+        ) {
           setSubtitlesSafely(await extractMkvSubtitleParseResult(currentMedia.file))
           return
         }

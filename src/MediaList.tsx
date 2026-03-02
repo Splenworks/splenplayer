@@ -1,6 +1,6 @@
 import React from "react"
 import { twMerge } from "tailwind-merge"
-import { MediaFile } from "./utils/getMediaFiles"
+import { MediaFile, getMediaSourceKey } from "./utils/getMediaFiles"
 
 interface MediaListProps {
   mediaFiles: MediaFile[]
@@ -35,7 +35,7 @@ const MediaList: React.FC<MediaListProps> = ({
       <div className="max-h-56 overflow-y-auto rounded-xl border border-white/10 bg-zinc-900/50 p-2 backdrop-blur-md">
         {mediaFiles.map((mediaFile, index) => (
           <button
-            key={`${mediaFile.displayName}-${mediaFile.file.lastModified}-${index}`}
+            key={`${mediaFile.displayName}-${getMediaSourceKey(mediaFile)}-${index}`}
             tabIndex={-1}
             className={twMerge(
               "mb-1 flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-left text-white/85 transition-colors duration-200 ease-in-out last:mb-0 hover:bg-zinc-500/30 focus:outline-hidden",

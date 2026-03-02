@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from "react"
+import { forwardRef, useEffect, useMemo } from "react"
 import { MediaFile } from "./utils/getMediaFiles"
 
 interface VideoPlayerProps {
@@ -8,21 +8,31 @@ interface VideoPlayerProps {
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
   ({ mediaFiles, currentIndex }, videoRef) => {
-    const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined)
+    const media = mediaFiles[currentIndex]
+    const videoSrc = useMemo(() => {
+      if (!media) {
+        return undefined
+      }
 
-    useEffect(() => {
-      const media = mediaFiles[currentIndex]
+      if (media.source === "url") {
+        return media.url
+      }
+
       const blob = new Blob([media.file], {
         type: media.file.type || (media.type === "audio" ? "audio/mpeg" : "video/mp4"),
       })
-      const newUrl = URL.createObjectURL(blob)
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setVideoSrc(newUrl)
+      return URL.createObjectURL(blob)
+    }, [media])
+
+    useEffect(() => {
+      if (!media || media.source === "url" || !videoSrc) {
+        return
+      }
 
       return () => {
-        URL.revokeObjectURL(newUrl)
+        URL.revokeObjectURL(videoSrc)
       }
-    }, [mediaFiles, currentIndex])
+    }, [media, videoSrc])
 
     return (
       <div className="fixed bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-black">

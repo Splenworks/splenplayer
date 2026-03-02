@@ -17,12 +17,20 @@ interface AudioOverlayProps {
 const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
   const { analyzerContainerRef, isAudio, mediaFile } = props
   const [metadataByFileKey, setMetadataByFileKey] = useState<Record<string, AudioDisplayMetadata>>({})
+  const emptyAudioTags = useMemo(
+    () => ({
+      title: null,
+      artist: null,
+      album: null,
+    }),
+    [],
+  )
   const currentAudioCacheKey = useMemo(() => {
-    if (!mediaFile || mediaFile.type !== "audio") {
+    if (!mediaFile || !isAudio) {
       return null
     }
-    return getAudioFileCacheKey(mediaFile.file)
-  }, [mediaFile])
+    return mediaFile.source === "file" ? getAudioFileCacheKey(mediaFile.file) : `url:${mediaFile.url}`
+  }, [isAudio, mediaFile])
   const metadata = useMemo(() => {
     if (!currentAudioCacheKey) {
       return null
@@ -31,7 +39,7 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
   }, [currentAudioCacheKey, metadataByFileKey])
 
   useEffect(() => {
-    if (!mediaFile || mediaFile.type !== "audio" || !currentAudioCacheKey) {
+    if (!mediaFile || !isAudio || !currentAudioCacheKey) {
       return
     }
     if (metadataByFileKey[currentAudioCacheKey]) {
@@ -42,14 +50,16 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
     let shouldIgnoreResult = false
 
     const loadAudioMetadata = async () => {
-      const tags = await readAudioTagMetadata(mediaFile.file)
+      const fileName = mediaFile.source === "file" ? mediaFile.file.name : mediaFile.displayName
+      const tags =
+        mediaFile.source === "file" ? await readAudioTagMetadata(mediaFile.file) : emptyAudioTags
       if (shouldIgnoreResult || abortController.signal.aborted) {
         return
       }
 
-      const metadataFromTags = buildAudioDisplayMetadata(mediaFile.file.name, tags, null)
+      const metadataFromTags = buildAudioDisplayMetadata(fileName, tags, null)
       const onlineMetadata = await fetchAudioMetadataFromInternet(
-        mediaFile.file.name,
+        fileName,
         mediaFile.displayName,
         tags,
         abortController.signal,
@@ -60,7 +70,7 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
       }
 
       const metadataFromInternet = onlineMetadata
-        ? buildAudioDisplayMetadata(mediaFile.file.name, tags, onlineMetadata)
+        ? buildAudioDisplayMetadata(fileName, tags, onlineMetadata)
         : null
 
       setMetadataByFileKey((prevMetadataByFileKey) => ({
@@ -80,7 +90,7 @@ const AudioOverlay: React.FC<AudioOverlayProps> = (props) => {
       shouldIgnoreResult = true
       abortController.abort()
     }
-  }, [currentAudioCacheKey, mediaFile, metadataByFileKey])
+  }, [currentAudioCacheKey, emptyAudioTags, isAudio, mediaFile, metadataByFileKey])
 
   return (
     <>
