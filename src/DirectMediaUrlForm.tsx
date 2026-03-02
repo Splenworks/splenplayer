@@ -25,7 +25,7 @@ const DirectMediaUrlForm: React.FC<DirectMediaUrlFormProps> = ({ setMedia }) => 
 
   return (
     <form
-      className="cursor-default z-10 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white/85 p-3 shadow-lg backdrop-blur-sm dark:border-white/10 dark:bg-neutral-950/75 sm:flex-row sm:items-center"
+      className="cursor-default z-10 flex w-full max-w-2xl flex-col gap-3 rounded-xl border border-gray-200/80 bg-white/85 p-3 shadow-lg backdrop-blur-sm dark:border-white/10 dark:bg-neutral-950/75 sm:flex-row sm:items-center"
       onSubmit={handleUrlSubmit}
       onClick={(event) => {
         event.stopPropagation()
@@ -46,11 +46,11 @@ const DirectMediaUrlForm: React.FC<DirectMediaUrlFormProps> = ({ setMedia }) => 
         onChange={(event) => {
           setMediaUrl(event.target.value)
         }}
-        className="min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-black outline-hidden transition focus:border-pink-700 dark:border-white/15 dark:bg-neutral-900 dark:text-white dark:focus:border-pink-500"
+        className="min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-4 py-3 text-sm text-black outline-hidden transition focus:border-pink-700 dark:border-white/15 dark:bg-neutral-900 dark:text-white dark:focus:border-pink-500"
       />
       <button
         type="submit"
-        className="cursor-pointer rounded-xl bg-pink-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 dark:bg-pink-700 dark:hover:bg-pink-600"
+        className="cursor-pointer rounded-md bg-pink-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 dark:bg-pink-700 dark:hover:bg-pink-600"
       >
         {t("dragDropArea.urlSubmit")}
       </button>
