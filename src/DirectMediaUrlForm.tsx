@@ -25,7 +25,7 @@ const DirectMediaUrlForm: React.FC<DirectMediaUrlFormProps> = ({ setMedia }) => 
 
   return (
     <form
-      className="z-10 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white/85 p-3 shadow-lg backdrop-blur-sm dark:border-white/10 dark:bg-neutral-950/75 sm:flex-row sm:items-center"
+      className="cursor-default z-10 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white/85 p-3 shadow-lg backdrop-blur-sm dark:border-white/10 dark:bg-neutral-950/75 sm:flex-row sm:items-center"
       onSubmit={handleUrlSubmit}
       onClick={(event) => {
         event.stopPropagation()
@@ -50,7 +50,7 @@ const DirectMediaUrlForm: React.FC<DirectMediaUrlFormProps> = ({ setMedia }) => 
       />
       <button
         type="submit"
-        className="rounded-xl bg-pink-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 dark:bg-pink-700 dark:hover:bg-pink-600"
+        className="cursor-pointer rounded-xl bg-pink-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 dark:bg-pink-700 dark:hover:bg-pink-600"
       >
         {t("dragDropArea.urlSubmit")}
       </button>
