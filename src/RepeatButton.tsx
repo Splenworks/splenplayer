@@ -1,7 +1,7 @@
-import { ArrowPathIcon } from "@heroicons/react/24/solid"
 import React from "react"
 import { useTranslation } from "react-i18next"
 import { twMerge } from "tailwind-merge"
+import RepeatIcon from "./assets/icons/repeat.svg?react"
 import IconButton from "./IconButton"
 import Tooltip from "./Tooltip"
 
@@ -21,7 +21,7 @@ const RepeatButton: React.FC<RepeatButtonProps> = ({
   return (
     <Tooltip text={t("others.repeat")} place="top">
       <IconButton
-        svgIcon={ArrowPathIcon}
+        svgIcon={RepeatIcon}
         className={twMerge(isRepeatEnabled && "bg-zinc-500/50")}
         onClick={() => {
           if (showControls) {
