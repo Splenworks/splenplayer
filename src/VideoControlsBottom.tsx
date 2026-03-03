@@ -5,6 +5,7 @@ import FullScreenButton from "./FullScreenButton"
 import PlayPauseButton from "./PlayPauseButton"
 import PlaySpeedControl from "./PlaySpeedControl"
 import PrevNextButton from "./PrevNextButton"
+import RepeatButton from "./RepeatButton"
 import SubtitleSyncControl from "./SubtitleSyncControl"
 import VolumeControl from "./VolumeControl"
 
@@ -12,9 +13,13 @@ interface VideoControlsBottomProps {
   showControls: boolean
   isPaused: boolean
   togglePlayPause: () => void
-  mediaFilesCount: number
-  currentMediaIndex: number
-  setCurrentMediaIndex: (index: number) => void
+  hasMultipleMedia: boolean
+  isPreviousMediaDisabled: boolean
+  isNextMediaDisabled: boolean
+  goToPreviousMedia: () => void
+  goToNextMedia: () => void
+  isRepeatEnabled: boolean
+  toggleRepeatEnabled: () => void
   currentTime: string
   totalTime: string
   volume: string
@@ -37,9 +42,13 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   showControls,
   isPaused,
   togglePlayPause,
-  mediaFilesCount,
-  currentMediaIndex,
-  setCurrentMediaIndex,
+  hasMultipleMedia,
+  isPreviousMediaDisabled,
+  isNextMediaDisabled,
+  goToPreviousMedia,
+  goToNextMedia,
+  isRepeatEnabled,
+  toggleRepeatEnabled,
   currentTime,
   totalTime,
   volume,
@@ -60,27 +69,32 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   return (
     <div className="absolute right-0 bottom-11 left-0 mx-4 flex items-end justify-between">
       <div className="flex items-center justify-center gap-2">
+        {hasMultipleMedia && (
+          <PrevNextButton
+            direction="prev"
+            showControls={showControls}
+            disabled={isPreviousMediaDisabled}
+            onClick={goToPreviousMedia}
+          />
+        )}
         <PlayPauseButton
           isPaused={isPaused}
           showControls={showControls}
           togglePlayPause={togglePlayPause}
         />
-        {mediaFilesCount > 1 && currentMediaIndex > 0 && (
-          <PrevNextButton
-            direction="prev"
-            showControls={showControls}
-            currentIndex={currentMediaIndex}
-            setCurrentIndex={setCurrentMediaIndex}
-          />
-        )}
-        {mediaFilesCount > 1 && currentMediaIndex < mediaFilesCount - 1 && (
+        {hasMultipleMedia && (
           <PrevNextButton
             direction="next"
             showControls={showControls}
-            currentIndex={currentMediaIndex}
-            setCurrentIndex={setCurrentMediaIndex}
+            disabled={isNextMediaDisabled}
+            onClick={goToNextMedia}
           />
         )}
+        <RepeatButton
+          showControls={showControls}
+          isRepeatEnabled={isRepeatEnabled}
+          toggleRepeat={toggleRepeatEnabled}
+        />
         <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
           <span className="pr-2">{currentTime}</span>/<span className="pl-2">{totalTime}</span>
         </div>

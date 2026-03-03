@@ -24,6 +24,13 @@ interface VideoControlsProps {
   exit: () => void
   currentIndex: number
   setCurrentIndex: (index: number) => void
+  hasMultipleMedia: boolean
+  isPreviousMediaDisabled: boolean
+  isNextMediaDisabled: boolean
+  goToPreviousMedia: () => void
+  goToNextMedia: () => void
+  isRepeatEnabled: boolean
+  toggleRepeatEnabled: () => void
   setMedia: (files: MediaFile[]) => void
   currentTime: string
   totalTime: string
@@ -64,6 +71,13 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   exit,
   currentIndex,
   setCurrentIndex,
+  hasMultipleMedia,
+  isPreviousMediaDisabled,
+  isNextMediaDisabled,
+  goToPreviousMedia,
+  goToNextMedia,
+  isRepeatEnabled,
+  toggleRepeatEnabled,
   setMedia,
   currentTime,
   totalTime,
@@ -333,9 +347,13 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         <VideoControlsBottom
           showControls={showControls}
           isPaused={isPaused}
-          mediaFilesCount={mediaFiles.length}
-          currentMediaIndex={currentIndex}
-          setCurrentMediaIndex={setCurrentIndex}
+          hasMultipleMedia={hasMultipleMedia}
+          isPreviousMediaDisabled={isPreviousMediaDisabled}
+          isNextMediaDisabled={isNextMediaDisabled}
+          goToPreviousMedia={goToPreviousMedia}
+          goToNextMedia={goToNextMedia}
+          isRepeatEnabled={isRepeatEnabled}
+          toggleRepeatEnabled={toggleRepeatEnabled}
           currentTime={currentTime}
           totalTime={totalTime}
           togglePlayPause={togglePlayPause}
