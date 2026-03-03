@@ -7,15 +7,13 @@ import { useTranslation } from "react-i18next"
 interface PrevNextButtonProps {
   direction: "next" | "prev"
   showControls: boolean
-  currentIndex: number
-  setCurrentIndex: (index: number) => void
+  onClick: () => void
 }
 
 const PrevNextButton: React.FC<PrevNextButtonProps> = ({
   direction,
   showControls,
-  currentIndex,
-  setCurrentIndex,
+  onClick,
 }) => {
   const { t } = useTranslation()
 
@@ -27,7 +25,7 @@ const PrevNextButton: React.FC<PrevNextButtonProps> = ({
           className="rotate-180 transform"
           onClick={() => {
             if (showControls) {
-              setCurrentIndex(currentIndex - 1)
+              onClick()
             }
           }}
         />
@@ -41,7 +39,7 @@ const PrevNextButton: React.FC<PrevNextButtonProps> = ({
         svgIcon={NextIcon}
         onClick={() => {
           if (showControls) {
-            setCurrentIndex(currentIndex + 1)
+            onClick()
           }
         }}
       />
