@@ -1,33 +1,34 @@
 import React from "react"
-import Tooltip from "./Tooltip"
-import IconButton from "./IconButton"
-import NextIcon from "./assets/icons/next.svg?react"
 import { useTranslation } from "react-i18next"
+import IconButton from "./IconButton"
+import Tooltip from "./Tooltip"
+import NextIcon from "./assets/icons/next.svg?react"
 
 interface PrevNextButtonProps {
   direction: "next" | "prev"
   showControls: boolean
-  currentIndex: number
-  setCurrentIndex: (index: number) => void
+  disabled?: boolean
+  onClick: () => void
 }
 
 const PrevNextButton: React.FC<PrevNextButtonProps> = ({
   direction,
   showControls,
-  currentIndex,
-  setCurrentIndex,
+  disabled = false,
+  onClick,
 }) => {
   const { t } = useTranslation()
 
   if (direction === "prev") {
     return (
-      <Tooltip text={t("others.previous")} place="top">
+      <Tooltip text={disabled ? "" : t("others.previous")} place="top">
         <IconButton
           svgIcon={NextIcon}
+          disabled={disabled}
           className="rotate-180 transform"
           onClick={() => {
             if (showControls) {
-              setCurrentIndex(currentIndex - 1)
+              onClick()
             }
           }}
         />
@@ -36,12 +37,13 @@ const PrevNextButton: React.FC<PrevNextButtonProps> = ({
   }
 
   return (
-    <Tooltip text={t("others.next")} place="top">
+    <Tooltip text={disabled ? "" : t("others.next")} place="top">
       <IconButton
         svgIcon={NextIcon}
+        disabled={disabled}
         onClick={() => {
           if (showControls) {
-            setCurrentIndex(currentIndex + 1)
+            onClick()
           }
         }}
       />

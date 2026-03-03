@@ -100,6 +100,7 @@ function App() {
   const [videoRatio, setVideoRatio] = useState(0)
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
+  const [isRepeatEnabled, setIsRepeatEnabled] = useState(false)
   const mouseMoveTimeout = useRef<number | null>(null)
 
   const resetAnalyzer = useCallback(() => {
@@ -132,6 +133,41 @@ function App() {
     setCurrentIndex(Math.min(exitedSession.currentIndex, exitedSession.mediaFiles.length - 1))
     setExitedSession(null)
   }, [exitedSession])
+
+  const hasMultipleMedia = mediaFiles.length > 1
+  const isPreviousMediaDisabled = hasMultipleMedia && !isRepeatEnabled && currentIndex === 0
+  const isNextMediaDisabled =
+    hasMultipleMedia && !isRepeatEnabled && currentIndex === mediaFiles.length - 1
+
+  const goToPreviousMedia = useCallback(() => {
+    if (mediaFiles.length < 2) {
+      return false
+    }
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1)
+      return true
+    }
+    if (isRepeatEnabled) {
+      setCurrentIndex(mediaFiles.length - 1)
+      return true
+    }
+    return false
+  }, [currentIndex, isRepeatEnabled, mediaFiles.length])
+
+  const goToNextMedia = useCallback(() => {
+    if (mediaFiles.length < 2) {
+      return false
+    }
+    if (currentIndex < mediaFiles.length - 1) {
+      setCurrentIndex(currentIndex + 1)
+      return true
+    }
+    if (isRepeatEnabled) {
+      setCurrentIndex(0)
+      return true
+    }
+    return false
+  }, [currentIndex, isRepeatEnabled, mediaFiles.length])
 
   useEffect(() => {
     if (mediaFiles.length === 0) {
@@ -229,8 +265,18 @@ function App() {
       }
       video.onended = () => {
         localStorage.removeItem(videoFileHash)
-        if (currentIndex < mediaFiles.length - 1) {
-          setCurrentIndex(currentIndex + 1)
+        if (goToNextMedia()) {
+          setShowControls(true)
+          mouseMoveTimeout.current = window.setTimeout(() => {
+            if (!video.paused) {
+              setShowControls(false)
+            }
+          }, 2000)
+        } else if (isRepeatEnabled && mediaFiles.length === 1) {
+          video.currentTime = 0
+          void video.play().then(() => {
+            setIsPaused(false)
+          })
           setShowControls(true)
           mouseMoveTimeout.current = window.setTimeout(() => {
             if (!video.paused) {
@@ -250,7 +296,16 @@ function App() {
         video.onended = null
       }
     }
-  }, [mediaFiles.length, currentIndex, selectedSubtitleTrack, subtitleOffsetMs, videoFileHash, subtitles])
+  }, [
+    currentIndex,
+    goToNextMedia,
+    isRepeatEnabled,
+    mediaFiles.length,
+    selectedSubtitleTrack,
+    subtitleOffsetMs,
+    subtitles,
+    videoFileHash,
+  ])
 
   if (mediaFiles.length > 0) {
     return (
@@ -269,6 +324,13 @@ function App() {
           exit={exit}
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
+          hasMultipleMedia={hasMultipleMedia}
+          isPreviousMediaDisabled={isPreviousMediaDisabled}
+          isNextMediaDisabled={isNextMediaDisabled}
+          goToPreviousMedia={goToPreviousMedia}
+          goToNextMedia={goToNextMedia}
+          isRepeatEnabled={isRepeatEnabled}
+          toggleRepeatEnabled={() => setIsRepeatEnabled((prev) => !prev)}
           videoRef={videoRef}
           setMedia={setMedia}
           currentTime={currentTime}
