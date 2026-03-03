@@ -19,7 +19,7 @@ const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({
 }) => {
   const { t } = useTranslation()
   return (
-    <Tooltip text={isPaused ? t("others.play") : t("others.pause")} place="top" align="left">
+    <Tooltip text={isPaused ? t("others.play") : t("others.pause")} place="top">
       <IconButton
         className={twMerge(isPaused && "pl-0.5")}
         svgIcon={isPaused ? PlayIcon : PauseIcon}

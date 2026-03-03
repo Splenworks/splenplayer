@@ -24,8 +24,9 @@ interface VideoControlsProps {
   exit: () => void
   currentIndex: number
   setCurrentIndex: (index: number) => void
-  canGoToPreviousMedia: boolean
-  canGoToNextMedia: boolean
+  hasMultipleMedia: boolean
+  isPreviousMediaDisabled: boolean
+  isNextMediaDisabled: boolean
   goToPreviousMedia: () => void
   goToNextMedia: () => void
   isRepeatEnabled: boolean
@@ -70,8 +71,9 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   exit,
   currentIndex,
   setCurrentIndex,
-  canGoToPreviousMedia,
-  canGoToNextMedia,
+  hasMultipleMedia,
+  isPreviousMediaDisabled,
+  isNextMediaDisabled,
   goToPreviousMedia,
   goToNextMedia,
   isRepeatEnabled,
@@ -345,8 +347,9 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         <VideoControlsBottom
           showControls={showControls}
           isPaused={isPaused}
-          canGoToPreviousMedia={canGoToPreviousMedia}
-          canGoToNextMedia={canGoToNextMedia}
+          hasMultipleMedia={hasMultipleMedia}
+          isPreviousMediaDisabled={isPreviousMediaDisabled}
+          isNextMediaDisabled={isNextMediaDisabled}
           goToPreviousMedia={goToPreviousMedia}
           goToNextMedia={goToNextMedia}
           isRepeatEnabled={isRepeatEnabled}

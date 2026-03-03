@@ -13,8 +13,9 @@ interface VideoControlsBottomProps {
   showControls: boolean
   isPaused: boolean
   togglePlayPause: () => void
-  canGoToPreviousMedia: boolean
-  canGoToNextMedia: boolean
+  hasMultipleMedia: boolean
+  isPreviousMediaDisabled: boolean
+  isNextMediaDisabled: boolean
   goToPreviousMedia: () => void
   goToNextMedia: () => void
   isRepeatEnabled: boolean
@@ -41,8 +42,9 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   showControls,
   isPaused,
   togglePlayPause,
-  canGoToPreviousMedia,
-  canGoToNextMedia,
+  hasMultipleMedia,
+  isPreviousMediaDisabled,
+  isNextMediaDisabled,
   goToPreviousMedia,
   goToNextMedia,
   isRepeatEnabled,
@@ -67,22 +69,24 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   return (
     <div className="absolute right-0 bottom-11 left-0 mx-4 flex items-end justify-between">
       <div className="flex items-center justify-center gap-2">
+        {hasMultipleMedia && (
+          <PrevNextButton
+            direction="prev"
+            showControls={showControls}
+            disabled={isPreviousMediaDisabled}
+            onClick={goToPreviousMedia}
+          />
+        )}
         <PlayPauseButton
           isPaused={isPaused}
           showControls={showControls}
           togglePlayPause={togglePlayPause}
         />
-        {canGoToPreviousMedia && (
-          <PrevNextButton
-            direction="prev"
-            showControls={showControls}
-            onClick={goToPreviousMedia}
-          />
-        )}
-        {canGoToNextMedia && (
+        {hasMultipleMedia && (
           <PrevNextButton
             direction="next"
             showControls={showControls}
+            disabled={isNextMediaDisabled}
             onClick={goToNextMedia}
           />
         )}

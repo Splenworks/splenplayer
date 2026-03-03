@@ -133,9 +133,10 @@ function App() {
     setExitedSession(null)
   }, [exitedSession])
 
-  const canGoToPreviousMedia = mediaFiles.length > 1 && (isRepeatEnabled || currentIndex > 0)
-  const canGoToNextMedia =
-    mediaFiles.length > 1 && (isRepeatEnabled || currentIndex < mediaFiles.length - 1)
+  const hasMultipleMedia = mediaFiles.length > 1
+  const isPreviousMediaDisabled = hasMultipleMedia && !isRepeatEnabled && currentIndex === 0
+  const isNextMediaDisabled =
+    hasMultipleMedia && !isRepeatEnabled && currentIndex === mediaFiles.length - 1
 
   const goToPreviousMedia = useCallback(() => {
     if (mediaFiles.length < 2) {
@@ -322,8 +323,9 @@ function App() {
           exit={exit}
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
-          canGoToPreviousMedia={canGoToPreviousMedia}
-          canGoToNextMedia={canGoToNextMedia}
+          hasMultipleMedia={hasMultipleMedia}
+          isPreviousMediaDisabled={isPreviousMediaDisabled}
+          isNextMediaDisabled={isNextMediaDisabled}
           goToPreviousMedia={goToPreviousMedia}
           goToNextMedia={goToNextMedia}
           isRepeatEnabled={isRepeatEnabled}
