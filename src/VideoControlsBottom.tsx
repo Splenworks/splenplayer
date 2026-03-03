@@ -13,7 +13,6 @@ interface VideoControlsBottomProps {
   showControls: boolean
   isPaused: boolean
   togglePlayPause: () => void
-  mediaFilesCount: number
   canGoToPreviousMedia: boolean
   canGoToNextMedia: boolean
   goToPreviousMedia: () => void
@@ -42,7 +41,6 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   showControls,
   isPaused,
   togglePlayPause,
-  mediaFilesCount,
   canGoToPreviousMedia,
   canGoToNextMedia,
   goToPreviousMedia,
@@ -88,13 +86,11 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
             onClick={goToNextMedia}
           />
         )}
-        {mediaFilesCount > 1 && (
-          <RepeatButton
-            showControls={showControls}
-            isRepeatEnabled={isRepeatEnabled}
-            toggleRepeat={toggleRepeatEnabled}
-          />
-        )}
+        <RepeatButton
+          showControls={showControls}
+          isRepeatEnabled={isRepeatEnabled}
+          toggleRepeat={toggleRepeatEnabled}
+        />
         <div className="hidden pl-2 font-mono text-sm font-semibold sm:block">
           <span className="pr-2">{currentTime}</span>/<span className="pl-2">{totalTime}</span>
         </div>

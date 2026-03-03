@@ -345,7 +345,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         <VideoControlsBottom
           showControls={showControls}
           isPaused={isPaused}
-          mediaFilesCount={mediaFiles.length}
           canGoToPreviousMedia={canGoToPreviousMedia}
           canGoToNextMedia={canGoToNextMedia}
           goToPreviousMedia={goToPreviousMedia}

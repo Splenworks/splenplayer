@@ -270,6 +270,17 @@ function App() {
               setShowControls(false)
             }
           }, 2000)
+        } else if (isRepeatEnabled && mediaFiles.length === 1) {
+          video.currentTime = 0
+          void video.play().then(() => {
+            setIsPaused(false)
+          })
+          setShowControls(true)
+          mouseMoveTimeout.current = window.setTimeout(() => {
+            if (!video.paused) {
+              setShowControls(false)
+            }
+          }, 2000)
         } else {
           setIsPaused(true)
           setShowControls(true)
@@ -286,6 +297,7 @@ function App() {
   }, [
     currentIndex,
     goToNextMedia,
+    isRepeatEnabled,
     mediaFiles.length,
     selectedSubtitleTrack,
     subtitleOffsetMs,
