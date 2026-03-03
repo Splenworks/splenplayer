@@ -5,6 +5,7 @@ interface IconButtonProps {
   svgIcon: React.FunctionComponent<{ className?: string }>
   id?: string
   className?: string
+  iconClassName?: string
   onClick?: () => void
 }
 
@@ -12,6 +13,7 @@ const IconButton: React.FC<IconButtonProps> = ({
   svgIcon,
   id,
   className,
+  iconClassName,
   onClick,
 }) => {
   return (
@@ -27,7 +29,7 @@ const IconButton: React.FC<IconButtonProps> = ({
         e.preventDefault()
       }}
     >
-      {React.createElement(svgIcon, { className: "w-6 h-6 text-white" })}
+      {React.createElement(svgIcon, { className: twMerge("w-6 h-6 text-white", iconClassName) })}
     </button>
   )
 }

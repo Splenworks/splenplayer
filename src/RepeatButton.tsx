@@ -22,7 +22,8 @@ const RepeatButton: React.FC<RepeatButtonProps> = ({
     <Tooltip text={t("others.repeat")} place="top">
       <IconButton
         svgIcon={RepeatIcon}
-        className={twMerge(isRepeatEnabled && "bg-zinc-500/50")}
+        className={twMerge(isRepeatEnabled && "bg-white hover:bg-white/90")}
+        iconClassName={twMerge(isRepeatEnabled && "text-black")}
         onClick={() => {
           if (showControls) {
             toggleRepeat()
