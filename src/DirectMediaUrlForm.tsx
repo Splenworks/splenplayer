@@ -25,20 +25,16 @@ const DirectMediaUrlForm: React.FC<DirectMediaUrlFormProps> = ({ setMedia }) => 
 
   return (
     <div
-      className="cursor-default z-10 flex w-full max-w-xl flex-col items-center gap-2"
-      onClick={(event) => {
-        event.stopPropagation()
-      }}
+      className="z-10 flex w-full max-w-lg flex-col items-center gap-2 cursor-default"
     >
       <p className="text-gray-800 dark:text-gray-300">
         {t("dragDropArea.urlLabel")}
       </p>
       <form
-        className="flex w-full items-center gap-2"
+        className="pointer-events-auto flex w-full items-center gap-2"
         onSubmit={handleUrlSubmit}
       >
         <input
-          id="direct-media-url"
           type="url"
           inputMode="url"
           value={mediaUrl}
@@ -46,7 +42,7 @@ const DirectMediaUrlForm: React.FC<DirectMediaUrlFormProps> = ({ setMedia }) => 
           onChange={(event) => {
             setMediaUrl(event.target.value)
           }}
-          className="min-w-0 flex-1 rounded-md border border-gray-300/60 bg-transparent px-3 py-2 text-sm text-black outline-hidden transition placeholder:text-gray-400 focus:border-pink-700 dark:border-white/25 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-pink-500"
+          className="min-w-0 flex-1 rounded-md border border-gray-300/60 px-3 py-2 text-sm text-black outline-hidden transition placeholder:text-gray-400 focus:border-pink-700 dark:border-white/25 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-pink-500 bg-white dark:bg-neutral-800"
         />
         <button
           type="submit"

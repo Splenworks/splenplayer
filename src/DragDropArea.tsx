@@ -18,18 +18,36 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   const { t } = useTranslation()
   const smallScreen = useMediaQuery("(max-width: 640px), (max-height: 640px)")
 
+  const isFileDrag = (e: React.DragEvent<HTMLDivElement>) =>
+    Array.from(e.dataTransfer.types).includes("Files")
+
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+    if (!isFileDrag(e)) {
+      return
+    }
+
     setDragging(true)
   }
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+    if (!isFileDrag(e)) {
+      return
+    }
+
     setDragging(false)
   }
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!isFileDrag(e)) {
+      return
+    }
+
     e.preventDefault()
+    // if (!dragging) {
+    //   setDragging(true)
+    // }
   }
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
@@ -94,14 +112,18 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
             <>
               <div
                 className={twJoin(
-                  "flex flex-col items-center justify-center",
+                  "pointer-events-none flex flex-col items-center justify-center",
                   !smallScreen && "pb-10",
                 )}
               >
-                <div onClick={handleClick} className="cursor-pointer">
-                  <GradientPlayCircleIcon className="mb-8 h-24 w-24" />
-                </div>
-                <p className="mb-4 text-center text-xl font-bold">
+                <button
+                  type="button"
+                  onClick={handleClick}
+                  className="pointer-events-auto cursor-pointer border-0 bg-transparent p-0"
+                >
+                  <GradientPlayCircleIcon className="h-24 w-24" />
+                </button>
+                <p className="mt-8 mb-4 text-center text-xl font-bold">
                   <Trans
                     i18nKey="dragDropArea.mainMessage"
                     components={{
