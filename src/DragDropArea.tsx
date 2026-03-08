@@ -36,6 +36,17 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
       return
     }
 
+    const rect = e.currentTarget.getBoundingClientRect()
+    const leftDropZone =
+      e.clientX < rect.left ||
+      e.clientX > rect.right ||
+      e.clientY < rect.top ||
+      e.clientY > rect.bottom
+
+    if (!leftDropZone) {
+      return
+    }
+
     setDragging(false)
   }
 
@@ -45,9 +56,6 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     }
 
     e.preventDefault()
-    // if (!dragging) {
-    //   setDragging(true)
-    // }
   }
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
