@@ -66,7 +66,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     <div className="fixed bottom-16 left-0 right-0 top-16 bg-white dark:bg-neutral-900">
       <div
         className={twJoin(
-          "absolute inset-x-8 inset-y-0 flex cursor-pointer flex-col items-center justify-center rounded-xl border-4 ff:border-3 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
+          "absolute inset-x-8 inset-y-0 flex flex-col items-center justify-center rounded-xl border-4 ff:border-3 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
           "hover:bg-gradient-to-r hover:from-transparent hover:to-transparent hover:bg-[length:200%_100%] hover:animate-shimmer",
           "hover:via-pink-200/50 dark:hover:via-pink-800/20",
           dragging &&
@@ -76,7 +76,6 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={(event) => void handleDrop(event)}
-        onClick={handleClick}
       >
         <input
           type="file"
@@ -95,11 +94,13 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
             <>
               <div
                 className={twJoin(
-                  "pointer-events-none flex flex-col items-center justify-center",
+                  "flex flex-col items-center justify-center",
                   !smallScreen && "pb-10",
                 )}
               >
-                <GradientPlayCircleIcon className="mb-8 h-24 w-24" />
+                <div onClick={handleClick} className="cursor-pointer">
+                  <GradientPlayCircleIcon className="mb-8 h-24 w-24" />
+                </div>
                 <p className="mb-4 text-center text-xl font-bold">
                   <Trans
                     i18nKey="dragDropArea.mainMessage"
