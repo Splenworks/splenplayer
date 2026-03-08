@@ -116,11 +116,11 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
                     }}
                   />
                 </p>
-                {!smallScreen && (
+                {/* {!smallScreen && (
                   <p className="text-center text-gray-800 dark:text-gray-300">
                     <Trans i18nKey="dragDropArea.neverStoreYourData" />
                   </p>
-                )}
+                )} */}
               </div>
               <DirectMediaUrlForm setMedia={setMedia} />
             </>
