@@ -43,7 +43,11 @@ const DirectMediaUrlForm: React.FC<DirectMediaUrlFormProps> = ({ setMedia }) => 
           onChange={(event) => {
             setMediaUrl(event.target.value)
           }}
-          className="min-w-0 flex-1 rounded-md border border-gray-300/60 px-3 py-2 text-sm text-black outline-hidden transition placeholder:text-gray-400 focus:border-pink-700 dark:border-white/25 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-pink-500 bg-white dark:bg-neutral-900"
+          className={twJoin(
+            "min-w-0 flex-1 rounded-md border px-3 py-2 text-sm outline-hidden transition",
+            "border-gray-300/60 bg-white text-black placeholder:text-gray-400 focus:border-pink-800",
+            "dark:border-white/25 dark:bg-neutral-900 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-pink-600",
+          )}
         />
         <button
           type="submit"
