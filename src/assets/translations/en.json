@@ -6,7 +6,7 @@
     "dropHere": "Drop here",
     "mainMessage": "Drag and drop any <u>video</u> or <u>audio</u> files here!",
     "subMessage": "You can drop MKV files and subtitle files(vtt, srt, smi) too.",
-    "urlLabel": "Or paste a direct media link",
+    "urlLabel": "Or paste a media link",
     "urlPlaceholder": "https://example.com/video.mp4",
     "urlSubmit": "Open link",
     "noMediaFilesFound": "No media files found.",

@@ -6,7 +6,7 @@
     "dropHere": "拖放到此处",
     "mainMessage": "将任何 <u>视频</u> 或 <u>音频</u> 文件拖放到这里！",
     "subMessage": "你也可以拖放 MKV 文件和字幕文件（vtt、srt、smi）。",
-    "urlLabel": "或粘贴媒体文件的直链",
+    "urlLabel": "或粘贴媒体链接",
     "urlPlaceholder": "https://example.com/video.mp4",
     "urlSubmit": "打开链接",
     "noMediaFilesFound": "未找到媒体文件。",

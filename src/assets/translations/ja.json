@@ -5,8 +5,8 @@
   "dragDropArea": {
     "dropHere": "ここにドロップしてください",
     "mainMessage": "ここに<u>ビデオ</u>や、<u>オーディオ</u>ファイルをドロップしてください！",
-    "subMessage": "MKVファイルや字幕（vtt, srt, smi）ファイルも可能です",
-    "urlLabel": "またはメディアファイルの直リンクを貼り付けてください",
+    "subMessage": "MKVファイルや字幕（vtt, srt, smi）ファイルも可能です。",
+    "urlLabel": "またはメディアリンクを貼り付けてください",
     "urlPlaceholder": "https://example.com/video.mp4",
     "urlSubmit": "リンクを開く",
     "noMediaFilesFound": "メディア ファイルが見つかりません。",

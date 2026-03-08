@@ -6,7 +6,7 @@
     "dropHere": "Suelta aquí",
     "mainMessage": "¡Arrastra y suelta cualquier archivo de <u>video</u> o <u>audio</u> aquí!",
     "subMessage": "También puedes soltar archivos MKV y archivos de subtítulos (vtt, srt, smi).",
-    "urlLabel": "O pega un enlace directo al archivo multimedia",
+    "urlLabel": "O pega un enlace de medios",
     "urlPlaceholder": "https://example.com/video.mp4",
     "urlSubmit": "Abrir enlace",
     "noMediaFilesFound": "No se encontraron archivos multimedia.",
