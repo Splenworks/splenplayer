@@ -7,7 +7,7 @@
     "mainMessage": "将任何 <u>视频</u> 或 <u>音频</u> 文件拖放到这里！",
     "subMessage": "你也可以拖放 MKV 文件和字幕文件（vtt、srt、smi）。",
     "urlLabel": "或粘贴媒体或流媒体链接",
-    "urlPlaceholder": "在此粘贴 MP4、MP3 或 HLS（.m3u8）链接",
+    "urlPlaceholder": "在此粘贴 MP4、MP3、HLS（.m3u8）或 DASH（.mpd）链接",
     "urlSubmit": "打开链接",
     "noMediaFilesFound": "未找到媒体文件。",
     "invalidMediaUrl": "请输入有效的音频或视频直链。",
