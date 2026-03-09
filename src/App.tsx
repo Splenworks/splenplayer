@@ -6,7 +6,8 @@ import Caption from "./Caption"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
-import { MediaFile } from "./utils/getMediaFiles"
+import type { MediaFile } from "./types/MediaFiles"
+import { getMediaSourceKey } from "./utils/getMediaFiles"
 import { hashCode } from "./utils/hashCode"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import VideoControls from "./VideoControls"
@@ -28,7 +29,7 @@ function App() {
   const [seekValue, setSeekValue] = useState("0")
   const videoFileHash = useMemo(() => {
     const allMediaFilesAndSizes = mediaFiles
-      .map((mediaFile) => mediaFile.displayName + mediaFile.file.size)
+      .map((mediaFile) => mediaFile.displayName + getMediaSourceKey(mediaFile))
       .join("")
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])

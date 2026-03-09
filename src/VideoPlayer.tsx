@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useState } from "react"
-import { MediaFile } from "./utils/getMediaFiles"
+import type { MediaFile } from "./types/MediaFiles"
 
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]
@@ -8,21 +8,29 @@ interface VideoPlayerProps {
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
   ({ mediaFiles, currentIndex }, videoRef) => {
-    const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined)
+    const media = mediaFiles[currentIndex]
+    const [localVideoSrc, setLocalVideoSrc] = useState<string | null>(null)
 
     useEffect(() => {
-      const media = mediaFiles[currentIndex]
-      const blob = new Blob([media.file], {
-        type: media.file.type || (media.type === "audio" ? "audio/mpeg" : "video/mp4"),
-      })
-      const newUrl = URL.createObjectURL(blob)
+      if (!media || media.source === "url") {
+        return
+      }
+
+      const objectUrl = URL.createObjectURL(media.file)
+      // The object URL has to be created after commit; doing it during render causes
+      // a throwaway StrictMode render in dev to produce a revoked blob request.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setVideoSrc(newUrl)
+      setLocalVideoSrc(objectUrl)
 
       return () => {
-        URL.revokeObjectURL(newUrl)
+        URL.revokeObjectURL(objectUrl)
       }
-    }, [mediaFiles, currentIndex])
+    }, [media])
+
+    const videoSrc =
+      media?.source === "url"
+        ? media.url
+        : localVideoSrc ?? undefined
 
     return (
       <div className="fixed bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-black">

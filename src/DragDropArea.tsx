@@ -2,9 +2,11 @@ import React, { useRef, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { twJoin } from "tailwind-merge"
 import { useMediaQuery } from "usehooks-ts"
+import DirectMediaUrlForm from "./DirectMediaUrlForm"
 import GradientPlayCircleIcon from "./GradientPlayCircleIcon"
+import type { MediaFile } from "./types/MediaFiles"
 import { getDisplayName, getDroppedFiles } from "./utils/getDroppedFiles"
-import { MediaFile, getMediaFiles } from "./utils/getMediaFiles"
+import { getMediaFiles } from "./utils/getMediaFiles"
 
 interface DragDropAreaProps {
   setMedia: (files: MediaFile[]) => void
@@ -16,17 +18,43 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   const { t } = useTranslation()
   const smallScreen = useMediaQuery("(max-width: 640px), (max-height: 640px)")
 
+  const isFileDrag = (e: React.DragEvent<HTMLDivElement>) =>
+    Array.from(e.dataTransfer.types).includes("Files")
+
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+    if (!isFileDrag(e)) {
+      return
+    }
+
     setDragging(true)
   }
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+    if (!isFileDrag(e)) {
+      return
+    }
+
+    const rect = e.currentTarget.getBoundingClientRect()
+    const leftDropZone =
+      e.clientX < rect.left ||
+      e.clientX > rect.right ||
+      e.clientY < rect.top ||
+      e.clientY > rect.bottom
+
+    if (!leftDropZone) {
+      return
+    }
+
     setDragging(false)
   }
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!isFileDrag(e)) {
+      return
+    }
+
     e.preventDefault()
   }
 
@@ -64,7 +92,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     <div className="fixed bottom-16 left-0 right-0 top-16 bg-white dark:bg-neutral-900">
       <div
         className={twJoin(
-          "absolute inset-x-8 inset-y-0 flex cursor-pointer flex-col items-center justify-center rounded-xl border-4 ff:border-3 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
+          "absolute inset-x-8 inset-y-0 flex flex-col items-center justify-center rounded-xl border-4 ff:border-3 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
           "hover:bg-gradient-to-r hover:from-transparent hover:to-transparent hover:bg-[length:200%_100%] hover:animate-shimmer",
           "hover:via-pink-200/50 dark:hover:via-pink-800/20",
           dragging &&
@@ -74,7 +102,6 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={(event) => void handleDrop(event)}
-        onClick={handleClick}
       >
         <input
           type="file"
@@ -84,41 +111,45 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
           ref={fileInputRef}
           onChange={handleFileInputChange}
         />
-        <div
-          className={twJoin(
-            "pointer-events-none px-4 text-black dark:text-white",
-            !smallScreen && "pb-12",
-          )}
-        >
+        <div className="flex w-full max-w-4xl flex-col items-center px-4 text-black dark:text-white">
           {dragging ? (
-            <p className="text-center text-xl font-bold text-white shadow-gray-700 [text-shadow:_0_5px_5px_var(--tw-shadow-color,0.5)] dark:shadow-black">
+            <p className="pointer-events-none text-center text-xl font-bold text-white shadow-gray-700 [text-shadow:_0_5px_5px_var(--tw-shadow-color,0.5)] dark:shadow-black">
               <Trans i18nKey="dragDropArea.dropHere" />
             </p>
           ) : (
-            <div className="flex flex-col items-center justify-center">
-              <GradientPlayCircleIcon className="mb-8 h-24 w-24" />
-              <p className="mb-4 text-center text-xl font-bold">
-                <Trans
-                  i18nKey="dragDropArea.mainMessage"
-                  components={{
-                    u: <span className="text-pink-800 dark:text-pink-600" />,
-                  }}
-                />
-              </p>
-              <p className="mb-4 text-center text-lg font-semibold">
-                <Trans
-                  i18nKey="dragDropArea.subMessage"
-                  components={{
-                    u: <span className="text-pink-800 dark:text-pink-600" />,
-                  }}
-                />
-              </p>
-              {!smallScreen && (
-                <p className="text-center text-gray-800 dark:text-gray-300">
-                  <Trans i18nKey="dragDropArea.neverStoreYourData" />
+            <>
+              <div
+                className={twJoin(
+                  "pointer-events-none flex flex-col items-center justify-center",
+                  !smallScreen && "pb-10",
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={handleClick}
+                  className="pointer-events-auto cursor-pointer border-0 bg-transparent p-0"
+                >
+                  <GradientPlayCircleIcon className="h-24 w-24" />
+                </button>
+                <p className="mt-8 mb-4 text-center text-xl font-bold">
+                  <Trans
+                    i18nKey="dragDropArea.mainMessage"
+                    components={{
+                      u: <span className="text-pink-800 dark:text-pink-600" />,
+                    }}
+                  />
                 </p>
-              )}
-            </div>
+                <p className="mb-4 text-center text-lg font-semibold">
+                  <Trans
+                    i18nKey="dragDropArea.subMessage"
+                    components={{
+                      u: <span className="text-pink-800 dark:text-pink-600" />,
+                    }}
+                  />
+                </p>
+              </div>
+              <DirectMediaUrlForm setMedia={setMedia} />
+            </>
           )}
         </div>
       </div>

@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next"
 import IconButton from "./IconButton"
 import MediaList from "./MediaList"
 import MediaListButton from "./MediaListButton"
+import type { MediaFile } from "./types/MediaFiles"
 import Tooltip from "./Tooltip"
 import CloseIcon from "./assets/icons/xmark.svg?react"
-import { MediaFile } from "./utils/getMediaFiles"
 
 interface VideoControlsTopProps {
   showControls: boolean
