@@ -135,6 +135,8 @@ function App() {
   }, [exitedSession])
 
   const hasMultipleMedia = mediaFiles.length > 1
+  const currentMediaFile = mediaFiles[currentIndex] || null
+  const shouldEnableAudioAnalyzer = currentMediaFile?.source === "file"
   const isPreviousMediaDisabled = hasMultipleMedia && !isRepeatEnabled && currentIndex === 0
   const isNextMediaDisabled =
     hasMultipleMedia && !isRepeatEnabled && currentIndex === mediaFiles.length - 1
@@ -224,17 +226,26 @@ function App() {
       video.onloadedmetadata = () => {
         if (video.videoWidth === 0) {
           setIsAudio(true)
-          if (analyzerContainer.current && analyzer.current === null) {
-            analyzer.current = new AudioMotionAnalyzer(analyzerContainer.current, {
-              source: video,
-              overlay: true,
-              showBgColor: false,
-              smoothing: 0.8,
-              showScaleX: false,
-            })
+          if (!shouldEnableAudioAnalyzer) {
+            // Remote URLs can fail Web Audio security checks, so keep playback running without the analyzer.
+            resetAnalyzer()
+          } else if (analyzerContainer.current && analyzer.current === null) {
+            try {
+              analyzer.current = new AudioMotionAnalyzer(analyzerContainer.current, {
+                source: video,
+                overlay: true,
+                showBgColor: false,
+                smoothing: 0.8,
+                showScaleX: false,
+              })
+            } catch (error) {
+              resetAnalyzer()
+              console.error("Failed to initialize audio analyzer:", error)
+            }
           }
         } else {
           setIsAudio(false)
+          resetAnalyzer()
         }
         const hour = Math.floor(video.duration / 3600)
         let minute = Math.floor((video.duration % 3600) / 60).toString()
@@ -301,7 +312,9 @@ function App() {
     goToNextMedia,
     isRepeatEnabled,
     mediaFiles.length,
+    resetAnalyzer,
     selectedSubtitleTrack,
+    shouldEnableAudioAnalyzer,
     subtitleOffsetMs,
     subtitles,
     videoFileHash,
