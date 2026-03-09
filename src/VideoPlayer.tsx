@@ -1,3 +1,4 @@
+import type { MediaPlayerClass } from "dashjs"
 import Hls from "hls.js"
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react"
 import type { MediaFile } from "./types/MediaFiles"
@@ -13,6 +14,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     const [localVideoSrc, setLocalVideoSrc] = useState<string | null>(null)
     const internalVideoRef = useRef<HTMLVideoElement | null>(null)
     const hlsRef = useRef<Hls | null>(null)
+    const dashPlayerRef = useRef<MediaPlayerClass | null>(null)
 
     const setVideoElementRef = useCallback(
       (node: HTMLVideoElement | null) => {
@@ -31,6 +33,16 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
       hlsRef.current = null
     }, [])
 
+    const destroyDash = useCallback(() => {
+      dashPlayerRef.current?.reset()
+      dashPlayerRef.current = null
+    }, [])
+
+    const destroyStreamingPlayers = useCallback(() => {
+      destroyHls()
+      destroyDash()
+    }, [destroyDash, destroyHls])
+
     useEffect(() => {
       if (!media || media.source === "url") {
         return
@@ -39,7 +51,6 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
       const objectUrl = URL.createObjectURL(media.file)
       // The object URL has to be created after commit; doing it during render causes
       // a throwaway StrictMode render in dev to produce a revoked blob request.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalVideoSrc(objectUrl)
 
       return () => {
@@ -58,7 +69,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
         return
       }
 
-      destroyHls()
+      destroyStreamingPlayers()
 
       if (!videoSrc) {
         video.removeAttribute("src")
@@ -68,6 +79,8 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
 
       const isHlsUrl =
         media?.source === "url" && new URL(media.url).pathname.toLowerCase().endsWith(".m3u8")
+      const isDashUrl =
+        media?.source === "url" && new URL(media.url).pathname.toLowerCase().endsWith(".mpd")
 
       if (isHlsUrl) {
         if (video.canPlayType("application/vnd.apple.mpegurl")) {
@@ -76,22 +89,49 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
         }
 
         if (Hls.isSupported()) {
+          video.removeAttribute("src")
+          video.load()
           const hls = new Hls()
           hlsRef.current = hls
           hls.loadSource(videoSrc)
           hls.attachMedia(video)
           return () => {
-            destroyHls()
+            destroyStreamingPlayers()
           }
+        }
+      }
+
+      if (isDashUrl) {
+        let isCancelled = false
+        video.removeAttribute("src")
+        video.load()
+        void import("dashjs")
+          .then((dashjs) => {
+            if (isCancelled) {
+              return
+            }
+
+            const dashPlayer = dashjs.MediaPlayer().create()
+            dashPlayerRef.current = dashPlayer
+            dashPlayer.initialize(video, videoSrc, false)
+          })
+          .catch((error: unknown) => {
+            if (!isCancelled) {
+              console.error("Failed to initialize DASH playback:", error)
+            }
+          })
+        return () => {
+          isCancelled = true
+          destroyStreamingPlayers()
         }
       }
 
       video.src = videoSrc
 
       return () => {
-        destroyHls()
+        destroyStreamingPlayers()
       }
-    }, [destroyHls, media, videoSrc])
+    }, [destroyStreamingPlayers, media, videoSrc])
 
     return (
       <div className="fixed bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-black">
