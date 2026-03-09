@@ -21,7 +21,6 @@ function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [isAudio, setIsAudio] = useState(false)
   const analyzer = useRef<AudioMotionAnalyzer | null>(null)
   const analyzerContainer = useRef<HTMLDivElement | null>(null)
   const [currentTime, setCurrentTime] = useState("00:00")
@@ -114,7 +113,6 @@ function App() {
       currentIndex,
     })
     resetAnalyzer()
-    setIsAudio(false)
     setMediaFiles([])
     setCurrentIndex(0)
   }, [currentIndex, mediaFiles, resetAnalyzer])
@@ -136,7 +134,8 @@ function App() {
 
   const hasMultipleMedia = mediaFiles.length > 1
   const currentMediaFile = mediaFiles[currentIndex] || null
-  const shouldEnableAudioAnalyzer = currentMediaFile?.source === "file"
+  const isAudio = currentMediaFile?.type === "audio"
+  const shouldEnableAudioAnalyzer = isAudio && currentMediaFile?.source === "file"
   const isPreviousMediaDisabled = hasMultipleMedia && !isRepeatEnabled && currentIndex === 0
   const isNextMediaDisabled =
     hasMultipleMedia && !isRepeatEnabled && currentIndex === mediaFiles.length - 1
@@ -224,8 +223,7 @@ function App() {
         }
       }
       video.onloadedmetadata = () => {
-        if (video.videoWidth === 0) {
-          setIsAudio(true)
+        if (isAudio) {
           if (!shouldEnableAudioAnalyzer) {
             // Remote URLs can fail Web Audio security checks, so keep playback running without the analyzer.
             resetAnalyzer()
@@ -244,7 +242,6 @@ function App() {
             }
           }
         } else {
-          setIsAudio(false)
           resetAnalyzer()
         }
         const hour = Math.floor(video.duration / 3600)
@@ -310,6 +307,7 @@ function App() {
   }, [
     currentIndex,
     goToNextMedia,
+    isAudio,
     isRepeatEnabled,
     mediaFiles.length,
     resetAnalyzer,
