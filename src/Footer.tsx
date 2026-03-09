@@ -1,33 +1,34 @@
-import React, { useState } from "react"
-import { Trans, useTranslation } from "react-i18next"
+import React from "react"
+import { Trans } from "react-i18next"
 import CommitHash from "virtual:commit-hash"
 
-const otherProducts = [
-  {
-    name: "SplenView",
-    url: "https://splenview.com",
-  },
-  {
-    name: "txtpad.io",
-    url: "https://txtpad.io",
-  },
-  {
-    name: "SplenSheet",
-    url: "https://splensheet.com",
-  },
-]
+// const otherProducts = [
+//   {
+//     name: "SplenView",
+//     url: "https://splenview.com",
+//   },
+//   {
+//     name: "txtpad.io",
+//     url: "https://txtpad.io",
+//   },
+//   {
+//     name: "SplenSheet",
+//     url: "https://splensheet.com",
+//   },
+// ]
 
 const Footer: React.FC = () => {
-  const { t } = useTranslation()
-  const [randomProduct] = useState(() =>
-    otherProducts[Math.floor(Math.random() * otherProducts.length)]
-  )
+  // const { t } = useTranslation()
+  // const [randomProduct] = useState(() =>
+  //   otherProducts[Math.floor(Math.random() * otherProducts.length)]
+  // )
   return (
     <footer className="absolute bottom-0 left-0 right-0 bg-white dark:bg-neutral-900">
       <div className="mx-8 flex h-16 items-center justify-center md:mx-16">
         <div className="hidden flex-1 sm:block"></div>
         <p className="text-sm text-gray-800 dark:text-gray-300">
-          <Trans
+          <Trans i18nKey="dragDropArea.neverStoreYourData" />
+          {/* <Trans
             i18nKey="footer.checkOutProduct"
             t={t}
             components={{
@@ -42,7 +43,7 @@ const Footer: React.FC = () => {
                 </a>
               ),
             }}
-          />
+          /> */}
         </p>
         <div className="hidden flex-1 text-right text-sm text-white sm:block dark:text-neutral-900">
           Version {APP_VERSION}.{CommitHash.substring(0, 7)}
