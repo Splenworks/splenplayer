@@ -2,6 +2,7 @@ import type { MediaPlayerClass } from "dashjs"
 import Hls from "hls.js"
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react"
 import type { MediaFile } from "./types/MediaFiles"
+import { getMediaSourceKey } from "./utils/getMediaFiles"
 
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]
@@ -11,7 +12,10 @@ interface VideoPlayerProps {
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
   ({ mediaFiles, currentIndex }, videoRef) => {
     const media = mediaFiles[currentIndex]
-    const [localVideoSrc, setLocalVideoSrc] = useState<string | null>(null)
+    const [localVideoSrc, setLocalVideoSrc] = useState<{
+      sourceKey: string
+      url: string
+    } | null>(null)
     const internalVideoRef = useRef<HTMLVideoElement | null>(null)
     const hlsRef = useRef<Hls | null>(null)
     const dashPlayerRef = useRef<MediaPlayerClass | null>(null)
@@ -43,15 +47,21 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
       destroyDash()
     }, [destroyDash, destroyHls])
 
+    const mediaSourceKey = media ? getMediaSourceKey(media) : null
+
     useEffect(() => {
       if (!media || media.source === "url") {
         return
       }
 
+      const sourceKey = getMediaSourceKey(media)
       const objectUrl = URL.createObjectURL(media.file)
       // The object URL has to be created after commit; doing it during render causes
       // a throwaway StrictMode render in dev to produce a revoked blob request.
-      setLocalVideoSrc(objectUrl)
+      setLocalVideoSrc({
+        sourceKey,
+        url: objectUrl,
+      })
 
       return () => {
         URL.revokeObjectURL(objectUrl)
@@ -61,7 +71,9 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     const videoSrc =
       media?.source === "url"
         ? media.url
-        : localVideoSrc ?? undefined
+        : localVideoSrc?.sourceKey === mediaSourceKey
+          ? localVideoSrc.url
+          : undefined
 
     useEffect(() => {
       const video = internalVideoRef.current
