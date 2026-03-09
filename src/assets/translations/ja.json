@@ -7,7 +7,7 @@
     "mainMessage": "ここに<u>ビデオ</u>や、<u>オーディオ</u>ファイルをドロップしてください！",
     "subMessage": "MKVファイルや字幕（vtt, srt, smi）ファイルも可能です。",
     "urlLabel": "またはメディアまたはストリームURLを貼り付け",
-    "urlPlaceholder": "ここに MP4、MP3、HLS（.m3u8）、または DASH（.mpd）リンクを貼り付け",
+    "urlPlaceholder": "ここに .mp4、.mp3、.m3u8、.mpd などの URL を貼り付け",
     "urlSubmit": "リンクを開く",
     "noMediaFilesFound": "メディア ファイルが見つかりません。",
     "invalidMediaUrl": "有効な音声または動画の直リンクを入力してください。",
