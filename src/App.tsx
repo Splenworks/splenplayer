@@ -147,6 +147,7 @@ function App() {
   const currentMediaFile = mediaFiles[currentIndex] || null
   const isAudio = currentMediaFile?.type === "audio"
   const shouldEnableAudioAnalyzer = isAudio && currentMediaFile?.source === "file"
+  const mediaElementModeKey = shouldEnableAudioAnalyzer ? "analyzed-media" : "plain-media"
   const isPreviousMediaDisabled = hasMultipleMedia && !isRepeatEnabled && currentIndex === 0
   const isNextMediaDisabled =
     hasMultipleMedia && !isRepeatEnabled && currentIndex === mediaFiles.length - 1
@@ -186,6 +187,14 @@ function App() {
       resetAnalyzer()
     }
   }, [mediaFiles.length, resetAnalyzer])
+
+  useEffect(() => {
+    if (!shouldEnableAudioAnalyzer) {
+      // A MediaElementSourceNode is permanently tied to its DOM media element,
+      // so leaving analyzer mode must also release the old analyzer instance.
+      resetAnalyzer()
+    }
+  }, [resetAnalyzer, shouldEnableAudioAnalyzer])
 
   useEffect(() => {
     const video = videoRef.current
@@ -332,7 +341,12 @@ function App() {
   if (mediaFiles.length > 0) {
     return (
       <div className="fixed top-0 right-0 bottom-0 left-0">
-        <VideoPlayer mediaFiles={mediaFiles} currentIndex={currentIndex} ref={videoRef} />
+        <VideoPlayer
+          key={mediaElementModeKey}
+          mediaFiles={mediaFiles}
+          currentIndex={currentIndex}
+          ref={videoRef}
+        />
         <AudioOverlay
           analyzerContainerRef={analyzerContainer}
           isAudio={isAudio}
