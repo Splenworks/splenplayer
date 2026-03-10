@@ -92,7 +92,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     <div className="fixed bottom-16 left-0 right-0 top-16 bg-white dark:bg-neutral-900">
       <div
         className={twJoin(
-          "absolute inset-x-8 inset-y-0 flex flex-col items-center justify-center rounded-xl border-4 ff:border-3 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
+          "absolute inset-x-8 inset-y-0 flex flex-col items-center justify-center rounded-xl border-4 ff:border-2 sf:border-2 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
           "hover:bg-gradient-to-r hover:from-transparent hover:to-transparent hover:bg-[length:200%_100%] hover:animate-shimmer",
           "hover:via-pink-200/50 dark:hover:via-pink-800/20",
           dragging &&
