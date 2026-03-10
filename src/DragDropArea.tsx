@@ -5,6 +5,7 @@ import { useMediaQuery } from "usehooks-ts"
 import DirectMediaUrlForm from "./DirectMediaUrlForm"
 import GradientPlayCircleIcon from "./GradientPlayCircleIcon"
 import type { MediaFile } from "./types/MediaFiles"
+import { isSafari } from "./utils/browser"
 import { getDisplayName, getDroppedFiles } from "./utils/getDroppedFiles"
 import { getMediaFiles } from "./utils/getMediaFiles"
 
@@ -17,6 +18,9 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
   const smallScreen = useMediaQuery("(max-width: 640px), (max-height: 640px)")
+  const acceptedFileTypes = isSafari
+    ? "video/*,audio/*,.smi,.sami,.vtt,.srt"
+    : "video/*,audio/*,.mkv,.smi,.sami,.vtt,.srt"
 
   const isFileDrag = (e: React.DragEvent<HTMLDivElement>) =>
     Array.from(e.dataTransfer.types).includes("Files")
@@ -106,7 +110,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
         <input
           type="file"
           multiple
-          accept="video/*,audio/*,.mkv,.smi,.sami,.vtt,.srt"
+          accept={acceptedFileTypes}
           hidden
           ref={fileInputRef}
           onChange={handleFileInputChange}
@@ -141,7 +145,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
                 </p>
                 <p className="mb-4 text-center text-lg font-semibold">
                   <Trans
-                    i18nKey="dragDropArea.subMessage"
+                    i18nKey={isSafari ? "dragDropArea.subMessageSafari" : "dragDropArea.subMessage"}
                     components={{
                       u: <span className="text-pink-800 dark:text-pink-600" />,
                     }}

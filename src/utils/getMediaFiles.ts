@@ -11,6 +11,10 @@ const looksLikeVideo = (name: string) => {
   return endsWith(lowerCasedName, [".mp4", ".webm", ".mov", ".avi", ".mkv"])
 }
 
+export const isMkvFileName = (name: string) => {
+  return endsWith(name.toLowerCase(), [".mkv"])
+}
+
 const looksLikeAudio = (name: string) => {
   const lowerCasedName = name.toLowerCase()
   return endsWith(lowerCasedName, [".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a"])
@@ -108,6 +112,18 @@ export const getMediaSourceKey = (mediaFile: MediaFile) => {
   }
 
   return `url:${mediaFile.url}`
+}
+
+export const isMkvMediaFile = (mediaFile: MediaFile) => {
+  if (mediaFile.source === "file") {
+    return isMkvFileName(mediaFile.file.name)
+  }
+
+  try {
+    return isMkvFileName(new URL(mediaFile.url).pathname)
+  } catch {
+    return isMkvFileName(mediaFile.displayName)
+  }
 }
 
 export const getSubtitleFiles = (files: Array<File | DroppedFile>) => {

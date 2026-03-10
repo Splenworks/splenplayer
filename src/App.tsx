@@ -1,5 +1,6 @@
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { ParseResult } from "sami-parser"
 import AudioOverlay from "./AudioOverlay"
 import Caption from "./Caption"
@@ -7,13 +8,15 @@ import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
 import type { MediaFile } from "./types/MediaFiles"
-import { getMediaSourceKey } from "./utils/getMediaFiles"
+import { getMediaSourceKey, isMkvMediaFile } from "./utils/getMediaFiles"
+import { isSafari } from "./utils/browser"
 import { hashCode } from "./utils/hashCode"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
 function App() {
+  const { t } = useTranslation()
   const [exitedSession, setExitedSession] = useState<{
     mediaFiles: MediaFile[]
     currentIndex: number
@@ -118,10 +121,18 @@ function App() {
   }, [currentIndex, mediaFiles, resetAnalyzer])
 
   const setMedia = useCallback((files: MediaFile[]) => {
+    const playableFiles = isSafari ? files.filter((file) => !isMkvMediaFile(file)) : files
+    if (playableFiles.length !== files.length) {
+      alert(t("dragDropArea.safariMkvUnsupported"))
+    }
+    if (playableFiles.length === 0) {
+      return
+    }
+
     setExitedSession(null)
-    setMediaFiles(files)
+    setMediaFiles(playableFiles)
     setCurrentIndex(0)
-  }, [])
+  }, [t])
 
   const goBack = useCallback(() => {
     if (!exitedSession || exitedSession.mediaFiles.length === 0) {
