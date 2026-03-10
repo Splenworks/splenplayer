@@ -5,6 +5,7 @@ import { useMediaQuery } from "usehooks-ts"
 import DirectMediaUrlForm from "./DirectMediaUrlForm"
 import GradientPlayCircleIcon from "./GradientPlayCircleIcon"
 import type { MediaFile } from "./types/MediaFiles"
+import { isSafari } from "./utils/browser"
 import { getDisplayName, getDroppedFiles } from "./utils/getDroppedFiles"
 import { getMediaFiles } from "./utils/getMediaFiles"
 
@@ -17,6 +18,9 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
   const smallScreen = useMediaQuery("(max-width: 640px), (max-height: 640px)")
+  const acceptedFileTypes = isSafari
+    ? "video/*,audio/*,.smi,.sami,.vtt,.srt"
+    : "video/*,audio/*,.mkv,.smi,.sami,.vtt,.srt"
 
   const isFileDrag = (e: React.DragEvent<HTMLDivElement>) =>
     Array.from(e.dataTransfer.types).includes("Files")
@@ -92,7 +96,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
     <div className="fixed bottom-16 left-0 right-0 top-16 bg-white dark:bg-neutral-900">
       <div
         className={twJoin(
-          "absolute inset-x-8 inset-y-0 flex flex-col items-center justify-center rounded-xl border-4 ff:border-3 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
+          "absolute inset-x-8 inset-y-0 flex flex-col items-center justify-center rounded-xl border-4 ff:border-2 sf:border-2 border-dashed border-gray-300 transition-colors duration-300 ease-in-out md:inset-x-16",
           "hover:bg-gradient-to-r hover:from-transparent hover:to-transparent hover:bg-[length:200%_100%] hover:animate-shimmer",
           "hover:via-pink-200/50 dark:hover:via-pink-800/20",
           dragging &&
@@ -106,7 +110,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
         <input
           type="file"
           multiple
-          accept="video/*,audio/*,.mkv,.smi,.sami,.vtt,.srt"
+          accept={acceptedFileTypes}
           hidden
           ref={fileInputRef}
           onChange={handleFileInputChange}
@@ -141,7 +145,7 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
                 </p>
                 <p className="mb-4 text-center text-lg font-semibold">
                   <Trans
-                    i18nKey="dragDropArea.subMessage"
+                    i18nKey={isSafari ? "dragDropArea.subMessageSafari" : "dragDropArea.subMessage"}
                     components={{
                       u: <span className="text-pink-800 dark:text-pink-600" />,
                     }}

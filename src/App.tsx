@@ -1,5 +1,6 @@
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { ParseResult } from "sami-parser"
 import AudioOverlay from "./AudioOverlay"
 import Caption from "./Caption"
@@ -7,13 +8,15 @@ import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
 import type { MediaFile } from "./types/MediaFiles"
-import { getMediaSourceKey } from "./utils/getMediaFiles"
+import { getMediaSourceKey, isMkvMediaFile } from "./utils/getMediaFiles"
+import { isSafari } from "./utils/browser"
 import { hashCode } from "./utils/hashCode"
 import { replaceBasicHtmlEntities } from "./utils/html"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
 function App() {
+  const { t } = useTranslation()
   const [exitedSession, setExitedSession] = useState<{
     mediaFiles: MediaFile[]
     currentIndex: number
@@ -21,7 +24,6 @@ function App() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [isAudio, setIsAudio] = useState(false)
   const analyzer = useRef<AudioMotionAnalyzer | null>(null)
   const analyzerContainer = useRef<HTMLDivElement | null>(null)
   const [currentTime, setCurrentTime] = useState("00:00")
@@ -114,16 +116,23 @@ function App() {
       currentIndex,
     })
     resetAnalyzer()
-    setIsAudio(false)
     setMediaFiles([])
     setCurrentIndex(0)
   }, [currentIndex, mediaFiles, resetAnalyzer])
 
   const setMedia = useCallback((files: MediaFile[]) => {
+    const playableFiles = isSafari ? files.filter((file) => !isMkvMediaFile(file)) : files
+    if (playableFiles.length !== files.length) {
+      alert(t("dragDropArea.safariMkvUnsupported"))
+    }
+    if (playableFiles.length === 0) {
+      return
+    }
+
     setExitedSession(null)
-    setMediaFiles(files)
+    setMediaFiles(playableFiles)
     setCurrentIndex(0)
-  }, [])
+  }, [t])
 
   const goBack = useCallback(() => {
     if (!exitedSession || exitedSession.mediaFiles.length === 0) {
@@ -136,7 +145,8 @@ function App() {
 
   const hasMultipleMedia = mediaFiles.length > 1
   const currentMediaFile = mediaFiles[currentIndex] || null
-  const shouldEnableAudioAnalyzer = currentMediaFile?.source === "file"
+  const isAudio = currentMediaFile?.type === "audio"
+  const shouldEnableAudioAnalyzer = isAudio && currentMediaFile?.source === "file"
   const isPreviousMediaDisabled = hasMultipleMedia && !isRepeatEnabled && currentIndex === 0
   const isNextMediaDisabled =
     hasMultipleMedia && !isRepeatEnabled && currentIndex === mediaFiles.length - 1
@@ -224,8 +234,7 @@ function App() {
         }
       }
       video.onloadedmetadata = () => {
-        if (video.videoWidth === 0) {
-          setIsAudio(true)
+        if (isAudio) {
           if (!shouldEnableAudioAnalyzer) {
             // Remote URLs can fail Web Audio security checks, so keep playback running without the analyzer.
             resetAnalyzer()
@@ -244,7 +253,6 @@ function App() {
             }
           }
         } else {
-          setIsAudio(false)
           resetAnalyzer()
         }
         const hour = Math.floor(video.duration / 3600)
@@ -310,6 +318,7 @@ function App() {
   }, [
     currentIndex,
     goToNextMedia,
+    isAudio,
     isRepeatEnabled,
     mediaFiles.length,
     resetAnalyzer,

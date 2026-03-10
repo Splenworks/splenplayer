@@ -34,6 +34,7 @@ export default {
       addVariant("hocus", ["&:hover", "&:focus"])
       addVariant("both", ["&:before", "&:after"])
       addVariant("ff", "@supports (-moz-appearance: none)")
+      addVariant("sf", "@supports (font: -apple-system-body) and (-webkit-appearance: none)")
     }),
   ],
   darkMode: "selector",
