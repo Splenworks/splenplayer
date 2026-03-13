@@ -6,13 +6,11 @@ import type { MediaFile } from "./types/MediaFiles"
 import { getDroppedFiles } from "./utils/getDroppedFiles"
 import { getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
 import { extractMkvSubtitleParseResult } from "./utils/mkvSubtitles"
-import {
-  SUBTITLE_OFFSET_STEP_MS,
-  clampSubtitleOffset,
-} from "./utils/subtitleOffset"
+import { clampSubtitleOffset } from "./utils/subtitleOffset"
 
 import ActionOverlay from "./ActionOverlay"
 import { useFullScreen } from "./hooks/useFullScreen"
+import { usePlayerKeyboard } from "./hooks/usePlayerKeyboard"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import SubtitleDelayToast from "./SubtitleDelayToast"
@@ -20,85 +18,63 @@ import VideoControlsBottom from "./VideoControlsBottom"
 import VideoControlsTop from "./VideoControlsTop"
 
 interface VideoControlsProps {
-  videoRef: React.RefObject<HTMLVideoElement | null>
-  mediaFiles: MediaFile[]
-  exit: () => void
-  currentIndex: number
-  setCurrentIndex: (index: number) => void
-  hasMultipleMedia: boolean
-  isPreviousMediaDisabled: boolean
-  isNextMediaDisabled: boolean
-  goToPreviousMedia: () => void
-  goToNextMedia: () => void
-  isRepeatEnabled: boolean
-  toggleRepeatEnabled: () => void
-  setMedia: (files: MediaFile[]) => void
-  currentTime: string
-  totalTime: string
-  seekValue: string
+  playlist: {
+    mediaFiles: MediaFile[]
+    currentIndex: number
+    setCurrentIndex: (index: number) => void
+    hasMultipleMedia: boolean
+    isPreviousMediaDisabled: boolean
+    isNextMediaDisabled: boolean
+    goToPreviousMedia: () => void
+    goToNextMedia: () => void
+    isRepeatEnabled: boolean
+    toggleRepeatEnabled: () => void
+    exit: () => void
+    setMedia: (files: MediaFile[]) => void
+  }
+  playback: {
+    videoRef: React.RefObject<HTMLVideoElement | null>
+    isPaused: boolean
+    setIsPaused: React.Dispatch<React.SetStateAction<boolean>>
+    isAudio: boolean
+    currentTime: string
+    totalTime: string
+    seekValue: string
+  }
+  subtitle: {
+    setSubtitles: React.Dispatch<React.SetStateAction<ParseResult>>
+    hasSubtitles: boolean
+    showSubtitle: boolean
+    setShowSubtitle: React.Dispatch<React.SetStateAction<boolean>>
+    subtitleTracks: string[]
+    selectedSubtitleTrack: string | null
+    setSelectedSubtitleTrack: React.Dispatch<React.SetStateAction<string | null>>
+    subtitleOffsetMs: number
+    setSubtitleOffsetMs: React.Dispatch<React.SetStateAction<number>>
+  }
   showControls: boolean
   setShowControls: React.Dispatch<React.SetStateAction<boolean>>
-  isPaused: boolean
-  isAudio: boolean
-  setIsPaused: React.Dispatch<React.SetStateAction<boolean>>
-  setSubtitles: React.Dispatch<React.SetStateAction<ParseResult>>
-  hasSubtitles: boolean
-  showSubtitle: boolean
-  setShowSubtitle: React.Dispatch<React.SetStateAction<boolean>>
-  subtitleTracks: string[]
-  selectedSubtitleTrack: string | null
-  setSelectedSubtitleTrack: React.Dispatch<React.SetStateAction<string | null>>
-  subtitleOffsetMs: number
-  setSubtitleOffsetMs: React.Dispatch<React.SetStateAction<number>>
-
 }
 
-const isSubtitleOffsetIncreaseKey = (event: KeyboardEvent) => {
-  return (
-    event.key === "+" ||
-    event.key === "=" ||
-    event.code === "NumpadAdd" ||
-    (event.code === "Equal" && event.shiftKey)
-  )
-}
-
-const isSubtitleOffsetDecreaseKey = (event: KeyboardEvent) => {
-  return event.key === "-" || event.key === "_" || event.code === "NumpadSubtract"
-}
 
 const VideoControls: React.FC<VideoControlsProps> = ({
-  videoRef,
-  mediaFiles,
-  exit,
-  currentIndex,
-  setCurrentIndex,
-  hasMultipleMedia,
-  isPreviousMediaDisabled,
-  isNextMediaDisabled,
-  goToPreviousMedia,
-  goToNextMedia,
-  isRepeatEnabled,
-  toggleRepeatEnabled,
-  setMedia,
-  currentTime,
-  totalTime,
-  seekValue,
+  playlist,
+  playback,
+  subtitle,
   showControls,
   setShowControls,
-  isPaused,
-  isAudio,
-  setIsPaused,
-  setSubtitles,
-  hasSubtitles,
-  showSubtitle,
-  setShowSubtitle,
-  subtitleTracks,
-  selectedSubtitleTrack,
-  setSelectedSubtitleTrack,
-  subtitleOffsetMs,
-  setSubtitleOffsetMs,
-
 }) => {
+  const {
+    mediaFiles, currentIndex, setCurrentIndex, hasMultipleMedia,
+    isPreviousMediaDisabled, isNextMediaDisabled, goToPreviousMedia, goToNextMedia,
+    isRepeatEnabled, toggleRepeatEnabled, exit, setMedia,
+  } = playlist
+  const { videoRef, isPaused, setIsPaused, isAudio, currentTime, totalTime, seekValue } = playback
+  const {
+    setSubtitles, hasSubtitles, showSubtitle, setShowSubtitle,
+    subtitleTracks, selectedSubtitleTrack, setSelectedSubtitleTrack,
+    subtitleOffsetMs, setSubtitleOffsetMs,
+  } = subtitle
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
@@ -255,55 +231,14 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     applySubtitleOffset(subtitleOffsetRef.current + deltaMs)
   }, [applySubtitleOffset])
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const video = getVideo()
-      if (!video) return
-      if (event.key === "Escape" && !isFullScreen) {
-        exit()
-      } else if (event.key === "ArrowLeft") {
-        video.currentTime -= 5
-      } else if (event.key === "ArrowRight") {
-        video.currentTime += 5
-      } else if (event.key === " ") {
-        event.preventDefault()
-        togglePlayPause()
-      } else if (event.key === "f") {
-        toggleFullScreen()
-      } else if (
-        hasSubtitles &&
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        isSubtitleOffsetIncreaseKey(event)
-      ) {
-        event.preventDefault()
-        changeSubtitleOffsetBy(SUBTITLE_OFFSET_STEP_MS)
-      } else if (
-        hasSubtitles &&
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        isSubtitleOffsetDecreaseKey(event)
-      ) {
-        event.preventDefault()
-        changeSubtitleOffsetBy(-SUBTITLE_OFFSET_STEP_MS)
-      } else if (hasSubtitles && !event.metaKey && !event.ctrlKey && !event.altKey && event.key === "0") {
-        event.preventDefault()
-        changeSubtitleOffsetBy(-subtitleOffsetRef.current)
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [
-    changeSubtitleOffsetBy,
+  usePlayerKeyboard({
+    videoRef,
     exit,
-    getVideo,
-    hasSubtitles,
-    isFullScreen,
-    toggleFullScreen,
     togglePlayPause,
-  ])
+    hasSubtitles,
+    changeSubtitleOffsetBy,
+    subtitleOffsetMs,
+  })
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = getVideo()

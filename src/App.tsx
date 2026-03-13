@@ -321,37 +321,42 @@ function App() {
           <Caption caption={currentSubtitle} videoRatio={videoRatio} />
         )}
         <VideoControls
-          mediaFiles={mediaFiles}
-          exit={exit}
-          currentIndex={currentIndex}
-          setCurrentIndex={setCurrentIndex}
-          hasMultipleMedia={hasMultipleMedia}
-          isPreviousMediaDisabled={isPreviousMediaDisabled}
-          isNextMediaDisabled={isNextMediaDisabled}
-          goToPreviousMedia={goToPreviousMedia}
-          goToNextMedia={goToNextMedia}
-          isRepeatEnabled={isRepeatEnabled}
-          toggleRepeatEnabled={() => setIsRepeatEnabled((prev) => !prev)}
-          videoRef={videoRef}
-          setMedia={setMedia}
-          currentTime={currentTime}
-          totalTime={totalTime}
-          seekValue={seekValue}
+          playlist={{
+            mediaFiles,
+            currentIndex,
+            setCurrentIndex,
+            hasMultipleMedia,
+            isPreviousMediaDisabled,
+            isNextMediaDisabled,
+            goToPreviousMedia,
+            goToNextMedia,
+            isRepeatEnabled,
+            toggleRepeatEnabled: () => setIsRepeatEnabled((prev) => !prev),
+            exit,
+            setMedia,
+          }}
+          playback={{
+            videoRef,
+            isPaused,
+            setIsPaused,
+            isAudio,
+            currentTime,
+            totalTime,
+            seekValue,
+          }}
+          subtitle={{
+            setSubtitles,
+            hasSubtitles: subtitleTracks.length > 0,
+            showSubtitle,
+            setShowSubtitle,
+            subtitleTracks,
+            selectedSubtitleTrack,
+            setSelectedSubtitleTrack: setPreferredSubtitleTrack,
+            subtitleOffsetMs,
+            setSubtitleOffsetMs,
+          }}
           showControls={showControls}
           setShowControls={setShowControls}
-          isPaused={isPaused}
-          isAudio={isAudio}
-          setIsPaused={setIsPaused}
-          setSubtitles={setSubtitles}
-          hasSubtitles={subtitleTracks.length > 0}
-          showSubtitle={showSubtitle}
-          setShowSubtitle={setShowSubtitle}
-          subtitleTracks={subtitleTracks}
-          selectedSubtitleTrack={selectedSubtitleTrack}
-          setSelectedSubtitleTrack={setPreferredSubtitleTrack}
-          subtitleOffsetMs={subtitleOffsetMs}
-          setSubtitleOffsetMs={setSubtitleOffsetMs}
-
         />
       </div>
     )
