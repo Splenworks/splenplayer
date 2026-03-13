@@ -1,16 +1,19 @@
 import type { MediaPlayerClass } from "dashjs"
 import Hls from "hls.js"
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react"
+import { forwardRef, useCallback, useEffect, useRef, useState, type SyntheticEvent } from "react"
 import type { MediaFile } from "./types/MediaFiles"
 import { getMediaSourceKey } from "./utils/getMediaFiles"
 
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]
   currentIndex: number
+  onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement>) => void
+  onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement>) => void
+  onEnded?: (event: SyntheticEvent<HTMLVideoElement>) => void
 }
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
-  ({ mediaFiles, currentIndex }, videoRef) => {
+  ({ mediaFiles, currentIndex, onTimeUpdate, onLoadedMetadata, onEnded }, videoRef) => {
     const media = mediaFiles[currentIndex]
     const [localVideoSrc, setLocalVideoSrc] = useState<{
       sourceKey: string
@@ -150,6 +153,9 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
         <video
           ref={setVideoElementRef}
           className="max-h-full min-h-full min-w-full max-w-full"
+          onTimeUpdate={onTimeUpdate}
+          onLoadedMetadata={onLoadedMetadata}
+          onEnded={onEnded}
         />
       </div>
     )
