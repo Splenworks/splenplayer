@@ -103,8 +103,6 @@ function App() {
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
   const [isRepeatEnabled, setIsRepeatEnabled] = useState(false)
-  const mouseMoveTimeout = useRef<number | null>(null)
-
   const resetAnalyzer = useCallback(() => {
     analyzer.current?.destroy()
     analyzer.current = null
@@ -288,18 +286,12 @@ function App() {
       localStorage.removeItem(videoFileHash)
       if (goToNextMedia()) {
         setShowControls(true)
-        mouseMoveTimeout.current = window.setTimeout(() => {
-          if (!video.paused) setShowControls(false)
-        }, 2000)
       } else if (isRepeatEnabled && mediaFiles.length === 1) {
         video.currentTime = 0
         void video.play().then(() => {
           setIsPaused(false)
         })
         setShowControls(true)
-        mouseMoveTimeout.current = window.setTimeout(() => {
-          if (!video.paused) setShowControls(false)
-        }, 2000)
       } else {
         setIsPaused(true)
         setShowControls(true)
@@ -359,7 +351,7 @@ function App() {
           setSelectedSubtitleTrack={setPreferredSubtitleTrack}
           subtitleOffsetMs={subtitleOffsetMs}
           setSubtitleOffsetMs={setSubtitleOffsetMs}
-          mouseMoveTimeout={mouseMoveTimeout}
+
         />
       </div>
     )

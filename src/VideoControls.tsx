@@ -50,7 +50,7 @@ interface VideoControlsProps {
   setSelectedSubtitleTrack: React.Dispatch<React.SetStateAction<string | null>>
   subtitleOffsetMs: number
   setSubtitleOffsetMs: React.Dispatch<React.SetStateAction<number>>
-  mouseMoveTimeout: React.RefObject<number | null>
+
 }
 
 const isSubtitleOffsetIncreaseKey = (event: KeyboardEvent) => {
@@ -97,7 +97,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   setSelectedSubtitleTrack,
   subtitleOffsetMs,
   setSubtitleOffsetMs,
-  mouseMoveTimeout,
+
 }) => {
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
@@ -327,7 +327,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
       <MouseMoveOverlay
         showControls={showControls}
         setShowControls={setShowControls}
-        mouseMoveTimeoutRef={mouseMoveTimeout}
+
         videoPaused={isPaused}
         preventAutoHide={isMediaListHovered}
       >
