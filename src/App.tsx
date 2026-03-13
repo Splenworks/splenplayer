@@ -1,9 +1,8 @@
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ParseResult } from "sami-parser"
 import AudioOverlay from "./AudioOverlay"
-import Caption from "./Caption"
+import SubtitleOverlay from "./SubtitleOverlay"
 import DragDropArea from "./DragDropArea"
 import Footer from "./Footer"
 import Header from "./Header"
@@ -11,7 +10,7 @@ import type { MediaFile } from "./types/MediaFiles"
 import { getMediaSourceKey, isMkvMediaFile } from "./utils/getMediaFiles"
 import { isSafari } from "./utils/browser"
 import { hashCode } from "./utils/hashCode"
-import { replaceBasicHtmlEntities } from "./utils/html"
+import { SubtitleProvider } from "./providers/SubtitleProvider"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
@@ -35,70 +34,7 @@ function App() {
       .join("")
     return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
   }, [mediaFiles, currentIndex])
-  const subtitleSyncDelayStorageKey = `${videoFileHash}-subtitle-sync-delay`
-  const [showSubtitle, setShowSubtitle] = useState(true)
-  const [subtitleOffsetState, setSubtitleOffsetState] = useState<{
-    storageKey: string
-    offsetMs: number
-  } | null>(null)
-  const subtitleOffsetMs = useMemo(() => {
-    if (mediaFiles.length === 0) {
-      return 0
-    }
-    if (subtitleOffsetState && subtitleOffsetState.storageKey === subtitleSyncDelayStorageKey) {
-      return subtitleOffsetState.offsetMs
-    }
-    const savedSubtitleSyncDelay = localStorage.getItem(subtitleSyncDelayStorageKey)
-    const parsedSubtitleSyncDelay = Number(savedSubtitleSyncDelay)
-    return savedSubtitleSyncDelay !== null && Number.isFinite(parsedSubtitleSyncDelay)
-      ? parsedSubtitleSyncDelay
-      : 0
-  }, [mediaFiles.length, subtitleOffsetState, subtitleSyncDelayStorageKey])
-  const setSubtitleOffsetMs = useCallback(
-    (value: number | ((prevValue: number) => number)) => {
-      if (mediaFiles.length === 0) {
-        return
-      }
-      const nextSubtitleOffsetMs = typeof value === "function" ? value(subtitleOffsetMs) : value
-      setSubtitleOffsetState({
-        storageKey: subtitleSyncDelayStorageKey,
-        offsetMs: nextSubtitleOffsetMs,
-      })
-      if (nextSubtitleOffsetMs === 0) {
-        localStorage.removeItem(subtitleSyncDelayStorageKey)
-        return
-      }
-      localStorage.setItem(subtitleSyncDelayStorageKey, nextSubtitleOffsetMs + "")
-    },
-    [mediaFiles.length, subtitleOffsetMs, subtitleSyncDelayStorageKey],
-  )
-  const [subtitles, setSubtitles] = useState<ParseResult>([])
-  const subtitleTracks = useMemo(() => {
-    const trackSet = new Set<string>()
-    subtitles.forEach((subtitle) => {
-      Object.entries(subtitle.languages).forEach(([track, text]) => {
-        if (text.trim().length > 0) {
-          trackSet.add(track)
-        }
-      })
-    })
-    return Array.from(trackSet)
-  }, [subtitles])
-  const [preferredSubtitleTrack, setPreferredSubtitleTrack] = useState<string | null>(null)
-  const selectedSubtitleTrack = useMemo(() => {
-    if (subtitleTracks.length === 0) {
-      return null
-    }
-    if (preferredSubtitleTrack && subtitleTracks.includes(preferredSubtitleTrack)) {
-      return preferredSubtitleTrack
-    }
-    return (
-      subtitleTracks.find((track) => track === "und") ||
-      subtitleTracks.find((track) => track.startsWith("en")) ||
-      subtitleTracks[0]
-    )
-  }, [preferredSubtitleTrack, subtitleTracks])
-  const [currentSubtitle, setCurrentSubtitle] = useState("")
+  const [currentTimeMs, setCurrentTimeMs] = useState(0)
   const [videoRatio, setVideoRatio] = useState(0)
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
@@ -204,6 +140,7 @@ function App() {
       if (second.length === 1) second = `0${second}`
       setCurrentTime(hour === 0 ? `${minute}:${second}` : `${hour}:${minute}:${second}`)
       setSeekValue((video.currentTime / video.duration) * 100 + "")
+      setCurrentTimeMs(video.currentTime * 1000)
       if (video.duration > 90) {
         if (video.currentTime >= 30 && video.currentTime < video.duration - 30) {
           localStorage.setItem(videoFileHash, video.currentTime + "")
@@ -211,27 +148,8 @@ function App() {
           localStorage.removeItem(videoFileHash)
         }
       }
-      if (subtitles.length > 0) {
-        const subtitleTimeMs = video.currentTime * 1000 - subtitleOffsetMs
-        const currentSubtitle = subtitles.find(
-          (subtitle) =>
-            subtitleTimeMs >= subtitle.startTime &&
-            subtitleTimeMs <= subtitle.endTime &&
-            (selectedSubtitleTrack ? subtitle.languages[selectedSubtitleTrack] : true),
-        )
-        if (currentSubtitle) {
-          const text =
-            (selectedSubtitleTrack && currentSubtitle.languages[selectedSubtitleTrack]) ||
-            Object.values(currentSubtitle.languages)[0]
-          setCurrentSubtitle(replaceBasicHtmlEntities(text))
-        } else {
-          setCurrentSubtitle("")
-        }
-      } else {
-        setCurrentSubtitle("")
-      }
     },
-    [subtitles, subtitleOffsetMs, selectedSubtitleTrack, videoFileHash],
+    [videoFileHash],
   )
 
   const handleLoadedMetadata = useCallback(
@@ -302,63 +220,52 @@ function App() {
 
   if (mediaFiles.length > 0) {
     return (
-      <div className="fixed top-0 right-0 bottom-0 left-0">
-        <VideoPlayer
-          key={mediaElementModeKey}
-          mediaFiles={mediaFiles}
-          currentIndex={currentIndex}
-          ref={videoRef}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          onEnded={handleEnded}
-        />
-        <AudioOverlay
-          analyzerContainerRef={analyzerContainer}
-          isAudio={isAudio}
-          mediaFile={mediaFiles[currentIndex] || null}
-        />
-        {showSubtitle && subtitles.length > 0 && (
-          <Caption caption={currentSubtitle} videoRatio={videoRatio} />
-        )}
-        <VideoControls
-          playlist={{
-            mediaFiles,
-            currentIndex,
-            setCurrentIndex,
-            hasMultipleMedia,
-            isPreviousMediaDisabled,
-            isNextMediaDisabled,
-            goToPreviousMedia,
-            goToNextMedia,
-            isRepeatEnabled,
-            toggleRepeatEnabled: () => setIsRepeatEnabled((prev) => !prev),
-            exit,
-            setMedia,
-          }}
-          playback={{
-            videoRef,
-            isPaused,
-            setIsPaused,
-            isAudio,
-            currentTime,
-            totalTime,
-            seekValue,
-          }}
-          subtitle={{
-            setSubtitles,
-            hasSubtitles: subtitleTracks.length > 0,
-            showSubtitle,
-            setShowSubtitle,
-            subtitleTracks,
-            selectedSubtitleTrack,
-            setSelectedSubtitleTrack: setPreferredSubtitleTrack,
-            subtitleOffsetMs,
-            setSubtitleOffsetMs,
-          }}
-          showControls={showControls}
-          setShowControls={setShowControls}
-        />
-      </div>
+      <SubtitleProvider mediaFiles={mediaFiles} currentIndex={currentIndex} videoFileHash={videoFileHash}>
+        <div className="fixed top-0 right-0 bottom-0 left-0">
+          <VideoPlayer
+            key={mediaElementModeKey}
+            mediaFiles={mediaFiles}
+            currentIndex={currentIndex}
+            ref={videoRef}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onEnded={handleEnded}
+          />
+          <AudioOverlay
+            analyzerContainerRef={analyzerContainer}
+            isAudio={isAudio}
+            mediaFile={mediaFiles[currentIndex] || null}
+          />
+          <SubtitleOverlay currentTimeMs={currentTimeMs} videoRatio={videoRatio} />
+          <VideoControls
+            playlist={{
+              mediaFiles,
+              currentIndex,
+              setCurrentIndex,
+              hasMultipleMedia,
+              isPreviousMediaDisabled,
+              isNextMediaDisabled,
+              goToPreviousMedia,
+              goToNextMedia,
+              isRepeatEnabled,
+              toggleRepeatEnabled: () => setIsRepeatEnabled((prev) => !prev),
+              exit,
+              setMedia,
+            }}
+            playback={{
+              videoRef,
+              isPaused,
+              setIsPaused,
+              isAudio,
+              currentTime,
+              totalTime,
+              seekValue,
+            }}
+            showControls={showControls}
+            setShowControls={setShowControls}
+          />
+        </div>
+      </SubtitleProvider>
     )
   }
 

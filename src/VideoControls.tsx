@@ -1,16 +1,14 @@
-import { parse as srtVttParse } from "@plussub/srt-vtt-parser"
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { ParseResult, parse as samiParse } from "sami-parser"
 
 import type { MediaFile } from "./types/MediaFiles"
 import { getDroppedFiles } from "./utils/getDroppedFiles"
 import { getMediaFiles, getSubtitleFiles } from "./utils/getMediaFiles"
-import { extractMkvSubtitleParseResult } from "./utils/mkvSubtitles"
 import { clampSubtitleOffset } from "./utils/subtitleOffset"
 
 import ActionOverlay from "./ActionOverlay"
 import { useFullScreen } from "./hooks/useFullScreen"
 import { usePlayerKeyboard } from "./hooks/usePlayerKeyboard"
+import { useSubtitles } from "./hooks/useSubtitles"
 import MouseMoveOverlay from "./MouseMoveOverlay"
 import ProgressBar from "./ProgressBar"
 import SubtitleDelayToast from "./SubtitleDelayToast"
@@ -41,17 +39,6 @@ interface VideoControlsProps {
     totalTime: string
     seekValue: string
   }
-  subtitle: {
-    setSubtitles: React.Dispatch<React.SetStateAction<ParseResult>>
-    hasSubtitles: boolean
-    showSubtitle: boolean
-    setShowSubtitle: React.Dispatch<React.SetStateAction<boolean>>
-    subtitleTracks: string[]
-    selectedSubtitleTrack: string | null
-    setSelectedSubtitleTrack: React.Dispatch<React.SetStateAction<string | null>>
-    subtitleOffsetMs: number
-    setSubtitleOffsetMs: React.Dispatch<React.SetStateAction<number>>
-  }
   showControls: boolean
   setShowControls: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -60,7 +47,6 @@ interface VideoControlsProps {
 const VideoControls: React.FC<VideoControlsProps> = ({
   playlist,
   playback,
-  subtitle,
   showControls,
   setShowControls,
 }) => {
@@ -71,10 +57,10 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   } = playlist
   const { videoRef, isPaused, setIsPaused, isAudio, currentTime, totalTime, seekValue } = playback
   const {
-    setSubtitles, hasSubtitles, showSubtitle, setShowSubtitle,
+    loadSubtitleFile, hasSubtitles, showSubtitle, setShowSubtitle,
     subtitleTracks, selectedSubtitleTrack, setSelectedSubtitleTrack,
     subtitleOffsetMs, setSubtitleOffsetMs,
-  } = subtitle
+  } = useSubtitles()
   const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
   const [playSpeed, setPlaySpeed] = useState(1)
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
@@ -91,74 +77,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     subtitleOffsetRef.current = subtitleOffsetMs
   }, [subtitleOffsetMs])
 
-  const parseSubtitleFile = useCallback(async (subtitleFile: File): Promise<ParseResult> => {
-    const content = await subtitleFile.text()
-    const lowerCaseSubtitleFileName = subtitleFile.name.toLowerCase()
-    if (lowerCaseSubtitleFileName.endsWith(".srt") || lowerCaseSubtitleFileName.endsWith(".vtt")) {
-      return srtVttParse(content).entries.map((entry) => ({
-        startTime: entry.from,
-        endTime: entry.to,
-        languages: {
-          x: entry.text,
-        },
-      }))
-    }
-    return samiParse(content)?.result || []
-  }, [])
-
-  const parseSubtitle = useCallback(
-    async (subtitleFile: File) => {
-      try {
-        setSubtitles(await parseSubtitleFile(subtitleFile))
-      } catch (error) {
-        console.error("Failed to parse subtitle file:", error)
-        setSubtitles([])
-      }
-    },
-    [parseSubtitleFile, setSubtitles],
-  )
-
-  useEffect(() => {
-    const currentMedia = mediaFiles[currentIndex]
-    if (!currentMedia) {
-      setSubtitles([])
-      return
-    }
-
-    let shouldIgnoreResult = false
-    const setSubtitlesSafely = (parsedSubtitles: ParseResult) => {
-      if (!shouldIgnoreResult) {
-        setSubtitles(parsedSubtitles)
-      }
-    }
-
-    const loadSubtitles = async () => {
-      try {
-        if (currentMedia.subtitleFile) {
-          setSubtitlesSafely(await parseSubtitleFile(currentMedia.subtitleFile))
-          return
-        }
-
-        if (
-          currentMedia.source === "file" &&
-          currentMedia.file.name.toLowerCase().endsWith(".mkv")
-        ) {
-          setSubtitlesSafely(await extractMkvSubtitleParseResult(currentMedia.file))
-          return
-        }
-
-        setSubtitlesSafely([])
-      } catch (error) {
-        console.error("Failed to parse subtitles:", error)
-        setSubtitlesSafely([])
-      }
-    }
-
-    void loadSubtitles()
-    return () => {
-      shouldIgnoreResult = true
-    }
-  }, [currentIndex, mediaFiles, parseSubtitleFile, setSubtitles])
 
   const handlePlaybackSpeed = useCallback(
     (speed: number) => {
@@ -192,7 +110,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     if (mediaFiles.length === 0) {
       const subtitleFiles = getSubtitleFiles(files)
       if (subtitleFiles.length > 0) {
-        void parseSubtitle(subtitleFiles[0].file)
+        void loadSubtitleFile(subtitleFiles[0].file)
       }
     } else {
       setMedia(mediaFiles)
@@ -300,7 +218,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           handleVolumeChange={handleVolumeChange}
           hasSubtitles={hasSubtitles}
           showSubtitle={showSubtitle}
-          toggleShowSubtitle={() => setShowSubtitle((prev) => !prev)}
+          toggleShowSubtitle={() => setShowSubtitle(!showSubtitle)}
           subtitleTracks={subtitleTracks}
           selectedSubtitleTrack={selectedSubtitleTrack}
           handleSubtitleTrackChange={(track) => {
