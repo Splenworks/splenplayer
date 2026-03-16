@@ -6,6 +6,7 @@ import { SubtitleProvider } from "./providers/SubtitleProvider"
 import type { MediaFile } from "./types/MediaFiles"
 import { getMediaSourceKey } from "./utils/getMediaFiles"
 import { hashCode } from "./utils/hashCode"
+import { formatTime } from "./utils/number"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
@@ -79,12 +80,7 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
       const video = event.currentTarget
-      const hour = Math.floor(video.currentTime / 3600)
-      let minute = Math.floor((video.currentTime % 3600) / 60).toString()
-      if (minute.length === 1) minute = `0${minute}`
-      let second = Math.floor(video.currentTime % 60).toString()
-      if (second.length === 1) second = `0${second}`
-      setCurrentTime(hour === 0 ? `${minute}:${second}` : `${hour}:${minute}:${second}`)
+      setCurrentTime(formatTime(video.currentTime))
       setSeekValue((video.currentTime / video.duration) * 100 + "")
       setCurrentTimeMs(video.currentTime * 1000)
       if (video.duration > 90) {
@@ -122,12 +118,7 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
       } else {
         resetAnalyzer()
       }
-      const hour = Math.floor(video.duration / 3600)
-      let minute = Math.floor((video.duration % 3600) / 60).toString()
-      if (minute.length === 1) minute = `0${minute}`
-      let second = Math.floor(video.duration % 60).toString()
-      if (second.length === 1) second = `0${second}`
-      setTotalTime(hour === 0 ? `${minute}:${second}` : `${hour}:${minute}:${second}`)
+      setTotalTime(formatTime(video.duration))
       const savedPlaybackPosition = localStorage.getItem(videoFileHash)
       if (video.videoWidth > 0 && savedPlaybackPosition) {
         const newCurrentTime = Number(savedPlaybackPosition)
