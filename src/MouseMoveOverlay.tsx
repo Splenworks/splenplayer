@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useRef } from "react"
+import { useEffect, useRef, type PropsWithChildren } from "react"
 import { twMerge } from "tailwind-merge"
 
 interface MouseMoveOverlayProps {

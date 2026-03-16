@@ -32,12 +32,13 @@ interface SubtitleProviderProps {
   videoFileHash: string
 }
 
-export function SubtitleProvider({
+export const SubtitleProvider: React.FC<PropsWithChildren<SubtitleProviderProps>> = ({
   mediaFiles,
   currentIndex,
   videoFileHash,
   children,
-}: PropsWithChildren<SubtitleProviderProps>) {
+}) => {
+  const currentMedia = mediaFiles[currentIndex] || null
   const [subtitles, setSubtitles] = useState<ParseResult>([])
   const [showSubtitle, setShowSubtitle] = useState(true)
   const [preferredSubtitleTrack, setPreferredSubtitleTrack] = useState<string | null>(null)
@@ -72,15 +73,19 @@ export function SubtitleProvider({
     [mediaFiles.length, subtitleOffsetMs, subtitleSyncDelayStorageKey],
   )
 
+  const activeSubtitles = useMemo(() => {
+    return currentMedia ? subtitles : []
+  }, [currentMedia, subtitles])
+
   const subtitleTracks = useMemo(() => {
     const trackSet = new Set<string>()
-    subtitles.forEach((subtitle) => {
+    activeSubtitles.forEach((subtitle) => {
       Object.entries(subtitle.languages).forEach(([track, text]) => {
         if (text.trim().length > 0) trackSet.add(track)
       })
     })
     return Array.from(trackSet)
-  }, [subtitles])
+  }, [activeSubtitles])
 
   const selectedSubtitleTrack = useMemo(() => {
     if (subtitleTracks.length === 0) return null
@@ -95,9 +100,7 @@ export function SubtitleProvider({
   }, [preferredSubtitleTrack, subtitleTracks])
 
   useEffect(() => {
-    const currentMedia = mediaFiles[currentIndex]
     if (!currentMedia) {
-      setSubtitles([])
       return
     }
     const controller = new AbortController()
@@ -112,7 +115,7 @@ export function SubtitleProvider({
         }
       })
     return () => controller.abort()
-  }, [mediaFiles, currentIndex])
+  }, [currentMedia])
 
   const loadSubtitleFile = useCallback(async (file: File) => {
     try {
@@ -126,7 +129,7 @@ export function SubtitleProvider({
   return (
     <SubtitleContext.Provider
       value={{
-        subtitles,
+        subtitles: activeSubtitles,
         loadSubtitleFile,
         subtitleTracks,
         selectedSubtitleTrack,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FC } from "react"
+import { useEffect, useRef, useState } from "react"
 import PauseIcon from "./assets/icons/pause.svg?react"
 import PlayIcon from "./assets/icons/play.svg?react"
 
@@ -7,7 +7,7 @@ interface ActionOverlayProps {
   isAudio: boolean
 }
 
-const ActionOverlay: FC<ActionOverlayProps> = ({ isPaused, isAudio }) => {
+const ActionOverlay: React.FC<ActionOverlayProps> = ({ isPaused, isAudio }) => {
   const [isActive, setIsActive] = useState(false)
   const hasPlayedOnce = useRef(false)
   const showPausedAudioOverlay = isAudio && isPaused

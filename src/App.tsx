@@ -6,7 +6,7 @@ import type { MediaFile } from "./types/MediaFiles"
 import { isMkvMediaFile } from "./utils/getMediaFiles"
 import { isSafari } from "./utils/browser"
 
-function App() {
+const App: React.FC = () => {
   const { t } = useTranslation()
   const [exitedSession, setExitedSession] = useState<{
     mediaFiles: MediaFile[]
