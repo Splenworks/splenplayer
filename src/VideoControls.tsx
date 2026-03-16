@@ -7,6 +7,7 @@ import { clampSubtitleOffset } from "./utils/subtitleOffset"
 
 import ActionOverlay from "./ActionOverlay"
 import { useFullScreen } from "./hooks/useFullScreen"
+import { usePlayback } from "./hooks/usePlayback"
 import { usePlayerKeyboard } from "./hooks/usePlayerKeyboard"
 import { useSubtitles } from "./hooks/useSubtitles"
 import MouseMoveOverlay from "./MouseMoveOverlay"
@@ -30,15 +31,6 @@ interface VideoControlsProps {
     exit: () => void
     setMedia: (files: MediaFile[]) => void
   }
-  playback: {
-    videoRef: React.RefObject<HTMLVideoElement | null>
-    isPaused: boolean
-    setIsPaused: React.Dispatch<React.SetStateAction<boolean>>
-    isAudio: boolean
-    currentTime: string
-    totalTime: string
-    seekValue: string
-  }
   showControls: boolean
   setShowControls: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -46,7 +38,6 @@ interface VideoControlsProps {
 
 const VideoControls: React.FC<VideoControlsProps> = ({
   playlist,
-  playback,
   showControls,
   setShowControls,
 }) => {
@@ -55,52 +46,24 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     isPreviousMediaDisabled, isNextMediaDisabled, goToPreviousMedia, goToNextMedia,
     isRepeatEnabled, toggleRepeatEnabled, exit, setMedia,
   } = playlist
-  const { videoRef, isPaused, setIsPaused, isAudio, currentTime, totalTime, seekValue } = playback
+  const { videoRef, isPaused, isAudio, seekValue, duration, togglePlayPause, handleSeek } = usePlayback()
   const {
     loadSubtitleFile, hasSubtitles, showSubtitle, setShowSubtitle,
     subtitleTracks, selectedSubtitleTrack, setSelectedSubtitleTrack,
     subtitleOffsetMs, setSubtitleOffsetMs,
   } = useSubtitles()
-  const [volume, setVolume] = useState(localStorage.getItem("volume") || "0.5")
-  const [playSpeed, setPlaySpeed] = useState(1)
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
   const [subtitleDelayOffsetTime, setSubtitleDelayOffsetTime] = useState<number | null>(null)
   const [subtitleDelayToastKey, setSubtitleDelayToastKey] = useState(0)
   const subtitleOffsetRef = useRef(subtitleOffsetMs)
-  const { isFullScreen, toggleFullScreen } = useFullScreen()
-
-  const getVideo = useCallback(() => {
-    return videoRef && typeof videoRef === "object" && videoRef.current
-  }, [videoRef])
+  const { isFullScreen } = useFullScreen()
 
   useEffect(() => {
     subtitleOffsetRef.current = subtitleOffsetMs
   }, [subtitleOffsetMs])
 
-
-  const handlePlaybackSpeed = useCallback(
-    (speed: number) => {
-      const video = getVideo()
-      if (video) {
-        video.playbackRate = speed
-        setPlaySpeed(speed)
-      }
-    },
-    [getVideo],
-  )
-
-  useEffect(() => {
-    const video = getVideo()
-    if (video) {
-      video.volume = Number(volume)
-    }
-  }, [volume, getVideo])
-
-  useEffect(() => {
-    if (!showControls || mediaFiles.length < 2) {
-      setIsMediaListHovered(false)
-    }
-  }, [showControls, mediaFiles.length])
+  const canShowMediaList = showControls && mediaFiles.length >= 2
+  const isMediaListVisible = isMediaListHovered && canShowMediaList
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -116,19 +79,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
       setMedia(mediaFiles)
     }
   }
-
-  const togglePlayPause = useCallback(() => {
-    const video = videoRef?.current
-    if (video) {
-      if (video.paused || video.ended) {
-        video.play()
-        setIsPaused(false)
-      } else {
-        video.pause()
-        setIsPaused(true)
-      }
-    }
-  }, [videoRef, setIsPaused])
 
   const showSubtitleDelayToast = useCallback((offsetMs: number) => {
     setSubtitleDelayOffsetTime(offsetMs)
@@ -158,23 +108,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     subtitleOffsetMs,
   })
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const video = getVideo()
-    if (video) {
-      const seekTime = (video.duration / 100) * Number(e.currentTarget.value)
-      video.currentTime = seekTime
-    }
-  }
-
-  const handleVolumeChange = (value: string) => {
-    const video = getVideo()
-    if (video) {
-      setVolume(value)
-      video.volume = Number(value)
-      localStorage.setItem("volume", value)
-    }
-  }
-
   return (
     <>
       <MouseMoveOverlay
@@ -182,7 +115,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         setShowControls={setShowControls}
 
         videoPaused={isPaused}
-        preventAutoHide={isMediaListHovered}
+        preventAutoHide={isMediaListVisible}
       >
         <div
           className="absolute top-30 right-0 bottom-21 left-0"
@@ -197,13 +130,12 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           mediaFiles={mediaFiles}
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
-          isMediaListHovered={isMediaListHovered}
+          isMediaListHovered={isMediaListVisible}
           setIsMediaListHovered={setIsMediaListHovered}
           exit={exit}
         />
         <VideoControlsBottom
           showControls={showControls}
-          isPaused={isPaused}
           hasMultipleMedia={hasMultipleMedia}
           isPreviousMediaDisabled={isPreviousMediaDisabled}
           isNextMediaDisabled={isNextMediaDisabled}
@@ -211,11 +143,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           goToNextMedia={goToNextMedia}
           isRepeatEnabled={isRepeatEnabled}
           toggleRepeatEnabled={toggleRepeatEnabled}
-          currentTime={currentTime}
-          totalTime={totalTime}
-          togglePlayPause={togglePlayPause}
-          volume={volume}
-          handleVolumeChange={handleVolumeChange}
           hasSubtitles={hasSubtitles}
           showSubtitle={showSubtitle}
           toggleShowSubtitle={() => setShowSubtitle(!showSubtitle)}
@@ -227,16 +154,11 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           }}
           subtitleOffsetMs={subtitleOffsetMs}
           changeSubtitleOffsetBy={changeSubtitleOffsetBy}
-          playSpeed={playSpeed}
-          handlePlaybackSpeed={handlePlaybackSpeed}
-          isFullScreen={isFullScreen}
-          toggleFullScreen={toggleFullScreen}
         />
         <ProgressBar
           handleSeek={handleSeek}
           seekValue={seekValue}
-          // eslint-disable-next-line react-hooks/refs
-          duration={videoRef.current?.duration ?? 0}
+          duration={duration}
         />
       </MouseMoveOverlay>
       {subtitleDelayOffsetTime !== null && (

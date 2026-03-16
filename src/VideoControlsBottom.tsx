@@ -2,6 +2,8 @@ import React from "react"
 import { twMerge } from "tailwind-merge"
 import CaptionControl from "./CaptionControl"
 import FullScreenButton from "./FullScreenButton"
+import { useFullScreen } from "./hooks/useFullScreen"
+import { usePlayback } from "./hooks/usePlayback"
 import PlayPauseButton from "./PlayPauseButton"
 import PlaySpeedControl from "./PlaySpeedControl"
 import PrevNextButton from "./PrevNextButton"
@@ -11,8 +13,6 @@ import VolumeControl from "./VolumeControl"
 
 interface VideoControlsBottomProps {
   showControls: boolean
-  isPaused: boolean
-  togglePlayPause: () => void
   hasMultipleMedia: boolean
   isPreviousMediaDisabled: boolean
   isNextMediaDisabled: boolean
@@ -20,10 +20,6 @@ interface VideoControlsBottomProps {
   goToNextMedia: () => void
   isRepeatEnabled: boolean
   toggleRepeatEnabled: () => void
-  currentTime: string
-  totalTime: string
-  volume: string
-  handleVolumeChange: (volume: string) => void
   hasSubtitles: boolean
   showSubtitle: boolean
   toggleShowSubtitle: () => void
@@ -32,16 +28,10 @@ interface VideoControlsBottomProps {
   handleSubtitleTrackChange: (track: string) => void
   subtitleOffsetMs: number
   changeSubtitleOffsetBy: (deltaMs: number) => void
-  playSpeed: number
-  handlePlaybackSpeed: (speed: number) => void
-  isFullScreen: boolean
-  toggleFullScreen: () => void
 }
 
 const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   showControls,
-  isPaused,
-  togglePlayPause,
   hasMultipleMedia,
   isPreviousMediaDisabled,
   isNextMediaDisabled,
@@ -49,10 +39,6 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   goToNextMedia,
   isRepeatEnabled,
   toggleRepeatEnabled,
-  currentTime,
-  totalTime,
-  volume,
-  handleVolumeChange,
   hasSubtitles,
   showSubtitle,
   toggleShowSubtitle,
@@ -61,11 +47,9 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   handleSubtitleTrackChange,
   subtitleOffsetMs,
   changeSubtitleOffsetBy,
-  playSpeed,
-  handlePlaybackSpeed,
-  isFullScreen,
-  toggleFullScreen,
 }) => {
+  const { isPaused, togglePlayPause, currentTime, totalTime, volume, handleVolumeChange, playSpeed, handlePlaybackSpeed } = usePlayback()
+  const { isFullScreen, toggleFullScreen } = useFullScreen()
   return (
     <div className="absolute right-0 bottom-11 left-0 mx-4 flex items-end justify-between">
       <div className="flex items-center justify-center gap-2">

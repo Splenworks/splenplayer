@@ -2,6 +2,7 @@ import AudioMotionAnalyzer from "audiomotion-analyzer"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import AudioOverlay from "./AudioOverlay"
 import SubtitleOverlay from "./SubtitleOverlay"
+import { PlaybackProvider } from "./providers/PlaybackProvider"
 import { SubtitleProvider } from "./providers/SubtitleProvider"
 import type { MediaFile } from "./types/MediaFiles"
 import { getMediaSourceKey } from "./utils/getMediaFiles"
@@ -26,6 +27,7 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
   const [totalTime, setTotalTime] = useState("00:00")
   const [seekValue, setSeekValue] = useState("0")
   const [currentTimeMs, setCurrentTimeMs] = useState(0)
+  const [duration, setDuration] = useState(0)
   const [videoRatio, setVideoRatio] = useState(0)
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
@@ -127,6 +129,7 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
       } else {
         setSeekValue("0")
       }
+      setDuration(video.duration)
       setVideoRatio(video.videoWidth / video.videoHeight)
       video.play().then(() => setIsPaused(false))
     },
@@ -152,52 +155,54 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
   )
 
   return (
-    <SubtitleProvider mediaFiles={mediaFiles} currentIndex={currentIndex} videoFileHash={videoFileHash}>
-      <div className="fixed top-0 right-0 bottom-0 left-0">
-        <VideoPlayer
-          key={mediaElementModeKey}
-          mediaFiles={mediaFiles}
-          currentIndex={currentIndex}
-          ref={videoRef}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          onEnded={handleEnded}
-        />
-        <AudioOverlay
-          analyzerContainerRef={analyzerContainer}
-          isAudio={isAudio}
-          mediaFile={currentMediaFile}
-        />
-        <SubtitleOverlay currentTimeMs={currentTimeMs} videoRatio={videoRatio} />
-        <VideoControls
-          playlist={{
-            mediaFiles,
-            currentIndex,
-            setCurrentIndex,
-            hasMultipleMedia,
-            isPreviousMediaDisabled,
-            isNextMediaDisabled,
-            goToPreviousMedia,
-            goToNextMedia,
-            isRepeatEnabled,
-            toggleRepeatEnabled: () => setIsRepeatEnabled((prev) => !prev),
-            exit,
-            setMedia,
-          }}
-          playback={{
-            videoRef,
-            isPaused,
-            setIsPaused,
-            isAudio,
-            currentTime,
-            totalTime,
-            seekValue,
-          }}
-          showControls={showControls}
-          setShowControls={setShowControls}
-        />
-      </div>
-    </SubtitleProvider>
+    <PlaybackProvider
+      videoRef={videoRef}
+      isPaused={isPaused}
+      setIsPaused={setIsPaused}
+      isAudio={isAudio}
+      currentTime={currentTime}
+      totalTime={totalTime}
+      seekValue={seekValue}
+      duration={duration}
+    >
+      <SubtitleProvider mediaFiles={mediaFiles} currentIndex={currentIndex} videoFileHash={videoFileHash}>
+        <div className="fixed top-0 right-0 bottom-0 left-0">
+          <VideoPlayer
+            key={mediaElementModeKey}
+            mediaFiles={mediaFiles}
+            currentIndex={currentIndex}
+            ref={videoRef}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onEnded={handleEnded}
+          />
+          <AudioOverlay
+            analyzerContainerRef={analyzerContainer}
+            isAudio={isAudio}
+            mediaFile={currentMediaFile}
+          />
+          <SubtitleOverlay currentTimeMs={currentTimeMs} videoRatio={videoRatio} />
+          <VideoControls
+            playlist={{
+              mediaFiles,
+              currentIndex,
+              setCurrentIndex,
+              hasMultipleMedia,
+              isPreviousMediaDisabled,
+              isNextMediaDisabled,
+              goToPreviousMedia,
+              goToNextMedia,
+              isRepeatEnabled,
+              toggleRepeatEnabled: () => setIsRepeatEnabled((prev) => !prev),
+              exit,
+              setMedia,
+            }}
+            showControls={showControls}
+            setShowControls={setShowControls}
+          />
+        </div>
+      </SubtitleProvider>
+    </PlaybackProvider>
   )
 }
 
