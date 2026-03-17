@@ -1,4 +1,3 @@
-import { type FC } from "react"
 import { useTranslation } from "react-i18next"
 import { formatSubtitleOffset } from "./utils/subtitleOffset"
 
@@ -7,7 +6,7 @@ interface SubtitleDelayToastProps {
   onHidden: () => void
 }
 
-const SubtitleDelayToast: FC<SubtitleDelayToastProps> = ({ offsetTime, onHidden }) => {
+const SubtitleDelayToast: React.FC<SubtitleDelayToastProps> = ({ offsetTime, onHidden }) => {
   const { t } = useTranslation()
 
   if (offsetTime === null) {

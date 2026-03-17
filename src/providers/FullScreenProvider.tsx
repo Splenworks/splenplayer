@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, type PropsWithChildren } from "react"
 import { FullScreenContext } from "../contexts/FullScreenContext"
 import { isMac } from "../utils/browser"
 

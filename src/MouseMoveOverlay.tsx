@@ -1,10 +1,9 @@
-import { PropsWithChildren, useEffect } from "react"
+import { useEffect, useRef, type PropsWithChildren } from "react"
 import { twMerge } from "tailwind-merge"
 
 interface MouseMoveOverlayProps {
   showControls: boolean
   setShowControls: (showControls: boolean) => void
-  mouseMoveTimeoutRef: React.RefObject<number | null>
   videoPaused: boolean
   preventAutoHide?: boolean
   delay?: number
@@ -14,35 +13,26 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
   children,
   showControls,
   setShowControls,
-  mouseMoveTimeoutRef,
   videoPaused,
   preventAutoHide = false,
   delay = 1000,
 }) => {
+  const timeoutRef = useRef<number>(undefined)
+
   useEffect(() => {
-    if (mouseMoveTimeoutRef.current) {
-      clearTimeout(mouseMoveTimeoutRef.current)
-      mouseMoveTimeoutRef.current = null
-    }
+    clearTimeout(timeoutRef.current)
 
     if (videoPaused || preventAutoHide) {
       setShowControls(true)
       return
     }
 
-    mouseMoveTimeoutRef.current = window.setTimeout(() => {
-      if (!videoPaused) {
-        setShowControls(false)
-      }
+    timeoutRef.current = window.setTimeout(() => {
+      setShowControls(false)
     }, delay)
 
-    return () => {
-      if (mouseMoveTimeoutRef.current) {
-        clearTimeout(mouseMoveTimeoutRef.current)
-        mouseMoveTimeoutRef.current = null
-      }
-    }
-  }, [videoPaused, preventAutoHide, delay, setShowControls, mouseMoveTimeoutRef])
+    return () => clearTimeout(timeoutRef.current)
+  }, [videoPaused, preventAutoHide, delay, setShowControls])
 
   return (
     <div className="fixed top-0 right-0 bottom-0 left-0">
@@ -63,13 +53,11 @@ const MouseMoveOverlay: React.FC<PropsWithChildren<MouseMoveOverlayProps>> = ({
           }
         }}
         onMouseMove={() => {
-          if (mouseMoveTimeoutRef.current) {
-            clearTimeout(mouseMoveTimeoutRef.current)
-          }
+          clearTimeout(timeoutRef.current)
           if (document.hasFocus() || videoPaused || preventAutoHide) {
             setShowControls(true)
             if (!videoPaused && !preventAutoHide) {
-              mouseMoveTimeoutRef.current = window.setTimeout(() => {
+              timeoutRef.current = window.setTimeout(() => {
                 setShowControls(false)
               }, delay)
             }

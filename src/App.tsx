@@ -1,21 +1,12 @@
-import AudioMotionAnalyzer from "audiomotion-analyzer"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ParseResult } from "sami-parser"
-import AudioOverlay from "./AudioOverlay"
-import Caption from "./Caption"
-import DragDropArea from "./DragDropArea"
-import Footer from "./Footer"
-import Header from "./Header"
+import Landing from "./Landing"
+import Player from "./Player"
 import type { MediaFile } from "./types/MediaFiles"
-import { getMediaSourceKey, isMkvMediaFile } from "./utils/getMediaFiles"
+import { isMkvMediaFile } from "./utils/getMediaFiles"
 import { isSafari } from "./utils/browser"
-import { hashCode } from "./utils/hashCode"
-import { replaceBasicHtmlEntities } from "./utils/html"
-import VideoControls from "./VideoControls"
-import VideoPlayer from "./VideoPlayer"
 
-function App() {
+const App: React.FC = () => {
   const { t } = useTranslation()
   const [exitedSession, setExitedSession] = useState<{
     mediaFiles: MediaFile[]
@@ -23,382 +14,44 @@ function App() {
   } | null>(null)
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const analyzer = useRef<AudioMotionAnalyzer | null>(null)
-  const analyzerContainer = useRef<HTMLDivElement | null>(null)
-  const [currentTime, setCurrentTime] = useState("00:00")
-  const [totalTime, setTotalTime] = useState("00:00")
-  const [seekValue, setSeekValue] = useState("0")
-  const videoFileHash = useMemo(() => {
-    const allMediaFilesAndSizes = mediaFiles
-      .map((mediaFile) => mediaFile.displayName + getMediaSourceKey(mediaFile))
-      .join("")
-    return "video-hash-" + hashCode(allMediaFilesAndSizes + currentIndex)
-  }, [mediaFiles, currentIndex])
-  const subtitleSyncDelayStorageKey = `${videoFileHash}-subtitle-sync-delay`
-  const [showSubtitle, setShowSubtitle] = useState(true)
-  const [subtitleOffsetState, setSubtitleOffsetState] = useState<{
-    storageKey: string
-    offsetMs: number
-  } | null>(null)
-  const subtitleOffsetMs = useMemo(() => {
-    if (mediaFiles.length === 0) {
-      return 0
-    }
-    if (subtitleOffsetState && subtitleOffsetState.storageKey === subtitleSyncDelayStorageKey) {
-      return subtitleOffsetState.offsetMs
-    }
-    const savedSubtitleSyncDelay = localStorage.getItem(subtitleSyncDelayStorageKey)
-    const parsedSubtitleSyncDelay = Number(savedSubtitleSyncDelay)
-    return savedSubtitleSyncDelay !== null && Number.isFinite(parsedSubtitleSyncDelay)
-      ? parsedSubtitleSyncDelay
-      : 0
-  }, [mediaFiles.length, subtitleOffsetState, subtitleSyncDelayStorageKey])
-  const setSubtitleOffsetMs = useCallback(
-    (value: number | ((prevValue: number) => number)) => {
-      if (mediaFiles.length === 0) {
-        return
-      }
-      const nextSubtitleOffsetMs = typeof value === "function" ? value(subtitleOffsetMs) : value
-      setSubtitleOffsetState({
-        storageKey: subtitleSyncDelayStorageKey,
-        offsetMs: nextSubtitleOffsetMs,
-      })
-      if (nextSubtitleOffsetMs === 0) {
-        localStorage.removeItem(subtitleSyncDelayStorageKey)
-        return
-      }
-      localStorage.setItem(subtitleSyncDelayStorageKey, nextSubtitleOffsetMs + "")
-    },
-    [mediaFiles.length, subtitleOffsetMs, subtitleSyncDelayStorageKey],
-  )
-  const [subtitles, setSubtitles] = useState<ParseResult>([])
-  const subtitleTracks = useMemo(() => {
-    const trackSet = new Set<string>()
-    subtitles.forEach((subtitle) => {
-      Object.entries(subtitle.languages).forEach(([track, text]) => {
-        if (text.trim().length > 0) {
-          trackSet.add(track)
-        }
-      })
-    })
-    return Array.from(trackSet)
-  }, [subtitles])
-  const [preferredSubtitleTrack, setPreferredSubtitleTrack] = useState<string | null>(null)
-  const selectedSubtitleTrack = useMemo(() => {
-    if (subtitleTracks.length === 0) {
-      return null
-    }
-    if (preferredSubtitleTrack && subtitleTracks.includes(preferredSubtitleTrack)) {
-      return preferredSubtitleTrack
-    }
-    return (
-      subtitleTracks.find((track) => track === "und") ||
-      subtitleTracks.find((track) => track.startsWith("en")) ||
-      subtitleTracks[0]
-    )
-  }, [preferredSubtitleTrack, subtitleTracks])
-  const [currentSubtitle, setCurrentSubtitle] = useState("")
-  const [videoRatio, setVideoRatio] = useState(0)
-  const [showControls, setShowControls] = useState(false)
-  const [isPaused, setIsPaused] = useState(true)
-  const [isRepeatEnabled, setIsRepeatEnabled] = useState(false)
-  const mouseMoveTimeout = useRef<number | null>(null)
-
-  const resetAnalyzer = useCallback(() => {
-    analyzer.current?.destroy()
-    analyzer.current = null
-  }, [])
 
   const exit = useCallback(() => {
-    setExitedSession({
-      mediaFiles,
-      currentIndex,
-    })
-    resetAnalyzer()
+    setExitedSession({ mediaFiles, currentIndex })
     setMediaFiles([])
     setCurrentIndex(0)
-  }, [currentIndex, mediaFiles, resetAnalyzer])
+  }, [currentIndex, mediaFiles])
 
   const setMedia = useCallback((files: MediaFile[]) => {
     const playableFiles = isSafari ? files.filter((file) => !isMkvMediaFile(file)) : files
     if (playableFiles.length !== files.length) {
       alert(t("dragDropArea.safariMkvUnsupported"))
     }
-    if (playableFiles.length === 0) {
-      return
-    }
-
+    if (playableFiles.length === 0) return
     setExitedSession(null)
     setMediaFiles(playableFiles)
     setCurrentIndex(0)
   }, [t])
 
   const goBack = useCallback(() => {
-    if (!exitedSession || exitedSession.mediaFiles.length === 0) {
-      return
-    }
+    if (!exitedSession || exitedSession.mediaFiles.length === 0) return
     setMediaFiles(exitedSession.mediaFiles)
     setCurrentIndex(Math.min(exitedSession.currentIndex, exitedSession.mediaFiles.length - 1))
     setExitedSession(null)
   }, [exitedSession])
 
-  const hasMultipleMedia = mediaFiles.length > 1
-  const currentMediaFile = mediaFiles[currentIndex] || null
-  const isAudio = currentMediaFile?.type === "audio"
-  const shouldEnableAudioAnalyzer = isAudio && currentMediaFile?.source === "file"
-  const mediaElementModeKey = shouldEnableAudioAnalyzer ? "analyzed-media" : "plain-media"
-  const isPreviousMediaDisabled = hasMultipleMedia && !isRepeatEnabled && currentIndex === 0
-  const isNextMediaDisabled =
-    hasMultipleMedia && !isRepeatEnabled && currentIndex === mediaFiles.length - 1
-
-  const goToPreviousMedia = useCallback(() => {
-    if (mediaFiles.length < 2) {
-      return false
-    }
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1)
-      return true
-    }
-    if (isRepeatEnabled) {
-      setCurrentIndex(mediaFiles.length - 1)
-      return true
-    }
-    return false
-  }, [currentIndex, isRepeatEnabled, mediaFiles.length])
-
-  const goToNextMedia = useCallback(() => {
-    if (mediaFiles.length < 2) {
-      return false
-    }
-    if (currentIndex < mediaFiles.length - 1) {
-      setCurrentIndex(currentIndex + 1)
-      return true
-    }
-    if (isRepeatEnabled) {
-      setCurrentIndex(0)
-      return true
-    }
-    return false
-  }, [currentIndex, isRepeatEnabled, mediaFiles.length])
-
-  useEffect(() => {
-    if (mediaFiles.length === 0) {
-      resetAnalyzer()
-    }
-  }, [mediaFiles.length, resetAnalyzer])
-
-  useEffect(() => {
-    if (!shouldEnableAudioAnalyzer) {
-      // A MediaElementSourceNode is permanently tied to its DOM media element,
-      // so leaving analyzer mode must also release the old analyzer instance.
-      resetAnalyzer()
-    }
-  }, [resetAnalyzer, shouldEnableAudioAnalyzer])
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (video) {
-      video.ontimeupdate = () => {
-        const hour = Math.floor(video.currentTime / 3600)
-        let minute = Math.floor((video.currentTime % 3600) / 60).toString()
-        if (minute.length === 1) {
-          minute = `0${minute}`
-        }
-        let second = Math.floor(video.currentTime % 60).toString()
-        if (second.length === 1) {
-          second = `0${second}`
-        }
-        if (hour === 0) {
-          setCurrentTime(`${minute}:${second}`)
-        } else {
-          setCurrentTime(`${hour}:${minute}:${second}`)
-        }
-        setSeekValue((video.currentTime / video.duration) * 100 + "")
-        if (video.duration > 90) {
-          if (video.currentTime >= 30 && video.currentTime < video.duration - 30) {
-            localStorage.setItem(videoFileHash, video.currentTime + "")
-          } else if (video.currentTime < 30 || video.currentTime >= video.duration - 30) {
-            localStorage.removeItem(videoFileHash)
-          }
-        }
-        if (subtitles.length > 0) {
-          const subtitleTimeMs = video.currentTime * 1000 - subtitleOffsetMs
-          const currentSubtitle = subtitles.find(
-            (subtitle) =>
-              subtitleTimeMs >= subtitle.startTime &&
-              subtitleTimeMs <= subtitle.endTime &&
-              (selectedSubtitleTrack ? subtitle.languages[selectedSubtitleTrack] : true),
-          )
-          if (currentSubtitle) {
-            const text =
-              (selectedSubtitleTrack && currentSubtitle.languages[selectedSubtitleTrack]) ||
-              Object.values(currentSubtitle.languages)[0]
-            setCurrentSubtitle(replaceBasicHtmlEntities(text))
-          } else {
-            setCurrentSubtitle("")
-          }
-        } else {
-          setCurrentSubtitle("")
-        }
-      }
-      video.onloadedmetadata = () => {
-        if (isAudio) {
-          if (!shouldEnableAudioAnalyzer) {
-            // Remote URLs can fail Web Audio security checks, so keep playback running without the analyzer.
-            resetAnalyzer()
-          } else if (analyzerContainer.current && analyzer.current === null) {
-            try {
-              analyzer.current = new AudioMotionAnalyzer(analyzerContainer.current, {
-                source: video,
-                overlay: true,
-                showBgColor: false,
-                smoothing: 0.8,
-                showScaleX: false,
-              })
-            } catch (error) {
-              resetAnalyzer()
-              console.error("Failed to initialize audio analyzer:", error)
-            }
-          }
-        } else {
-          resetAnalyzer()
-        }
-        const hour = Math.floor(video.duration / 3600)
-        let minute = Math.floor((video.duration % 3600) / 60).toString()
-        if (minute.length === 1) {
-          minute = `0${minute}`
-        }
-        let second = Math.floor(video.duration % 60).toString()
-        if (second.length === 1) {
-          second = `0${second}`
-        }
-        if (hour === 0) {
-          setTotalTime(`${minute}:${second}`)
-        } else {
-          setTotalTime(`${hour}:${minute}:${second}`)
-        }
-        const savedPlaybackPosition = localStorage.getItem(videoFileHash)
-        if (video.videoWidth > 0 && savedPlaybackPosition) {
-          const newCurrentTime = Number(savedPlaybackPosition)
-          video.currentTime = newCurrentTime > 10 ? newCurrentTime - 10 : 0
-          setSeekValue((video.currentTime / video.duration) * 100 + "")
-        } else {
-          setSeekValue("0")
-        }
-        setVideoRatio(video.videoWidth / video.videoHeight)
-        video.play().then(() => {
-          setIsPaused(false)
-        })
-      }
-      video.onended = () => {
-        localStorage.removeItem(videoFileHash)
-        if (goToNextMedia()) {
-          setShowControls(true)
-          mouseMoveTimeout.current = window.setTimeout(() => {
-            if (!video.paused) {
-              setShowControls(false)
-            }
-          }, 2000)
-        } else if (isRepeatEnabled && mediaFiles.length === 1) {
-          video.currentTime = 0
-          void video.play().then(() => {
-            setIsPaused(false)
-          })
-          setShowControls(true)
-          mouseMoveTimeout.current = window.setTimeout(() => {
-            if (!video.paused) {
-              setShowControls(false)
-            }
-          }, 2000)
-        } else {
-          setIsPaused(true)
-          setShowControls(true)
-        }
-      }
-    }
-    return () => {
-      if (video) {
-        video.ontimeupdate = null
-        video.onloadedmetadata = null
-        video.onended = null
-      }
-    }
-  }, [
-    currentIndex,
-    goToNextMedia,
-    isAudio,
-    isRepeatEnabled,
-    mediaFiles.length,
-    resetAnalyzer,
-    selectedSubtitleTrack,
-    shouldEnableAudioAnalyzer,
-    subtitleOffsetMs,
-    subtitles,
-    videoFileHash,
-  ])
-
   if (mediaFiles.length > 0) {
     return (
-      <div className="fixed top-0 right-0 bottom-0 left-0">
-        <VideoPlayer
-          key={mediaElementModeKey}
-          mediaFiles={mediaFiles}
-          currentIndex={currentIndex}
-          ref={videoRef}
-        />
-        <AudioOverlay
-          analyzerContainerRef={analyzerContainer}
-          isAudio={isAudio}
-          mediaFile={mediaFiles[currentIndex] || null}
-        />
-        {showSubtitle && subtitles.length > 0 && (
-          <Caption caption={currentSubtitle} videoRatio={videoRatio} />
-        )}
-        <VideoControls
-          mediaFiles={mediaFiles}
-          exit={exit}
-          currentIndex={currentIndex}
-          setCurrentIndex={setCurrentIndex}
-          hasMultipleMedia={hasMultipleMedia}
-          isPreviousMediaDisabled={isPreviousMediaDisabled}
-          isNextMediaDisabled={isNextMediaDisabled}
-          goToPreviousMedia={goToPreviousMedia}
-          goToNextMedia={goToNextMedia}
-          isRepeatEnabled={isRepeatEnabled}
-          toggleRepeatEnabled={() => setIsRepeatEnabled((prev) => !prev)}
-          videoRef={videoRef}
-          setMedia={setMedia}
-          currentTime={currentTime}
-          totalTime={totalTime}
-          seekValue={seekValue}
-          showControls={showControls}
-          setShowControls={setShowControls}
-          isPaused={isPaused}
-          isAudio={isAudio}
-          setIsPaused={setIsPaused}
-          setSubtitles={setSubtitles}
-          hasSubtitles={subtitleTracks.length > 0}
-          showSubtitle={showSubtitle}
-          setShowSubtitle={setShowSubtitle}
-          subtitleTracks={subtitleTracks}
-          selectedSubtitleTrack={selectedSubtitleTrack}
-          setSelectedSubtitleTrack={setPreferredSubtitleTrack}
-          subtitleOffsetMs={subtitleOffsetMs}
-          setSubtitleOffsetMs={setSubtitleOffsetMs}
-          mouseMoveTimeout={mouseMoveTimeout}
-        />
-      </div>
+      <Player
+        mediaFiles={mediaFiles}
+        currentIndex={currentIndex}
+        setCurrentIndex={setCurrentIndex}
+        exit={exit}
+        setMedia={setMedia}
+      />
     )
   }
 
-  return (
-    <>
-      <Header exited={Boolean(exitedSession)} goBack={goBack} />
-      <DragDropArea setMedia={setMedia} />
-      <Footer />
-    </>
-  )
+  return <Landing exited={Boolean(exitedSession)} goBack={goBack} setMedia={setMedia} />
 }
 
 export default App
