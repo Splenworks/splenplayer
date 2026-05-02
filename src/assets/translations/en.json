@@ -37,10 +37,11 @@
     "video": "Video"
   },
   "transcoding": {
-    "loading": "Loading audio engine…",
-    "message": "Converting WMA for playback…",
+    "loading": "Loading media engine…",
+    "message": "Converting file for playback…",
     "preparing": "Preparing…",
     "percent": "{{percent}}%",
-    "error": "Could not prepare this WMA file for playback."
+    "error": "Could not prepare this file for playback.",
+    "flvCodecError": "This .flv file uses an old codec that can't be converted in the browser."
   }
 }

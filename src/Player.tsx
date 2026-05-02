@@ -10,7 +10,7 @@ import type { MediaFile } from "./types/MediaFiles"
 import { getMediaSourceKey } from "./utils/getMediaFiles"
 import { hashCode } from "./utils/hashCode"
 import { formatTime } from "./utils/number"
-import type { TranscodeStatus } from "./utils/wmaTranscoder"
+import type { TranscodeStatus } from "./utils/mediaTranscoder"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
@@ -41,7 +41,11 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
   const handleTranscodeStatusChange = useCallback(
     (status: TranscodeStatus) => {
       if (status.status === "error") {
-        alert(t("transcoding.error"))
+        const messageKey =
+          status.reason === "incompatible-flv-codec"
+            ? "transcoding.flvCodecError"
+            : "transcoding.error"
+        alert(t(messageKey))
         setTranscodeStatus({ status: "idle" })
         return
       }

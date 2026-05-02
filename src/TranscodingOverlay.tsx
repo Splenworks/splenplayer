@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import type { TranscodePhase } from "./utils/wmaTranscoder"
+import type { TranscodePhase } from "./utils/mediaTranscoder"
 
 interface TranscodingOverlayProps {
   phase: TranscodePhase

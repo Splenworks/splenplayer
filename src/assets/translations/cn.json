@@ -37,10 +37,11 @@
     "video": "视频"
   },
   "transcoding": {
-    "loading": "正在加载音频引擎…",
-    "message": "正在转换 WMA 文件以便播放…",
+    "loading": "正在加载媒体引擎…",
+    "message": "正在转换文件以便播放…",
     "preparing": "准备中…",
     "percent": "{{percent}}%",
-    "error": "无法准备此 WMA 文件以便播放。"
+    "error": "无法准备此文件以便播放。",
+    "flvCodecError": "此 .flv 文件使用了浏览器无法转换的旧编解码器。"
   }
 }

@@ -1,6 +1,7 @@
-// Browsers can't natively decode WMA. We lazy-load ffmpeg.wasm only when a
-// WMA file is opened, then transcode it to MP3 in memory and feed the result
-// to the existing <video> element via a blob URL.
+// Browsers can't natively decode some media formats (e.g. WMA, older FLV).
+// We lazy-load ffmpeg.wasm only when one of those is opened, then transcode
+// the file in memory and feed the result to the existing <video> element via
+// a blob URL.
 
 import type { FFmpeg } from "@ffmpeg/ffmpeg"
 
@@ -14,11 +15,18 @@ export type TranscodePhase = "loading" | "transcoding"
 export type TranscodeStatus =
   | { status: "idle" }
   | { status: "active"; phase: TranscodePhase; progress: number; indeterminate: boolean }
-  | { status: "error" }
+  | { status: "error"; reason?: "incompatible-flv-codec" }
 
 type ProgressCallback = (
   status: Extract<TranscodeStatus, { status: "active" }>,
 ) => void
+
+export class IncompatibleFlvCodecError extends Error {
+  constructor() {
+    super("incompatible-flv-codec")
+    this.name = "IncompatibleFlvCodecError"
+  }
+}
 
 let ffmpegInstance: FFmpeg | null = null
 let ffmpegLoadPromise: Promise<FFmpeg> | null = null
@@ -117,9 +125,21 @@ const loadFFmpeg = async (
 export const getCachedTranscodedUrl = (cacheKey: string): string | null =>
   transcodedBlobUrlCache.get(cacheKey) ?? null
 
-export const transcodeWmaToMp3 = async (
+type TranscodeJob = {
+  inputName: string
+  outputName: string
+  outputMime: string
+  // ffmpeg args between `-i INPUT` and OUTPUT. e.g. ["-vn", "-c:a", "libmp3lame", "-q:a", "2"].
+  args: string[]
+  // When set, a non-zero ffmpeg exit code throws this instead of a generic error.
+  // Used for FLV remux: if `-c copy` fails we know the codecs don't fit MP4.
+  exitErrorOverride?: () => Error
+}
+
+const runTranscode = async (
   file: File,
   cacheKey: string,
+  job: TranscodeJob,
   onProgress?: ProgressCallback,
 ): Promise<string> => {
   const cached = transcodedBlobUrlCache.get(cacheKey)
@@ -156,9 +176,6 @@ export const transcodeWmaToMp3 = async (
 
     broadcast({ status: "active", phase: "transcoding", progress: 0, indeterminate: false })
 
-    const inputName = "input.wma"
-    const outputName = "output.mp3"
-
     const handleProgress = ({ progress }: { progress: number }) => {
       const clamped = Math.max(0, Math.min(1, progress))
       broadcast({
@@ -172,36 +189,32 @@ export const transcodeWmaToMp3 = async (
 
     try {
       const buffer = new Uint8Array(await file.arrayBuffer())
-      await ffmpeg.writeFile(inputName, buffer)
+      await ffmpeg.writeFile(job.inputName, buffer)
       const exitCode = await ffmpeg.exec([
         "-i",
-        inputName,
-        "-vn",
-        "-c:a",
-        "libmp3lame",
-        "-q:a",
-        "2",
-        outputName,
+        job.inputName,
+        ...job.args,
+        job.outputName,
       ])
       if (exitCode !== 0) {
-        throw new Error(`ffmpeg exited with code ${exitCode}`)
+        throw job.exitErrorOverride?.() ?? new Error(`ffmpeg exited with code ${exitCode}`)
       }
-      const data = await ffmpeg.readFile(outputName)
+      const data = await ffmpeg.readFile(job.outputName)
       const dataBytes =
         typeof data === "string" ? new TextEncoder().encode(data) : new Uint8Array(data)
-      const blob = new Blob([dataBytes.buffer], { type: "audio/mpeg" })
+      const blob = new Blob([dataBytes.buffer], { type: job.outputMime })
       const blobUrl = URL.createObjectURL(blob)
       transcodedBlobUrlCache.set(cacheKey, blobUrl)
       return blobUrl
     } finally {
       ffmpeg.off("progress", handleProgress)
       try {
-        await ffmpeg.deleteFile(inputName)
+        await ffmpeg.deleteFile(job.inputName)
       } catch {
         // Ignore cleanup failures — the in-memory FS is small and reused.
       }
       try {
-        await ffmpeg.deleteFile(outputName)
+        await ffmpeg.deleteFile(job.outputName)
       } catch {
         // Same as above.
       }
@@ -213,6 +226,46 @@ export const transcodeWmaToMp3 = async (
   inflightTranscodes.set(cacheKey, { promise, subscribers })
   return promise
 }
+
+export const transcodeWmaToMp3 = (
+  file: File,
+  cacheKey: string,
+  onProgress?: ProgressCallback,
+): Promise<string> =>
+  runTranscode(
+    file,
+    cacheKey,
+    {
+      inputName: "input.wma",
+      outputName: "output.mp3",
+      outputMime: "audio/mpeg",
+      args: ["-vn", "-c:a", "libmp3lame", "-q:a", "2"],
+    },
+    onProgress,
+  )
+
+// Remux-only path: copies streams from FLV into MP4 without re-encoding.
+// Works for the modern (~95% of) FLVs that hold H.264 + AAC/MP3. Fails fast
+// for old codecs (Sorenson Spark, VP6, Speex, Nellymoser); we surface that as
+// IncompatibleFlvCodecError so the UI can show a clear message instead of
+// trying a slow re-encode.
+export const transcodeFlvToMp4 = (
+  file: File,
+  cacheKey: string,
+  onProgress?: ProgressCallback,
+): Promise<string> =>
+  runTranscode(
+    file,
+    cacheKey,
+    {
+      inputName: "input.flv",
+      outputName: "output.mp4",
+      outputMime: "video/mp4",
+      args: ["-c", "copy", "-movflags", "+faststart"],
+      exitErrorOverride: () => new IncompatibleFlvCodecError(),
+    },
+    onProgress,
+  )
 
 export const releaseTranscodedBlob = (cacheKey: string) => {
   const url = transcodedBlobUrlCache.get(cacheKey)

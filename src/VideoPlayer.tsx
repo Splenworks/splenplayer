@@ -2,12 +2,18 @@ import type { MediaPlayerClass } from "dashjs"
 import Hls from "hls.js"
 import { forwardRef, useCallback, useEffect, useRef, useState, type SyntheticEvent } from "react"
 import type { MediaFile } from "./types/MediaFiles"
-import { getMediaSourceKey, isWmaLocalMediaFile } from "./utils/getMediaFiles"
+import {
+  getMediaSourceKey,
+  isFlvLocalMediaFile,
+  isWmaLocalMediaFile,
+} from "./utils/getMediaFiles"
 import {
   getCachedTranscodedUrl,
+  IncompatibleFlvCodecError,
+  transcodeFlvToMp4,
   transcodeWmaToMp3,
   type TranscodeStatus,
-} from "./utils/wmaTranscoder"
+} from "./utils/mediaTranscoder"
 
 interface VideoPlayerProps {
   mediaFiles: MediaFile[]
@@ -68,7 +74,13 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
 
       const sourceKey = getMediaSourceKey(media)
 
-      if (isWmaLocalMediaFile(media)) {
+      const transcodeFn = isWmaLocalMediaFile(media)
+        ? transcodeWmaToMp3
+        : isFlvLocalMediaFile(media)
+          ? transcodeFlvToMp4
+          : null
+
+      if (transcodeFn) {
         const cachedUrl = getCachedTranscodedUrl(sourceKey)
         if (cachedUrl) {
           setLocalVideoSrc({ sourceKey, url: cachedUrl })
@@ -77,7 +89,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
         }
 
         let cancelled = false
-        transcodeWmaToMp3(media.file, sourceKey, (status) => {
+        transcodeFn(media.file, sourceKey, (status) => {
           if (cancelled) return
           onTranscodeStatusChange?.(status)
         })
@@ -88,8 +100,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
           })
           .catch((error: unknown) => {
             if (cancelled) return
-            console.error("Failed to transcode WMA file:", error)
-            onTranscodeStatusChange?.({ status: "error" })
+            console.error("Failed to transcode media file:", error)
+            const reason =
+              error instanceof IncompatibleFlvCodecError ? "incompatible-flv-codec" : undefined
+            onTranscodeStatusChange?.({ status: "error", reason })
           })
 
         return () => {
