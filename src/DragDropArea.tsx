@@ -19,8 +19,8 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ setMedia }) => {
   const { t } = useTranslation()
   const smallScreen = useMediaQuery("(max-width: 640px), (max-height: 640px)")
   const acceptedFileTypes = isSafari
-    ? "video/*,audio/*,.smi,.sami,.vtt,.srt"
-    : "video/*,audio/*,.mkv,.smi,.sami,.vtt,.srt"
+    ? "video/*,audio/*,.wma,.smi,.sami,.vtt,.srt"
+    : "video/*,audio/*,.mkv,.wma,.smi,.sami,.vtt,.srt"
 
   const isFileDrag = (e: React.DragEvent<HTMLDivElement>) =>
     Array.from(e.dataTransfer.types).includes("Files")

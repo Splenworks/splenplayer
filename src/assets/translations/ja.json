@@ -35,5 +35,12 @@
     "subtitleOffsetWithUnit": "{{offsetValue}}秒",
     "audio": "オーディオ",
     "video": "ビデオ"
+  },
+  "transcoding": {
+    "loading": "オーディオエンジンを読み込み中…",
+    "message": "WMA ファイルを再生できる形式に変換中…",
+    "preparing": "準備中…",
+    "percent": "{{percent}}%",
+    "error": "この WMA ファイルを再生用に準備できませんでした。"
   }
 }

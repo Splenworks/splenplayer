@@ -35,5 +35,12 @@
     "subtitleOffsetWithUnit": "{{offsetValue}}s",
     "audio": "Audio",
     "video": "Video"
+  },
+  "transcoding": {
+    "loading": "Loading audio engine…",
+    "message": "Converting WMA for playback…",
+    "preparing": "Preparing…",
+    "percent": "{{percent}}%",
+    "error": "Could not prepare this WMA file for playback."
   }
 }
