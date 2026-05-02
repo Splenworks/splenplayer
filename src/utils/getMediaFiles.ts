@@ -8,7 +8,7 @@ const endsWith = (fileName: string, fileExtensions: string[]) => {
 
 const looksLikeVideo = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return endsWith(lowerCasedName, [".mp4", ".webm", ".mov", ".avi", ".mkv"])
+  return endsWith(lowerCasedName, [".mp4", ".webm", ".mov", ".avi", ".mkv", ".flv"])
 }
 
 export const isMkvFileName = (name: string) => {
@@ -17,7 +17,24 @@ export const isMkvFileName = (name: string) => {
 
 const looksLikeAudio = (name: string) => {
   const lowerCasedName = name.toLowerCase()
-  return endsWith(lowerCasedName, [".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a"])
+  return endsWith(lowerCasedName, [
+    ".mp3",
+    ".wav",
+    ".ogg",
+    ".flac",
+    ".aac",
+    ".m4a",
+    ".wma",
+    ".opus",
+  ])
+}
+
+export const isWmaFileName = (name: string) => {
+  return endsWith(name.toLowerCase(), [".wma"])
+}
+
+export const isFlvFileName = (name: string) => {
+  return endsWith(name.toLowerCase(), [".flv"])
 }
 
 const looksLikeSubtitle = (name: string) => {
@@ -124,6 +141,14 @@ export const isMkvMediaFile = (mediaFile: MediaFile) => {
   } catch {
     return isMkvFileName(mediaFile.displayName)
   }
+}
+
+export const isWmaLocalMediaFile = (mediaFile: MediaFile) => {
+  return mediaFile.source === "file" && isWmaFileName(mediaFile.file.name)
+}
+
+export const isFlvLocalMediaFile = (mediaFile: MediaFile) => {
+  return mediaFile.source === "file" && isFlvFileName(mediaFile.file.name)
 }
 
 export const getSubtitleFiles = (files: Array<File | DroppedFile>) => {

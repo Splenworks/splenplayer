@@ -35,5 +35,13 @@
     "subtitleOffsetWithUnit": "{{offsetValue}}s",
     "audio": "Audio",
     "video": "Video"
+  },
+  "transcoding": {
+    "loading": "Cargando motor multimedia…",
+    "message": "Convirtiendo archivo para la reproducción…",
+    "preparing": "Preparando…",
+    "percent": "{{percent}}%",
+    "error": "No se pudo preparar este archivo para la reproducción.",
+    "flvCodecError": "Este archivo .flv usa un códec antiguo que no se puede convertir en el navegador."
   }
 }

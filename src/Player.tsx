@@ -1,13 +1,16 @@
 import AudioMotionAnalyzer from "audiomotion-analyzer"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import AudioOverlay from "./AudioOverlay"
 import SubtitleOverlay from "./SubtitleOverlay"
+import TranscodingOverlay from "./TranscodingOverlay"
 import { PlaybackProvider } from "./providers/PlaybackProvider"
 import { SubtitleProvider } from "./providers/SubtitleProvider"
 import type { MediaFile } from "./types/MediaFiles"
 import { getMediaSourceKey } from "./utils/getMediaFiles"
 import { hashCode } from "./utils/hashCode"
 import { formatTime } from "./utils/number"
+import type { TranscodeStatus } from "./utils/mediaTranscoder"
 import VideoControls from "./VideoControls"
 import VideoPlayer from "./VideoPlayer"
 
@@ -32,6 +35,24 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
   const [showControls, setShowControls] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
   const [isRepeatEnabled, setIsRepeatEnabled] = useState(false)
+  const [transcodeStatus, setTranscodeStatus] = useState<TranscodeStatus>({ status: "idle" })
+  const { t } = useTranslation()
+
+  const handleTranscodeStatusChange = useCallback(
+    (status: TranscodeStatus) => {
+      if (status.status === "error") {
+        const messageKey =
+          status.reason === "incompatible-flv-codec"
+            ? "transcoding.flvCodecError"
+            : "transcoding.error"
+        alert(t(messageKey))
+        setTranscodeStatus({ status: "idle" })
+        return
+      }
+      setTranscodeStatus(status)
+    },
+    [t],
+  )
 
   const videoFileHash = useMemo(() => {
     const allMediaFilesAndSizes = mediaFiles
@@ -175,6 +196,7 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             onEnded={handleEnded}
+            onTranscodeStatusChange={handleTranscodeStatusChange}
           />
           <AudioOverlay
             analyzerContainerRef={analyzerContainer}
@@ -182,6 +204,13 @@ const Player: React.FC<PlayerProps> = ({ mediaFiles, currentIndex, setCurrentInd
             mediaFile={currentMediaFile}
           />
           <SubtitleOverlay currentTimeMs={currentTimeMs} videoRatio={videoRatio} />
+          {transcodeStatus.status === "active" && (
+            <TranscodingOverlay
+              phase={transcodeStatus.phase}
+              progress={transcodeStatus.progress}
+              indeterminate={transcodeStatus.indeterminate}
+            />
+          )}
           <VideoControls
             playlist={{
               mediaFiles,
