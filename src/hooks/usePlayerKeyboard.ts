@@ -20,11 +20,12 @@ interface UsePlayerKeyboardOptions {
   exit: () => void
   togglePlayPause: () => void
   hasSubtitles: boolean
+  toggleShowSubtitle: () => void
   changeSubtitleOffsetBy: (deltaMs: number) => void
   subtitleOffsetMs: number
   volume: string
   handleVolumeChange: (value: string) => void
-  onVolumeInteraction: () => void
+  onRevealControls: (options?: { expandVolume?: boolean }) => void
 }
 
 export function usePlayerKeyboard({
@@ -32,11 +33,12 @@ export function usePlayerKeyboard({
   exit,
   togglePlayPause,
   hasSubtitles,
+  toggleShowSubtitle,
   changeSubtitleOffsetBy,
   subtitleOffsetMs,
   volume,
   handleVolumeChange,
-  onVolumeInteraction,
+  onRevealControls,
 }: UsePlayerKeyboardOptions) {
   const { isFullScreen, toggleFullScreen } = useFullScreen()
   const subtitleOffsetRef = useRef(subtitleOffsetMs)
@@ -58,11 +60,11 @@ export function usePlayerKeyboard({
       } else if (event.key === "ArrowUp") {
         event.preventDefault()
         handleVolumeChange(String(Math.round(Math.min(1, Number(volume) + 0.1) * 10) / 10))
-        onVolumeInteraction()
+        onRevealControls({ expandVolume: true })
       } else if (event.key === "ArrowDown") {
         event.preventDefault()
         handleVolumeChange(String(Math.round(Math.max(0, Number(volume) - 0.1) * 10) / 10))
-        onVolumeInteraction()
+        onRevealControls({ expandVolume: true })
       } else if (event.key === " " || event.key === "k" || event.key === "K") {
         event.preventDefault()
         togglePlayPause()
@@ -71,7 +73,11 @@ export function usePlayerKeyboard({
       } else if ((event.key === "m" || event.key === "M") && !event.metaKey && !event.ctrlKey && !event.altKey) {
         event.preventDefault()
         handleVolumeChange(volume === "0" ? "0.5" : "0")
-        onVolumeInteraction()
+        onRevealControls({ expandVolume: true })
+      } else if (hasSubtitles && (event.key === "c" || event.key === "C") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault()
+        toggleShowSubtitle()
+        onRevealControls()
       } else if (hasSubtitles && !event.metaKey && !event.ctrlKey && !event.altKey && isSubtitleOffsetIncreaseKey(event)) {
         event.preventDefault()
         changeSubtitleOffsetBy(SUBTITLE_OFFSET_STEP_MS)
@@ -85,5 +91,5 @@ export function usePlayerKeyboard({
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [videoRef, exit, isFullScreen, toggleFullScreen, togglePlayPause, hasSubtitles, changeSubtitleOffsetBy, volume, handleVolumeChange, onVolumeInteraction])
+  }, [videoRef, exit, isFullScreen, toggleFullScreen, togglePlayPause, hasSubtitles, toggleShowSubtitle, changeSubtitleOffsetBy, volume, handleVolumeChange, onRevealControls])
 }

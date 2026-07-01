@@ -16,7 +16,7 @@ import SubtitleDelayToast from "./SubtitleDelayToast"
 import VideoControlsBottom from "./VideoControlsBottom"
 import VideoControlsTop from "./VideoControlsTop"
 
-const VOLUME_CONTROL_REVEAL_MS = 1000
+const CONTROLS_REVEAL_MS = 1000
 
 interface VideoControlsProps {
   playlist: {
@@ -55,26 +55,29 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     subtitleOffsetMs, setSubtitleOffsetMs,
   } = useSubtitles()
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
-  const [isVolumeControlActive, setIsVolumeControlActive] = useState(false)
+  const [isControlsRevealed, setIsControlsRevealed] = useState(false)
+  const [isVolumeExpanded, setIsVolumeExpanded] = useState(false)
   const [subtitleDelayOffsetTime, setSubtitleDelayOffsetTime] = useState<number | null>(null)
   const [subtitleDelayToastKey, setSubtitleDelayToastKey] = useState(0)
   const subtitleOffsetRef = useRef(subtitleOffsetMs)
-  const volumeControlTimeoutRef = useRef<number>(undefined)
+  const revealTimeoutRef = useRef<number>(undefined)
   const { isFullScreen } = useFullScreen()
 
   useEffect(() => {
     subtitleOffsetRef.current = subtitleOffsetMs
   }, [subtitleOffsetMs])
 
-  const revealVolumeControl = useCallback(() => {
-    setIsVolumeControlActive(true)
-    clearTimeout(volumeControlTimeoutRef.current)
-    volumeControlTimeoutRef.current = window.setTimeout(() => {
-      setIsVolumeControlActive(false)
-    }, VOLUME_CONTROL_REVEAL_MS)
+  const revealControls = useCallback((options?: { expandVolume?: boolean }) => {
+    setIsControlsRevealed(true)
+    setIsVolumeExpanded(options?.expandVolume ?? false)
+    clearTimeout(revealTimeoutRef.current)
+    revealTimeoutRef.current = window.setTimeout(() => {
+      setIsControlsRevealed(false)
+      setIsVolumeExpanded(false)
+    }, CONTROLS_REVEAL_MS)
   }, [])
 
-  useEffect(() => () => clearTimeout(volumeControlTimeoutRef.current), [])
+  useEffect(() => () => clearTimeout(revealTimeoutRef.current), [])
 
   const canShowMediaList = showControls && mediaFiles.length >= 2
   const isMediaListVisible = isMediaListHovered && canShowMediaList
@@ -113,16 +116,21 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     applySubtitleOffset(subtitleOffsetRef.current + deltaMs)
   }, [applySubtitleOffset])
 
+  const toggleShowSubtitle = useCallback(() => {
+    setShowSubtitle(!showSubtitle)
+  }, [showSubtitle, setShowSubtitle])
+
   usePlayerKeyboard({
     videoRef,
     exit,
     togglePlayPause,
     hasSubtitles,
+    toggleShowSubtitle,
     changeSubtitleOffsetBy,
     subtitleOffsetMs,
     volume,
     handleVolumeChange,
-    onVolumeInteraction: revealVolumeControl,
+    onRevealControls: revealControls,
   })
 
   return (
@@ -132,7 +140,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         setShowControls={setShowControls}
 
         videoPaused={isPaused}
-        preventAutoHide={isMediaListVisible || isVolumeControlActive}
+        preventAutoHide={isMediaListVisible || isControlsRevealed}
       >
         <div
           className="absolute top-30 right-0 bottom-21 left-0"
@@ -153,7 +161,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         />
         <VideoControlsBottom
           showControls={showControls}
-          volumeExpanded={isVolumeControlActive}
+          volumeExpanded={isVolumeExpanded}
           hasMultipleMedia={hasMultipleMedia}
           isPreviousMediaDisabled={isPreviousMediaDisabled}
           isNextMediaDisabled={isNextMediaDisabled}
@@ -163,7 +171,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           toggleRepeatEnabled={toggleRepeatEnabled}
           hasSubtitles={hasSubtitles}
           showSubtitle={showSubtitle}
-          toggleShowSubtitle={() => setShowSubtitle(!showSubtitle)}
+          toggleShowSubtitle={toggleShowSubtitle}
           subtitleTracks={subtitleTracks}
           selectedSubtitleTrack={selectedSubtitleTrack}
           handleSubtitleTrackChange={(track) => {
