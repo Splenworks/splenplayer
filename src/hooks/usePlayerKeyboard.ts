@@ -53,6 +53,12 @@ export function usePlayerKeyboard({
         video.currentTime -= 5
       } else if (event.key === "ArrowRight") {
         video.currentTime += 5
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault()
+        handleVolumeChange(String(Math.round(Math.min(1, Number(volume) + 0.1) * 10) / 10))
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault()
+        handleVolumeChange(String(Math.round(Math.max(0, Number(volume) - 0.1) * 10) / 10))
       } else if (event.key === " " || event.key === "k" || event.key === "K") {
         event.preventDefault()
         togglePlayPause()
