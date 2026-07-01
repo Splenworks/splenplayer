@@ -26,8 +26,8 @@ interface VideoControlsProps {
     hasMultipleMedia: boolean
     isPreviousMediaDisabled: boolean
     isNextMediaDisabled: boolean
-    goToPreviousMedia: () => void
-    goToNextMedia: () => void
+    goToPreviousMedia: () => boolean
+    goToNextMedia: () => boolean
     isRepeatEnabled: boolean
     toggleRepeatEnabled: () => void
     exit: () => void
@@ -124,6 +124,8 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     videoRef,
     exit,
     togglePlayPause,
+    goToNextMedia,
+    goToPreviousMedia,
     hasSubtitles,
     toggleShowSubtitle,
     changeSubtitleOffsetBy,

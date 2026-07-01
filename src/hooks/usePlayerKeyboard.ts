@@ -19,6 +19,8 @@ interface UsePlayerKeyboardOptions {
   videoRef: RefObject<HTMLVideoElement | null>
   exit: () => void
   togglePlayPause: () => void
+  goToNextMedia: () => boolean
+  goToPreviousMedia: () => boolean
   hasSubtitles: boolean
   toggleShowSubtitle: () => void
   changeSubtitleOffsetBy: (deltaMs: number) => void
@@ -32,6 +34,8 @@ export function usePlayerKeyboard({
   videoRef,
   exit,
   togglePlayPause,
+  goToNextMedia,
+  goToPreviousMedia,
   hasSubtitles,
   toggleShowSubtitle,
   changeSubtitleOffsetBy,
@@ -72,6 +76,12 @@ export function usePlayerKeyboard({
         togglePlayPause()
       } else if (event.key === "f") {
         toggleFullScreen()
+      } else if (event.shiftKey && !event.metaKey && !event.ctrlKey && !event.altKey && (event.key === "n" || event.key === "N")) {
+        event.preventDefault()
+        if (goToNextMedia()) onRevealControls()
+      } else if (event.shiftKey && !event.metaKey && !event.ctrlKey && !event.altKey && (event.key === "p" || event.key === "P")) {
+        event.preventDefault()
+        if (goToPreviousMedia()) onRevealControls()
       } else if ((event.key === "m" || event.key === "M") && !event.metaKey && !event.ctrlKey && !event.altKey) {
         event.preventDefault()
         handleVolumeChange(volume === "0" ? "0.5" : "0")
@@ -93,5 +103,5 @@ export function usePlayerKeyboard({
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [videoRef, exit, isFullScreen, toggleFullScreen, togglePlayPause, hasSubtitles, toggleShowSubtitle, changeSubtitleOffsetBy, volume, handleVolumeChange, onRevealControls])
+  }, [videoRef, exit, isFullScreen, toggleFullScreen, togglePlayPause, goToNextMedia, goToPreviousMedia, hasSubtitles, toggleShowSubtitle, changeSubtitleOffsetBy, volume, handleVolumeChange, onRevealControls])
 }
