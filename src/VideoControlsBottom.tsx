@@ -13,6 +13,7 @@ import VolumeControl from "./VolumeControl"
 
 interface VideoControlsBottomProps {
   showControls: boolean
+  volumeExpanded: boolean
   hasMultipleMedia: boolean
   isPreviousMediaDisabled: boolean
   isNextMediaDisabled: boolean
@@ -32,6 +33,7 @@ interface VideoControlsBottomProps {
 
 const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
   showControls,
+  volumeExpanded,
   hasMultipleMedia,
   isPreviousMediaDisabled,
   isNextMediaDisabled,
@@ -84,7 +86,7 @@ const VideoControlsBottom: React.FC<VideoControlsBottomProps> = ({
         </div>
       </div>
       <div className="flex items-end justify-center gap-2">
-        <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} />
+        <VolumeControl volume={volume} handleVolumeChange={handleVolumeChange} expanded={volumeExpanded} />
         {hasSubtitles && (
           <div className="relative mr-0.5">
             <CaptionControl

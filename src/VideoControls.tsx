@@ -16,6 +16,8 @@ import SubtitleDelayToast from "./SubtitleDelayToast"
 import VideoControlsBottom from "./VideoControlsBottom"
 import VideoControlsTop from "./VideoControlsTop"
 
+const VOLUME_CONTROL_REVEAL_MS = 1000
+
 interface VideoControlsProps {
   playlist: {
     mediaFiles: MediaFile[]
@@ -53,14 +55,26 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     subtitleOffsetMs, setSubtitleOffsetMs,
   } = useSubtitles()
   const [isMediaListHovered, setIsMediaListHovered] = useState(false)
+  const [isVolumeControlActive, setIsVolumeControlActive] = useState(false)
   const [subtitleDelayOffsetTime, setSubtitleDelayOffsetTime] = useState<number | null>(null)
   const [subtitleDelayToastKey, setSubtitleDelayToastKey] = useState(0)
   const subtitleOffsetRef = useRef(subtitleOffsetMs)
+  const volumeControlTimeoutRef = useRef<number>(undefined)
   const { isFullScreen } = useFullScreen()
 
   useEffect(() => {
     subtitleOffsetRef.current = subtitleOffsetMs
   }, [subtitleOffsetMs])
+
+  const revealVolumeControl = useCallback(() => {
+    setIsVolumeControlActive(true)
+    clearTimeout(volumeControlTimeoutRef.current)
+    volumeControlTimeoutRef.current = window.setTimeout(() => {
+      setIsVolumeControlActive(false)
+    }, VOLUME_CONTROL_REVEAL_MS)
+  }, [])
+
+  useEffect(() => () => clearTimeout(volumeControlTimeoutRef.current), [])
 
   const canShowMediaList = showControls && mediaFiles.length >= 2
   const isMediaListVisible = isMediaListHovered && canShowMediaList
@@ -108,6 +122,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     subtitleOffsetMs,
     volume,
     handleVolumeChange,
+    onVolumeInteraction: revealVolumeControl,
   })
 
   return (
@@ -117,7 +132,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         setShowControls={setShowControls}
 
         videoPaused={isPaused}
-        preventAutoHide={isMediaListVisible}
+        preventAutoHide={isMediaListVisible || isVolumeControlActive}
       >
         <div
           className="absolute top-30 right-0 bottom-21 left-0"
@@ -138,6 +153,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         />
         <VideoControlsBottom
           showControls={showControls}
+          volumeExpanded={isVolumeControlActive}
           hasMultipleMedia={hasMultipleMedia}
           isPreviousMediaDisabled={isPreviousMediaDisabled}
           isNextMediaDisabled={isNextMediaDisabled}
