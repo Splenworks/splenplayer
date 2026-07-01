@@ -49,7 +49,7 @@ export function usePlayerKeyboard({
         video.currentTime -= 5
       } else if (event.key === "ArrowRight") {
         video.currentTime += 5
-      } else if (event.key === " ") {
+      } else if (event.key === " " || event.key === "k" || event.key === "K") {
         event.preventDefault()
         togglePlayPause()
       } else if (event.key === "f") {
