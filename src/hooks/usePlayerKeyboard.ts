@@ -55,8 +55,10 @@ export function usePlayerKeyboard({
         exit()
       } else if (event.key === "ArrowLeft") {
         video.currentTime -= 5
+        onRevealControls()
       } else if (event.key === "ArrowRight") {
         video.currentTime += 5
+        onRevealControls()
       } else if (event.key === "ArrowUp") {
         event.preventDefault()
         handleVolumeChange(String(Math.round(Math.min(1, Number(volume) + 0.1) * 10) / 10))
