@@ -46,7 +46,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     isPreviousMediaDisabled, isNextMediaDisabled, goToPreviousMedia, goToNextMedia,
     isRepeatEnabled, toggleRepeatEnabled, exit, setMedia,
   } = playlist
-  const { videoRef, isPaused, isAudio, seekValue, duration, togglePlayPause, handleSeek } = usePlayback()
+  const { videoRef, isPaused, isAudio, seekValue, duration, togglePlayPause, handleSeek, volume, handleVolumeChange } = usePlayback()
   const {
     loadSubtitleFile, hasSubtitles, showSubtitle, setShowSubtitle,
     subtitleTracks, selectedSubtitleTrack, setSelectedSubtitleTrack,
@@ -106,6 +106,8 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     hasSubtitles,
     changeSubtitleOffsetBy,
     subtitleOffsetMs,
+    volume,
+    handleVolumeChange,
   })
 
   return (

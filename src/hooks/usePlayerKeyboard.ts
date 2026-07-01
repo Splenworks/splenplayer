@@ -22,6 +22,8 @@ interface UsePlayerKeyboardOptions {
   hasSubtitles: boolean
   changeSubtitleOffsetBy: (deltaMs: number) => void
   subtitleOffsetMs: number
+  volume: string
+  handleVolumeChange: (value: string) => void
 }
 
 export function usePlayerKeyboard({
@@ -31,6 +33,8 @@ export function usePlayerKeyboard({
   hasSubtitles,
   changeSubtitleOffsetBy,
   subtitleOffsetMs,
+  volume,
+  handleVolumeChange,
 }: UsePlayerKeyboardOptions) {
   const { isFullScreen, toggleFullScreen } = useFullScreen()
   const subtitleOffsetRef = useRef(subtitleOffsetMs)
@@ -54,6 +58,9 @@ export function usePlayerKeyboard({
         togglePlayPause()
       } else if (event.key === "f") {
         toggleFullScreen()
+      } else if ((event.key === "m" || event.key === "M") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault()
+        handleVolumeChange(volume === "0" ? "0.5" : "0")
       } else if (hasSubtitles && !event.metaKey && !event.ctrlKey && !event.altKey && isSubtitleOffsetIncreaseKey(event)) {
         event.preventDefault()
         changeSubtitleOffsetBy(SUBTITLE_OFFSET_STEP_MS)
@@ -67,5 +74,5 @@ export function usePlayerKeyboard({
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [videoRef, exit, isFullScreen, toggleFullScreen, togglePlayPause, hasSubtitles, changeSubtitleOffsetBy])
+  }, [videoRef, exit, isFullScreen, toggleFullScreen, togglePlayPause, hasSubtitles, changeSubtitleOffsetBy, volume, handleVolumeChange])
 }
