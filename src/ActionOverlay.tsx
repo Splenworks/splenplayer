@@ -20,7 +20,6 @@ const ActionOverlay: React.FC<ActionOverlayProps> = ({ isPaused, isAudio }) => {
       hasPlayedOnce.current = true
       return
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsActive(true)
   }, [isPaused])
 
